@@ -4,6 +4,10 @@
 
 @layer base {
   :root {
+    /* Update primary and accent colors to #D31C74 */
+    --primary: 338 76% 48%; /* Converted #D31C74 to HSL */
+    --accent: 338 76% 48%; /* Same as primary for consistency */
+
     /* Black dominant theme for Harau Ping Pong */
     --background: 0 0% 7%; /* Near black */
     --foreground: 0 0% 98%; /* Off-white text */
@@ -14,7 +18,6 @@
     --popover: 0 0% 10%;
     --popover-foreground: 0 0% 98%;
 
-    --primary: 348 95% 49%; /* Vibrant red accent */
     --primary-foreground: 0 0% 100%;
 
     --secondary: 240 4% 16%; /* Dark gray */
@@ -23,7 +26,6 @@
     --muted: 240 4% 16%;
     --muted-foreground: 240 5% 65%;
 
-    --accent: 348 95% 49%; /* Same red accent for consistency */
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84.2% 60.2%;
@@ -46,6 +48,9 @@
   }
 
   .dark {
+    /* Update primary and accent colors for dark mode */
+    --primary: 338 76% 48%;
+    --accent: 338 76% 48%;
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
 
@@ -55,7 +60,6 @@
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 210 40% 98%;
     --primary-foreground: 222.2 47.4% 11.2%;
 
     --secondary: 217.2 32.6% 17.5%;
@@ -64,7 +68,6 @@
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
 
-    --accent: 217.2 32.6% 17.5%;
     --accent-foreground: 210 40% 98%;
 
     --destructive: 0 62.8% 30.6%;

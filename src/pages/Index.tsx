@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
@@ -18,11 +17,9 @@ const Index = () => {
     <div className="min-h-screen bg-black text-white flex flex-col">
       {/* Navbar */}
       <nav className="w-full p-6 flex justify-between items-center z-10">
-        <div className="text-2xl font-bold text-primary flex items-center gap-2">
-          <span className="text-white">Harau</span>
-          <span className="text-primary text-sm border-l border-zinc-700 pl-2">
-            PING PONG
-          </span>
+        <div className="text-2xl font-bold flex items-center">
+          <span className="text-white font-light tracking-wide">Harau</span>
+          <span className="text-primary text-2xl">.</span>
         </div>
 
         <div className="space-x-4">
@@ -188,15 +185,12 @@ const Index = () => {
       {/* Footer */}
       <footer className="bg-zinc-900 py-10 px-6 border-t border-zinc-800">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center">
-          <div className="text-2xl font-bold text-primary flex items-center gap-2 mb-6 md:mb-0">
-            <span className="text-white">Harau</span>
-            <span className="text-primary text-sm border-l border-zinc-700 pl-2">
-              PING PONG
-            </span>
+          <div className="text-2xl font-bold flex items-center">
+            <span className="text-white font-light tracking-wide">Harau</span>
+            <span className="text-primary text-2xl">.</span>
           </div>
           <div className="text-zinc-400 text-sm">
-            &copy; {new Date().getFullYear()} Harau Ping Pong. All rights
-            reserved.
+            &copy; {new Date().getFullYear()} Harau. All rights reserved.
           </div>
         </div>
       </footer>

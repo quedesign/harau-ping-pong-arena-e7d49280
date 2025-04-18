@@ -30,9 +30,9 @@ const Navbar: React.FC = () => {
   return (
     <nav className="bg-black border-b border-zinc-800 py-3 px-6 sticky top-0 z-10">
       <div className="container mx-auto flex justify-between items-center">
-        <Link to="/" className="text-2xl font-bold text-primary flex items-center gap-2">
-          <span className="text-white">Harau</span>
-          <span className="text-primary text-sm border-l border-zinc-700 pl-2">PING PONG</span>
+        <Link to="/" className="text-2xl font-bold flex items-center">
+          <span className="text-white font-light tracking-wide">Harau</span>
+          <span className="text-primary text-2xl">.</span>
         </Link>
 
         {/* Mobile menu button */}

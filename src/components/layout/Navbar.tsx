@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -35,7 +34,6 @@ const Navbar: React.FC = () => {
           <span className="text-primary text-2xl">.</span>
         </Link>
 
-        {/* Mobile menu button */}
         <button 
           onClick={toggleMenu} 
           className="md:hidden text-white focus:outline-none"
@@ -43,13 +41,12 @@ const Navbar: React.FC = () => {
           {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
 
-        {/* Desktop navigation */}
         <div className="hidden md:flex items-center gap-6">
           <Link to="/tournaments" className="text-white hover:text-primary transition">
-            Tournaments
+            Torneios
           </Link>
           <Link to="/athletes" className="text-white hover:text-primary transition">
-            Athletes
+            Atletas
           </Link>
           
           {currentUser ? (
@@ -67,48 +64,47 @@ const Navbar: React.FC = () => {
               <DropdownMenuContent align="end" className="w-48">
                 <DropdownMenuItem className="p-2 cursor-pointer" onClick={() => navigate('/profile')}>
                   <User size={16} className="mr-2" />
-                  <span>Profile</span>
+                  <span>Perfil</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem className="p-2 cursor-pointer" onClick={() => navigate('/settings')}>
                   <Settings size={16} className="mr-2" />
-                  <span>Settings</span>
+                  <span>Configurações</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem className="p-2 cursor-pointer" onClick={handleLogout}>
                   <LogOut size={16} className="mr-2" />
-                  <span>Logout</span>
+                  <span>Sair</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
             <div className="flex items-center gap-2">
               <Button variant="ghost" onClick={() => navigate('/login')}>
-                Login
+                Entrar
               </Button>
               <Button className="bg-primary" onClick={() => navigate('/register')}>
-                Register
+                Cadastrar
               </Button>
             </div>
           )}
         </div>
 
-        {/* Mobile menu */}
         {isMenuOpen && (
           <div className="md:hidden absolute top-full left-0 right-0 bg-black border-b border-zinc-800 p-4 flex flex-col gap-4">
             <Link to="/tournaments" className="text-white hover:text-primary transition py-2" onClick={toggleMenu}>
-              Tournaments
+              Torneios
             </Link>
             <Link to="/athletes" className="text-white hover:text-primary transition py-2" onClick={toggleMenu}>
-              Athletes
+              Atletas
             </Link>
             
             {currentUser ? (
               <>
                 <Link to="/profile" className="text-white hover:text-primary transition py-2" onClick={toggleMenu}>
-                  Profile
+                  Perfil
                 </Link>
                 <Link to="/settings" className="text-white hover:text-primary transition py-2" onClick={toggleMenu}>
-                  Settings
+                  Configurações
                 </Link>
                 <button 
                   onClick={() => {
@@ -117,7 +113,7 @@ const Navbar: React.FC = () => {
                   }} 
                   className="text-white hover:text-primary transition py-2 text-left"
                 >
-                  Logout
+                  Sair
                 </button>
               </>
             ) : (
@@ -126,13 +122,13 @@ const Navbar: React.FC = () => {
                   navigate('/login');
                   toggleMenu();
                 }}>
-                  Login
+                  Entrar
                 </Button>
                 <Button className="bg-primary" onClick={() => {
                   navigate('/register');
                   toggleMenu();
                 }}>
-                  Register
+                  Cadastrar
                 </Button>
               </div>
             )}

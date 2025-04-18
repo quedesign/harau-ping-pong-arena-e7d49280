@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -21,7 +20,7 @@ const Login = () => {
     setError(null);
 
     if (!email || !password) {
-      setError('Please fill in all fields');
+      setError('Por favor, preencha todos os campos');
       return;
     }
 
@@ -29,7 +28,7 @@ const Login = () => {
       await login(email, password);
       navigate('/dashboard');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to login');
+      setError(err instanceof Error ? err.message : 'Falha ao fazer login');
     }
   };
 
@@ -38,15 +37,15 @@ const Login = () => {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-white mb-2">
-            Harau <span className="text-primary">Table Tennis</span>
+            Harau <span className="text-primary">Tênis de Mesa</span>
           </h1>
-          <p className="text-zinc-400">Sign in to your account</p>
+          <p className="text-zinc-400">Entre na sua conta</p>
         </div>
 
         <Card className="bg-black border-zinc-800">
           <CardHeader>
-            <CardTitle className="text-white">Login</CardTitle>
-            <CardDescription>Enter your credentials to access your account</CardDescription>
+            <CardTitle className="text-white">Entrar</CardTitle>
+            <CardDescription>Digite suas credenciais para acessar sua conta</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -57,11 +56,11 @@ const Login = () => {
               )}
 
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">E-mail</Label>
                 <Input
                   id="email"
                   type="email"
-                  placeholder="your@email.com"
+                  placeholder="seu@email.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="bg-zinc-900 border-zinc-800"
@@ -70,9 +69,9 @@ const Login = () => {
 
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="password">Password</Label>
+                  <Label htmlFor="password">Senha</Label>
                   <Link to="/forgot-password" className="text-sm text-primary hover:underline">
-                    Forgot password?
+                    Esqueceu a senha?
                   </Link>
                 </div>
                 <Input
@@ -93,25 +92,24 @@ const Login = () => {
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Signing in...
+                    Entrando...
                   </>
-                ) : 'Sign In'}
+                ) : 'Entrar'}
               </Button>
             </form>
           </CardContent>
           <CardFooter className="flex justify-center">
             <p className="text-sm text-zinc-400">
-              Don't have an account?{' '}
+              Não tem uma conta?{' '}
               <Link to="/register" className="text-primary hover:underline">
-                Sign up
+                Cadastre-se
               </Link>
             </p>
           </CardFooter>
         </Card>
 
-        {/* Demo accounts for testing */}
         <div className="mt-8 text-center">
-          <p className="text-zinc-400 text-sm mb-2">Demo Accounts (for testing)</p>
+          <p className="text-zinc-400 text-sm mb-2">Contas de Demonstração (para teste)</p>
           <div className="grid grid-cols-2 gap-2">
             <Button 
               variant="outline" 
@@ -121,7 +119,7 @@ const Login = () => {
                 setPassword('password');
               }}
             >
-              Athlete
+              Atleta
             </Button>
             <Button 
               variant="outline" 

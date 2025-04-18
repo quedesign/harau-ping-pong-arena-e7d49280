@@ -25,15 +25,15 @@ const Index = () => {
         <div className="space-x-4">
           {currentUser ? (
             <Link to="/dashboard">
-              <Button>Go to Dashboard</Button>
+              <Button>Ir para Dashboard</Button>
             </Link>
           ) : (
             <>
               <Link to="/login">
-                <Button variant="ghost">Login</Button>
+                <Button variant="ghost">Entrar</Button>
               </Link>
               <Link to="/register">
-                <Button>Register</Button>
+                <Button>Cadastrar</Button>
               </Link>
             </>
           )}
@@ -43,23 +43,23 @@ const Index = () => {
       {/* Hero Section */}
       <section className="flex-1 flex flex-col items-center justify-center px-6 pt-10 pb-24 text-center">
         <h1 className="text-5xl md:text-6xl font-bold mb-6 tracking-tight">
-          Table Tennis <span className="text-primary">Made Simple</span>
+          Tênis de Mesa <span className="text-primary">Simplificado</span>
         </h1>
         <p className="text-lg md:text-xl text-zinc-400 max-w-2xl mb-10">
-          Create and join tournaments, find players nearby, schedule matches, and
-          track your progress - all in one platform.
+          Crie e participe de torneios, encontre jogadores próximos, agende partidas e
+          acompanhe seu progresso - tudo em uma única plataforma.
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4">
           <Link to="/register">
             <Button size="lg" className="px-8">
-              Get Started
+              Começar
               <ChevronRight size={16} className="ml-2" />
             </Button>
           </Link>
           <Link to="/tournaments">
             <Button size="lg" variant="outline" className="px-8">
-              Browse Tournaments
+              Ver Torneios
             </Button>
           </Link>
         </div>
@@ -68,23 +68,23 @@ const Index = () => {
           {[
             {
               icon: <Trophy className="h-12 w-12" />,
-              title: "Tournaments",
-              desc: "Create or join competitions",
+              title: "Torneios",
+              desc: "Crie ou participe de competições",
             },
             {
               icon: <Users className="h-12 w-12" />,
-              title: "Find Players",
-              desc: "Connect with nearby athletes",
+              title: "Encontre Jogadores",
+              desc: "Conecte-se com atletas próximos",
             },
             {
               icon: <Calendar className="h-12 w-12" />,
-              title: "Scheduling",
-              desc: "Organize matches easily",
+              title: "Agendamento",
+              desc: "Organize partidas facilmente",
             },
             {
               icon: <PlayCircle className="h-12 w-12" />,
-              title: "Track Progress",
-              desc: "Monitor your performance",
+              title: "Acompanhamento",
+              desc: "Monitore seu desempenho",
             },
           ].map((feature, index) => (
             <div
@@ -99,32 +99,30 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Features Section */}
       <section className="bg-zinc-900 py-20 px-6">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Features for Athletes and Organizers
+              Funcionalidades para Atletas e Organizadores
             </h2>
             <p className="text-zinc-400 max-w-2xl mx-auto">
-              Harau provides powerful tools for both table tennis players and
-              tournament administrators.
+              O Harau oferece ferramentas poderosas tanto para jogadores quanto para
+              administradores de torneios.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-            {/* Athletes Features */}
             <div className="bg-black border border-zinc-800 rounded-xl p-8 h-fit">
               <h3 className="text-2xl font-bold mb-6 flex items-center">
-                <Users className="mr-3 text-primary" /> For Athletes
+                <Users className="mr-3 text-primary" /> Para Atletas
               </h3>
               <ul className="space-y-4">
                 {[
-                  "Find and register for local tournaments",
-                  "Connect with other table tennis players nearby",
-                  "Schedule practice matches with other athletes",
-                  "Create a detailed player profile with playing style",
-                  "Track your match history and tournament results",
+                  "Encontre e inscreva-se em torneios locais",
+                  "Conecte-se com outros jogadores próximos",
+                  "Agende partidas de treino com outros atletas",
+                  "Crie um perfil detalhado com seu estilo de jogo",
+                  "Acompanhe seu histórico de partidas e resultados",
                 ].map((feature, index) => (
                   <li key={index} className="flex items-start">
                     <Check className="h-5 w-5 text-primary mr-3 mt-1 flex-shrink-0" />
@@ -134,18 +132,17 @@ const Index = () => {
               </ul>
             </div>
 
-            {/* Admins Features */}
             <div className="bg-black border border-zinc-800 rounded-xl p-8 h-fit">
               <h3 className="text-2xl font-bold mb-6 flex items-center">
-                <Trophy className="mr-3 text-primary" /> For Organizers
+                <Trophy className="mr-3 text-primary" /> Para Organizadores
               </h3>
               <ul className="space-y-4">
                 {[
-                  "Create knockout or round robin tournaments",
-                  "Generate tournament brackets automatically",
-                  "Manage participant registrations and seeding",
-                  "Create landing pages to promote tournaments",
-                  "Accept payments via PIX for tournament entries",
+                  "Crie torneios eliminatórios ou todos contra todos",
+                  "Gere chaves de torneios automaticamente",
+                  "Gerencie inscrições e classificação dos participantes",
+                  "Crie páginas de divulgação para torneios",
+                  "Aceite pagamentos via PIX para inscrições",
                 ].map((feature, index) => (
                   <li key={index} className="flex items-start">
                     <Check className="h-5 w-5 text-primary mr-3 mt-1 flex-shrink-0" />
@@ -158,31 +155,29 @@ const Index = () => {
         </div>
       </section>
 
-      {/* CTA Section */}
       <section className="py-20 px-6 text-center">
         <div className="max-w-3xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">
-            Ready to elevate your table tennis experience?
+            Pronto para elevar sua experiência no tênis de mesa?
           </h2>
           <p className="text-zinc-400 mb-10 text-lg">
-            Join the Harau community today and take your game to the next level.
+            Junte-se à comunidade Harau hoje e leve seu jogo para o próximo nível.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/register">
               <Button size="lg" className="px-8">
-                Create an Account
+                Criar uma Conta
               </Button>
             </Link>
             <Link to="/login">
               <Button size="lg" variant="outline" className="px-8">
-                Sign In
+                Entrar
               </Button>
             </Link>
           </div>
         </div>
       </section>
 
-      {/* Footer */}
       <footer className="bg-zinc-900 py-10 px-6 border-t border-zinc-800">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center">
           <div className="text-2xl font-bold flex items-center">
@@ -190,7 +185,7 @@ const Index = () => {
             <span className="text-primary text-2xl">.</span>
           </div>
           <div className="text-zinc-400 text-sm">
-            &copy; {new Date().getFullYear()} Harau. All rights reserved.
+            &copy; {new Date().getFullYear()} Harau. Todos os direitos reservados.
           </div>
         </div>
       </footer>

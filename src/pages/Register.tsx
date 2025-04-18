@@ -26,12 +26,12 @@ const Register = () => {
     setError(null);
 
     if (!name || !email || !password || !confirmPassword) {
-      setError('Please fill in all fields');
+      setError('Por favor, preencha todos os campos');
       return;
     }
 
     if (password !== confirmPassword) {
-      setError('Passwords do not match');
+      setError('As senhas não coincidem');
       return;
     }
 
@@ -39,7 +39,7 @@ const Register = () => {
       await register(name, email, password, role);
       navigate('/dashboard');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to register');
+      setError(err instanceof Error ? err.message : 'Falha ao registrar');
     }
   };
 
@@ -48,15 +48,15 @@ const Register = () => {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-white mb-2">
-            Harau <span className="text-primary">Ping Pong</span>
+            Harau <span className="text-primary">Tênis de Mesa</span>
           </h1>
-          <p className="text-zinc-400">Create your account</p>
+          <p className="text-zinc-400">Crie sua conta</p>
         </div>
 
         <Card className="bg-black border-zinc-800">
           <CardHeader>
-            <CardTitle className="text-white">Register</CardTitle>
-            <CardDescription>Create a new account to get started</CardDescription>
+            <CardTitle className="text-white">Cadastro</CardTitle>
+            <CardDescription>Crie uma nova conta para começar</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -67,10 +67,10 @@ const Register = () => {
               )}
 
               <div className="space-y-2">
-                <Label htmlFor="name">Full Name</Label>
+                <Label htmlFor="name">Nome Completo</Label>
                 <Input
                   id="name"
-                  placeholder="John Doe"
+                  placeholder="João Silva"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   className="bg-zinc-900 border-zinc-800"
@@ -78,11 +78,11 @@ const Register = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">E-mail</Label>
                 <Input
                   id="email"
                   type="email"
-                  placeholder="your@email.com"
+                  placeholder="seu@email.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="bg-zinc-900 border-zinc-800"
@@ -90,7 +90,7 @@ const Register = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">Senha</Label>
                 <Input
                   id="password"
                   type="password"
@@ -102,7 +102,7 @@ const Register = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirm Password</Label>
+                <Label htmlFor="confirmPassword">Confirmar Senha</Label>
                 <Input
                   id="confirmPassword"
                   type="password"
@@ -114,7 +114,7 @@ const Register = () => {
               </div>
 
               <div className="space-y-2">
-                <Label>Account Type</Label>
+                <Label>Tipo de Conta</Label>
                 <RadioGroup 
                   value={role} 
                   onValueChange={(value) => setRole(value as UserRole)}
@@ -122,11 +122,11 @@ const Register = () => {
                 >
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="athlete" id="athlete" />
-                    <Label htmlFor="athlete" className="cursor-pointer">Athlete</Label>
+                    <Label htmlFor="athlete" className="cursor-pointer">Atleta</Label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="admin" id="admin" />
-                    <Label htmlFor="admin" className="cursor-pointer">Tournament Admin</Label>
+                    <Label htmlFor="admin" className="cursor-pointer">Administrador de Torneios</Label>
                   </div>
                 </RadioGroup>
               </div>
@@ -139,17 +139,17 @@ const Register = () => {
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Creating account...
+                    Criando conta...
                   </>
-                ) : 'Register'}
+                ) : 'Cadastrar'}
               </Button>
             </form>
           </CardContent>
           <CardFooter className="flex justify-center">
             <p className="text-sm text-zinc-400">
-              Already have an account?{' '}
+              Já tem uma conta?{' '}
               <Link to="/login" className="text-primary hover:underline">
-                Sign in
+                Entrar
               </Link>
             </p>
           </CardFooter>

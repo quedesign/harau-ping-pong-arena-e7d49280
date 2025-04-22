@@ -43,10 +43,10 @@ const Index = () => {
       {/* Hero Section */}
       <section className="flex-1 flex flex-col items-center justify-center px-6 pt-10 pb-24 text-center">
         <h1 className="text-5xl md:text-6xl font-bold mb-6 tracking-tight">
-          Tênis de Mesa <span className="text-primary">Simplificado</span>
+          Mais que um jogo, <span className="text-primary">uma comunidade</span>
         </h1>
         <p className="text-lg md:text-xl text-zinc-400 max-w-2xl mb-10">
-          Mais que um jogo. Uma comunidade.
+          Você poderá encontrar facilmente competições e outros jogadores amadores em sua proximidade para jogar partidas divertidas e competitivas.
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4">

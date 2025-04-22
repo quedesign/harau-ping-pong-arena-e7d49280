@@ -41,29 +41,41 @@ const Index = () => {
       </nav>
 
       {/* Hero Section */}
-      <section className="flex-1 flex flex-col items-center justify-center px-6 pt-10 pb-24 text-center">
-        <h1 className="text-5xl md:text-6xl font-bold mb-6 tracking-tight">
-          Mais que um jogo, <span className="text-primary">uma comunidade</span>
-        </h1>
-        <p className="text-lg md:text-xl text-zinc-400 max-w-2xl mb-10">
-          Você poderá encontrar facilmente competições e outros jogadores amadores em sua proximidade para jogar partidas divertidas e competitivas.
-        </p>
+      <section className="relative flex-1 flex flex-col items-center justify-center px-6 pt-10 pb-24 text-center">
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-20"
+          style={{
+            backgroundImage: 'url("/lovable-uploads/fc318ccc-fb5d-4761-a9e9-343ce07d9cd3.png")',
+            backgroundPosition: 'center 20%',
+          }}
+        >
+          <div className="absolute inset-0 bg-black/60" />
+        </div>
+        
+        <div className="relative z-10">
+          <h1 className="text-5xl md:text-6xl font-bold mb-6 tracking-tight">
+            Mais que um jogo, <span className="text-primary">uma comunidade</span>
+          </h1>
+          <p className="text-lg md:text-xl text-zinc-400 max-w-2xl mb-10">
+            Você poderá encontrar facilmente competições e outros jogadores amadores em sua proximidade para jogar partidas divertidas e competitivas.
+          </p>
 
-        <div className="flex flex-col sm:flex-row gap-4">
-          <Link to="/register">
-            <Button size="lg" className="px-8">
-              Começar
-              <ChevronRight size={16} className="ml-2" />
-            </Button>
-          </Link>
-          <Link to="/tournaments">
-            <Button size="lg" variant="outline" className="px-8">
-              Ver Torneios
-            </Button>
-          </Link>
+          <div className="flex flex-col sm:flex-row gap-4">
+            <Link to="/register">
+              <Button size="lg" className="px-8">
+                Começar
+                <ChevronRight size={16} className="ml-2" />
+              </Button>
+            </Link>
+            <Link to="/tournaments">
+              <Button size="lg" variant="outline" className="px-8">
+                Ver Torneios
+              </Button>
+            </Link>
+          </div>
         </div>
 
-        <div className="mt-16 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl w-full">
+        <div className="relative z-10 mt-16 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl w-full">
           {[
             {
               icon: <Trophy className="h-12 w-12" />,

@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useData } from '@/contexts/DataContext';
@@ -20,18 +19,8 @@ const CreateTournament = () => {
   const { currentUser } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [pixKey, setPixKey] = useState('');
 
-  // Form state
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
-  const [format, setFormat] = useState<TournamentFormat>('knockout');
-  const [location, setLocation] = useState('');
-  const [entryFee, setEntryFee] = useState(0);
-  const [maxParticipants, setMaxParticipants] = useState(32);
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
-
-  // Ensure user is an admin
   if (currentUser?.role !== 'admin') {
     return (
       <Layout>
@@ -53,14 +42,12 @@ const CreateTournament = () => {
     setError(null);
     setIsSubmitting(true);
 
-    // Validate form
     if (!name || !description || !location || !startDate || !endDate) {
       setError('Please fill in all required fields');
       setIsSubmitting(false);
       return;
     }
 
-    // Validate dates
     const start = new Date(startDate);
     const end = new Date(endDate);
     
@@ -71,7 +58,6 @@ const CreateTournament = () => {
     }
 
     try {
-      // Create tournament
       const newTournament = await createTournament({
         name,
         description,
@@ -83,10 +69,10 @@ const CreateTournament = () => {
         endDate: end,
         registeredParticipants: [],
         createdBy: currentUser.id,
-        status: 'upcoming'
+        status: 'upcoming',
+        pixKey
       });
 
-      // Redirect to the new tournament page
       navigate(`/admin/tournaments/${newTournament.id}`);
     } catch (err) {
       setError('Failed to create tournament. Please try again.');
@@ -283,15 +269,15 @@ const CreateTournament = () => {
 
       <Card className="bg-zinc-900 border-zinc-800">
         <CardHeader>
-          <CardTitle>Payment Settings</CardTitle>
+          <CardTitle>Configurações de Pagamento</CardTitle>
           <CardDescription>
-            Configure how participants will pay for registration
+            Configure como os participantes irão pagar pela inscrição
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             <div>
-              <Label>Payment Method</Label>
+              <Label>Método de Pagamento</Label>
               <div className="mt-2 p-4 bg-black rounded-md border border-zinc-800">
                 <div className="flex items-center">
                   <div className="w-10 h-10 rounded-md bg-green-500/10 text-green-400 flex items-center justify-center mr-3">
@@ -300,19 +286,34 @@ const CreateTournament = () => {
                     </svg>
                   </div>
                   <div>
-                    <h3 className="font-medium">PIX Payment</h3>
+                    <h3 className="font-medium">Pagamento via PIX</h3>
                     <p className="text-sm text-zinc-400">
-                      Participants will pay via PIX after registration
+                      Participantes irão pagar via PIX após o registro
                     </p>
                   </div>
                 </div>
               </div>
             </div>
 
+            <div className="space-y-2">
+              <Label htmlFor="pixKey">Chave PIX*</Label>
+              <Input
+                id="pixKey"
+                value={pixKey}
+                onChange={(e) => setPixKey(e.target.value)}
+                placeholder="CPF, e-mail, telefone ou chave aleatória"
+                className="bg-black border-zinc-800"
+                required
+              />
+              <p className="text-sm text-zinc-400">
+                Insira sua chave PIX para receber os pagamentos das inscrições
+              </p>
+            </div>
+
             <div>
               <p className="text-sm text-zinc-400">
-                Note: When a participant registers, they will receive payment instructions via email. 
-                Tournament access will be granted after payment confirmation.
+                Nota: Quando um participante se registrar, receberá as instruções de pagamento por e-mail. 
+                O acesso ao torneio será liberado após a confirmação do pagamento.
               </p>
             </div>
           </div>

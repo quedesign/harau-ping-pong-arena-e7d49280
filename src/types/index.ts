@@ -1,4 +1,3 @@
-
 // Type definitions for Harau Ping Pong App
 
 // User types
@@ -52,6 +51,7 @@ export interface Tournament {
   createdBy: string; // admin ID
   bannerImage?: string;
   status: 'upcoming' | 'ongoing' | 'completed';
+  pixKey?: string; // New field for PIX payments
 }
 
 // Match types

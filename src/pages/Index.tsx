@@ -46,8 +46,7 @@ const Index = () => {
           Tênis de Mesa <span className="text-primary">Simplificado</span>
         </h1>
         <p className="text-lg md:text-xl text-zinc-400 max-w-2xl mb-10">
-          Crie e participe de torneios, encontre jogadores próximos, agende partidas e
-          acompanhe seu progresso - tudo em uma única plataforma.
+          Mais que um jogo. Uma comunidade.
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4">

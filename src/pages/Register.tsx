@@ -46,10 +46,11 @@ const Register = () => {
     }
     
     try {
-      await register(name, email, password, role);
-      navigate('/dashboard');
+      const success = await register(name, email, password, role);
+      if (success) {
+        navigate('/dashboard');
+      }
     } catch (err) {
-      // Error is handled in the AuthContext
       console.error('Registration error:', err);
     }
   };

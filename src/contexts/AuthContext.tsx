@@ -10,9 +10,9 @@ interface AuthContextType {
   currentUser: User | null;
   isLoading: boolean;
   error: string | null;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<boolean>;
   logout: () => Promise<void>;
-  register: (name: string, email: string, password: string, role: UserRole) => Promise<void>;
+  register: (name: string, email: string, password: string, role: UserRole) => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -25,71 +25,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Configurar o listener para mudanças de autenticação
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setSession(session);
-        if (session?.user) {
-          // Buscar o perfil do usuário no Supabase
-          supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', session.user.id)
-            .single()
-            .then(({ data, error }) => {
-              if (error) {
-                console.error('Erro ao buscar perfil:', error);
-                return;
-              }
-              
-              if (data) {
-                const user: User = {
-                  id: data.id,
-                  name: data.name,
-                  email: data.email,
-                  role: data.role as UserRole,
-                  profileImage: data.profile_image,
-                  createdAt: new Date(data.created_at)
-                };
-                setCurrentUser(user);
-              }
-            });
-        } else {
-          setCurrentUser(null);
-        }
-      }
-    );
-
-    // Verificar se já existe uma sessão
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    // Primeiro configure o listener para mudanças de autenticação
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log("Auth state changed:", event, session?.user?.id);
       setSession(session);
+      
       if (session?.user) {
-        // Buscar o perfil do usuário no Supabase
-        supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', session.user.id)
-          .single()
-          .then(({ data, error }) => {
-            if (error) {
-              console.error('Erro ao buscar perfil:', error);
-              setIsLoading(false);
-              return;
-            }
-            
-            if (data) {
-              const user: User = {
-                id: data.id,
-                name: data.name,
-                email: data.email,
-                role: data.role as UserRole,
-                profileImage: data.profile_image,
-                createdAt: new Date(data.created_at)
-              };
-              setCurrentUser(user);
-            }
-            setIsLoading(false);
-          });
+        fetchUserProfile(session.user.id);
+      } else {
+        setCurrentUser(null);
+        setIsLoading(false);
+      }
+    });
+
+    // Em seguida, verifique a sessão atual
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log("Initial session check:", session?.user?.id);
+      setSession(session);
+      
+      if (session?.user) {
+        fetchUserProfile(session.user.id);
       } else {
         setIsLoading(false);
       }
@@ -100,7 +55,35 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   }, []);
 
-  const login = async (email: string, password: string) => {
+  const fetchUserProfile = (userId: string) => {
+    supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', userId)
+      .single()
+      .then(({ data, error }) => {
+        if (error) {
+          console.error('Erro ao buscar perfil:', error);
+          setIsLoading(false);
+          return;
+        }
+        
+        if (data) {
+          const user: User = {
+            id: data.id,
+            name: data.name,
+            email: data.email,
+            role: data.role as UserRole,
+            profileImage: data.profile_image,
+            createdAt: new Date(data.created_at)
+          };
+          setCurrentUser(user);
+        }
+        setIsLoading(false);
+      });
+  };
+
+  const login = async (email: string, password: string): Promise<boolean> => {
     setIsLoading(true);
     setError(null);
     
@@ -110,12 +93,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         password
       });
       
-      if (error) throw new Error(error.message);
+      if (error) {
+        setError(error.message);
+        toast({
+          title: t('common.error'),
+          description: error.message,
+          variant: 'destructive',
+        });
+        return false;
+      }
       
       toast({
         title: t('auth.loginSuccess'),
         description: t('auth.welcomeBack'),
       });
+      
+      return true;
       
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : t('auth.loginFailed');
@@ -125,7 +118,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         description: errorMessage,
         variant: 'destructive',
       });
-      throw err;
+      return false;
     } finally {
       setIsLoading(false);
     }
@@ -150,11 +143,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const register = async (name: string, email: string, password: string, role: UserRole) => {
+  const register = async (name: string, email: string, password: string, role: UserRole): Promise<boolean> => {
     setIsLoading(true);
     setError(null);
     
     try {
+      // Verificar se o e-mail já está em uso
+      const { data: existingUsers, error: checkError } = await supabase
+        .from('profiles')
+        .select('email')
+        .eq('email', email)
+        .limit(1);
+      
+      if (checkError) {
+        throw new Error(checkError.message);
+      }
+      
+      if (existingUsers && existingUsers.length > 0) {
+        throw new Error(t('auth.emailAlreadyExists'));
+      }
+      
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -166,12 +174,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
       });
       
-      if (error) throw new Error(error.message);
+      if (error) {
+        throw new Error(error.message);
+      }
       
       toast({
         title: t('auth.registerSuccess'),
         description: t('auth.checkEmailVerification'),
       });
+      
+      return true;
       
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : t('auth.registerFailed');
@@ -181,7 +193,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         description: errorMessage,
         variant: 'destructive',
       });
-      throw err;
+      return false;
     } finally {
       setIsLoading(false);
     }

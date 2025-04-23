@@ -30,10 +30,11 @@ const Login = () => {
     }
     
     try {
-      await login(email, password);
-      navigate('/dashboard');
+      const success = await login(email, password);
+      if (success) {
+        navigate('/dashboard');
+      }
     } catch (err) {
-      // Error is handled in the AuthContext
       console.error('Login error:', err);
     }
   };

@@ -1,16 +1,44 @@
-
 import { useAuth } from '@/contexts/AuthContext';
 import { useData } from '@/contexts/DataContext';
 import { Link } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CalendarDays, Trophy, Users, PlayCircle, PlusCircle } from 'lucide-react';
+import { Users, MessageCircle, X } from 'lucide-react';
+import * as React from 'react';
+import { CalendarDays, Trophy, PlayCircle, PlusCircle } from 'lucide-react';
+
+// Utility to get following from sessionStorage (as in AthleteList page)
+const getInitialFollowing = () => {
+  const stored = sessionStorage.getItem('followingAthletes');
+  return stored ? JSON.parse(stored) : [];
+};
 
 const Dashboard = () => {
   const { currentUser } = useAuth();
   const { tournaments, matches, athleteProfiles } = useData();
-  
+
+  // Followed athletes state (sync with sessionStorage)
+  const [following, setFollowing] = React.useState<string[]>(getInitialFollowing());
+
+  // Keep following in sync with sessionStorage
+  React.useEffect(() => {
+    const handler = () => setFollowing(getInitialFollowing());
+    window.addEventListener('storage', handler);
+    return () => window.removeEventListener('storage', handler);
+  }, []);
+
+  const updateFollowing = (newList: string[]) => {
+    setFollowing(newList);
+    sessionStorage.setItem('followingAthletes', JSON.stringify(newList));
+  };
+  const handleUnfollow = (athleteId: string) => {
+    updateFollowing(following.filter((id) => id !== athleteId));
+  };
+
+  // "Followed" profiles
+  const followedProfiles = athleteProfiles.filter(profile => following.includes(profile.userId));
+
   if (!currentUser) {
     return (
       <Layout>
@@ -23,7 +51,7 @@ const Dashboard = () => {
       </Layout>
     );
   }
-  
+
   // Filter data based on user role and ID
   const userTournaments = currentUser.role === 'admin' 
     ? tournaments.filter(t => t.createdBy === currentUser.id)
@@ -38,14 +66,67 @@ const Dashboard = () => {
 
   return (
     <Layout>
+      {/* --- Followed Athletes Area --- */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">Welcome, {currentUser.name}</h1>
         <p className="text-zinc-400">
-          {currentUser.role === 'admin' 
-            ? 'Manage your tournaments and athletes from your admin dashboard.' 
+          {currentUser.role === 'admin'
+            ? 'Manage your tournaments and athletes from your admin dashboard.'
             : 'Track your matches, find tournaments, and connect with other players.'}
         </p>
       </div>
+
+      {/* New: Followed Athletes List */}
+      <div className="mb-10">
+        <div className="flex items-center mb-3 gap-2">
+          <Users className="text-primary" size={22} />
+          <h2 className="text-xl font-semibold">Athletes You Follow</h2>
+        </div>
+        {followedProfiles.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {followedProfiles.map(profile => (
+              <Card key={profile.userId} className="flex flex-col bg-zinc-900 border-zinc-800">
+                <CardContent className="p-5 flex flex-row gap-4 items-center">
+                  <div className="w-16 h-16 rounded-full bg-black flex items-center justify-center text-zinc-200 text-xl font-bold overflow-hidden">
+                    {/* Placeholder image for athlete (initial or photo) */}
+                    {/* Replace below with a real photo if you have it in your data */}
+                    <span>{`Player ${profile.userId}`.charAt(0)}</span>
+                  </div>
+                  <div className="flex-1">
+                    <div className="font-medium">{`Player ${profile.userId}`}</div>
+                    <div className="text-xs text-zinc-400">{profile.location.city}, {profile.location.country}</div>
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <Link to={`/messages/${profile.userId}`}>
+                      <Button size="sm" variant="secondary" className="flex gap-1 items-center">
+                        <MessageCircle size={16} className="mr-1 text-primary" />
+                        Chat
+                      </Button>
+                    </Link>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      onClick={() => handleUnfollow(profile.userId)}
+                      aria-label="Unfollow"
+                      className="text-zinc-400 hover:text-red-500 border border-transparent hover:border-red-400"
+                      title="Unfollow"
+                    >
+                      <X size={16} />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-6 bg-zinc-900 rounded-lg border border-zinc-800">
+            <Users className="mx-auto h-8 w-8 text-zinc-600 mb-2" />
+            <p className="text-zinc-400">You are not following any athletes yet. Go to the "Find Athletes" page to follow and connect.</p>
+          </div>
+        )}
+      </div>
+
+      {/* --- The rest of the dashboard content remains unchanged --- */}
       
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
         <Card className="bg-zinc-900 border-zinc-800">

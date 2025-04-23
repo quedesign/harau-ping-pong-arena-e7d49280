@@ -1,7 +1,7 @@
 
 import { createRoot } from 'react-dom/client'
+import './i18n/config' // Garantir que o i18n é carregado primeiro
 import App from './App.tsx'
 import './index.css'
-import './i18n/config'
 
 createRoot(document.getElementById("root")!).render(<App />);

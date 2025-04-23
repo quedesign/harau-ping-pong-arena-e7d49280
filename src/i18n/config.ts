@@ -17,8 +17,13 @@ i18n
       es: { translation: esTranslations }
     },
     fallbackLng: 'pt',
+    lng: 'pt', // Define português como idioma padrão explicitamente
     interpolation: {
       escapeValue: false
+    },
+    detection: {
+      order: ['localStorage', 'navigator'],
+      caches: ['localStorage']
     }
   });
 

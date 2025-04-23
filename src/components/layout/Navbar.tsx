@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -69,16 +70,16 @@ const Navbar: React.FC = () => {
               <DropdownMenuContent align="end" className="w-48">
                 <DropdownMenuItem className="p-2 cursor-pointer" onClick={() => navigate('/profile')}>
                   <User size={16} className="mr-2" />
-                  <span>Perfil</span>
+                  <span>{t('common.profile')}</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem className="p-2 cursor-pointer" onClick={() => navigate('/settings')}>
                   <Settings size={16} className="mr-2" />
-                  <span>Configurações</span>
+                  <span>{t('common.settings')}</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem className="p-2 cursor-pointer" onClick={handleLogout}>
                   <LogOut size={16} className="mr-2" />
-                  <span>Sair</span>
+                  <span>{t('common.logout')}</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -103,13 +104,17 @@ const Navbar: React.FC = () => {
               {t('common.athletes')}
             </Link>
             
+            <div className="my-2">
+              <LanguageSwitcher />
+            </div>
+            
             {currentUser ? (
               <>
                 <Link to="/profile" className="text-white hover:text-primary transition py-2" onClick={toggleMenu}>
-                  Perfil
+                  {t('common.profile')}
                 </Link>
                 <Link to="/settings" className="text-white hover:text-primary transition py-2" onClick={toggleMenu}>
-                  Configurações
+                  {t('common.settings')}
                 </Link>
                 <button 
                   onClick={() => {
@@ -118,7 +123,7 @@ const Navbar: React.FC = () => {
                   }} 
                   className="text-white hover:text-primary transition py-2 text-left"
                 >
-                  Sair
+                  {t('common.logout')}
                 </button>
               </>
             ) : (
@@ -127,13 +132,13 @@ const Navbar: React.FC = () => {
                   navigate('/login');
                   toggleMenu();
                 }}>
-                  Entrar
+                  {t('common.login')}
                 </Button>
                 <Button className="bg-primary" onClick={() => {
                   navigate('/register');
                   toggleMenu();
                 }}>
-                  Cadastrar
+                  {t('common.register')}
                 </Button>
               </div>
             )}

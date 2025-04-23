@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { AthleteProfile } from '@/types';
 import { Search, MapPin, Filter, Trophy, UserRound, MessageCircle } from 'lucide-react';
-import MessageDialog from "@/components/athlete/MessageDialog";
+import { Link } from 'react-router-dom';
 
 const AthleteList = () => {
   const { athleteProfiles } = useData();
@@ -156,14 +156,6 @@ const AthleteCard = ({ profile }: { profile: AthleteProfile }) => {
     ? Math.round((profile.wins / totalMatches) * 100)
     : 0;
 
-  const handleSchedule = () => {
-    window.setTimeout(() => {
-      import("@/components/ui/sonner").then(({ toast }) =>
-        toast.success(`Match request sent to ${playerName}`)
-      );
-    }, 300);
-  };
-
   return (
     <Card className="bg-zinc-900 border-zinc-800 hover:border-zinc-700 transition-colors">
       <CardContent className="p-6">
@@ -213,26 +205,19 @@ const AthleteCard = ({ profile }: { profile: AthleteProfile }) => {
                 </div>
               </div>
               <div className="flex gap-2">
-                <MessageDialog
-                  athleteName={playerName}
-                  onSchedule={handleSchedule}
-                  trigger={
-                    <Button size="sm" variant="secondary" className="flex gap-1 items-center">
-                      <MessageCircle size={16} className="mr-1 text-primary" />
-                      Chat
-                    </Button>
-                  }
-                />
-                <MessageDialog
-                  athleteName={playerName}
-                  onSchedule={handleSchedule}
-                  trigger={
-                    <Button size="sm" variant="outline">
-                      Message
-                    </Button>
-                  }
-                />
-                <Button size="sm" onClick={handleSchedule}>
+                <Link to={`/messages/${profile.userId}`}>
+                  <Button size="sm" variant="secondary" className="flex gap-1 items-center">
+                    <MessageCircle size={16} className="mr-1 text-primary" />
+                    Chat
+                  </Button>
+                </Link>
+                <Button size="sm" onClick={() => {
+                  window.setTimeout(() => {
+                    import("@/components/ui/sonner").then(({ toast }) =>
+                      toast.success(`Connection request sent to ${playerName}`)
+                    );
+                  }, 300);
+                }}>
                   Connect
                 </Button>
               </div>

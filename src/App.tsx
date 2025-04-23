@@ -20,6 +20,10 @@ import TournamentDetail from "./pages/tournaments/TournamentDetail";
 import AthleteList from "./pages/athletes/AthleteList";
 import AthleteProfile from "./pages/athletes/AthleteProfile";
 
+// Message pages
+import MessageList from "./pages/messages/MessageList";
+import MessageDetail from "./pages/messages/MessageDetail";
+
 // Admin pages
 import CreateTournament from "./pages/admin/CreateTournament";
 
@@ -46,6 +50,10 @@ const App = () => (
               <Route path="/athletes" element={<AthleteList />} />
               <Route path="/athletes/:id" element={<AthleteProfile />} />
               <Route path="/profile" element={<AthleteProfile />} />
+              
+              {/* Message routes */}
+              <Route path="/messages" element={<MessageList />} />
+              <Route path="/messages/:id" element={<MessageDetail />} />
               
               {/* Admin routes */}
               <Route path="/admin/tournaments" element={<Navigate to="/tournaments" />} />

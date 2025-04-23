@@ -1,5 +1,5 @@
 
-import { Tournament } from '@/types';
+import { Tournament, TournamentFormat } from '@/types';
 import { supabase } from '@/integrations/supabase/client';
 
 export const useTournamentMutations = (setTournaments: React.Dispatch<React.SetStateAction<Tournament[]>>) => {
@@ -34,7 +34,7 @@ export const useTournamentMutations = (setTournaments: React.Dispatch<React.SetS
       id: data.id,
       name: data.name,
       description: data.description,
-      format: data.format,
+      format: data.format as TournamentFormat, // Cast to ensure proper typing
       startDate: new Date(data.start_date),
       endDate: new Date(data.end_date),
       location: data.location,
@@ -43,7 +43,7 @@ export const useTournamentMutations = (setTournaments: React.Dispatch<React.SetS
       registeredParticipants: [],
       createdBy: data.created_by,
       bannerImage: data.banner_image,
-      status: data.status,
+      status: data.status as 'upcoming' | 'ongoing' | 'completed', // Cast to ensure proper typing
       pixKey: data.pix_key
     };
     
@@ -123,7 +123,7 @@ export const useTournamentMutations = (setTournaments: React.Dispatch<React.SetS
       id: updatedData.id,
       name: updatedData.name,
       description: updatedData.description,
-      format: updatedData.format,
+      format: updatedData.format as TournamentFormat, // Cast to ensure proper typing
       startDate: new Date(updatedData.start_date),
       endDate: new Date(updatedData.end_date),
       location: updatedData.location,
@@ -132,7 +132,7 @@ export const useTournamentMutations = (setTournaments: React.Dispatch<React.SetS
       registeredParticipants: data.registeredParticipants || [], // Use provided participants or empty array
       createdBy: updatedData.created_by,
       bannerImage: updatedData.banner_image,
-      status: updatedData.status,
+      status: updatedData.status as 'upcoming' | 'ongoing' | 'completed', // Cast to ensure proper typing
       pixKey: updatedData.pix_key
     };
     

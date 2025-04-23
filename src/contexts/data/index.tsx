@@ -45,5 +45,6 @@ export const useData = () => {
     matches: matchContext.matches,
     createMatch: matchContext.createMatch,
     updateMatch: matchContext.updateMatch,
+    generateBracket: matchContext.generateBracket, // Added the missing function here
   };
 };

@@ -1,0 +1,46 @@
+
+{
+  "common": {
+    "login": "Entrar",
+    "register": "Cadastrar",
+    "logout": "Sair",
+    "dashboard": "Painel",
+    "profile": "Perfil",
+    "tournaments": "Torneios",
+    "athletes": "Atletas",
+    "messages": "Mensagens",
+    "settings": "Configurações"
+  },
+  "auth": {
+    "email": "E-mail",
+    "password": "Senha",
+    "name": "Nome",
+    "loginButton": "Entrar",
+    "registerButton": "Cadastrar",
+    "forgotPassword": "Esqueceu sua senha?"
+  },
+  "home": {
+    "title": "Mais que um jogo, uma comunidade",
+    "subtitle": "Você poderá encontrar facilmente competições e outros jogadores amadores em sua proximidade para jogar partidas divertidas e competitivas.",
+    "startButton": "Começar",
+    "seeTournaments": "Ver Torneios"
+  },
+  "features": {
+    "tournaments": {
+      "title": "Torneios",
+      "description": "Crie ou participe de competições"
+    },
+    "findPlayers": {
+      "title": "Encontre Jogadores",
+      "description": "Conecte-se com atletas próximos"
+    },
+    "scheduling": {
+      "title": "Agendamento",
+      "description": "Organize partidas facilmente"
+    },
+    "tracking": {
+      "title": "Acompanhamento",
+      "description": "Monitore seu desempenho"
+    }
+  }
+}

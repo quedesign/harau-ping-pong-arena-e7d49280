@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
+import { useTranslation } from 'react-i18next';
 import {
   Trophy,
   Users,
@@ -12,6 +13,7 @@ import {
 
 const Index = () => {
   const { currentUser } = useAuth();
+  const { t } = useTranslation();
 
   return (
     <div className="min-h-screen bg-black/70 text-white flex flex-col">
@@ -44,22 +46,22 @@ const Index = () => {
       <section className="flex-1 flex flex-col items-center justify-center px-6 pt-10 pb-24 text-center">
         <div className="relative z-10">
           <h1 className="text-5xl md:text-6xl font-bold mb-6 tracking-tight">
-            Mais que um jogo, <span className="text-primary">uma comunidade</span>
+            {t('home.title')}
           </h1>
           <p className="text-lg md:text-xl text-zinc-400 max-w-2xl mb-10 mx-auto text-center">
-            Você poderá encontrar facilmente competições e outros jogadores amadores em sua proximidade para jogar partidas divertidas e competitivas.
+            {t('home.subtitle')}
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/register">
               <Button size="lg" className="px-8">
-                Começar
+                {t('home.startButton')}
                 <ChevronRight size={16} className="ml-2" />
               </Button>
             </Link>
             <Link to="/tournaments">
               <Button size="lg" variant="outline" className="px-8">
-                Ver Torneios
+                {t('home.seeTournaments')}
               </Button>
             </Link>
           </div>
@@ -69,23 +71,23 @@ const Index = () => {
           {[
             {
               icon: <Trophy className="h-12 w-12" />,
-              title: "Torneios",
-              desc: "Crie ou participe de competições",
+              titleKey: 'features.tournaments.title',
+              descKey: 'features.tournaments.description',
             },
             {
               icon: <Users className="h-12 w-12" />,
-              title: "Encontre Jogadores",
-              desc: "Conecte-se com atletas próximos",
+              titleKey: 'features.findPlayers.title',
+              descKey: 'features.findPlayers.description',
             },
             {
               icon: <Calendar className="h-12 w-12" />,
-              title: "Agendamento",
-              desc: "Organize partidas facilmente",
+              titleKey: 'features.scheduling.title',
+              descKey: 'features.scheduling.description',
             },
             {
               icon: <PlayCircle className="h-12 w-12" />,
-              title: "Acompanhamento",
-              desc: "Monitore seu desempenho",
+              titleKey: 'features.tracking.title',
+              descKey: 'features.tracking.description',
             },
           ].map((feature, index) => (
             <div
@@ -93,8 +95,8 @@ const Index = () => {
               className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 flex flex-col items-center text-center hover:border-zinc-700 transition-colors"
             >
               <div className="text-primary mb-4">{feature.icon}</div>
-              <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
-              <p className="text-zinc-400 text-sm">{feature.desc}</p>
+              <h3 className="text-xl font-semibold mb-2">{t(feature.titleKey)}</h3>
+              <p className="text-zinc-400 text-sm">{t(feature.descKey)}</p>
             </div>
           ))}
         </div>

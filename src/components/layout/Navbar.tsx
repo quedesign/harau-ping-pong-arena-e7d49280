@@ -11,11 +11,14 @@ import {
   DropdownMenuTrigger 
 } from '@/components/ui/dropdown-menu';
 import { Menu, X, User, LogOut, Settings } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from '../LanguageSwitcher';
 
 const Navbar: React.FC = () => {
   const { currentUser, logout } = useAuth();
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { t } = useTranslation();
 
   const handleLogout = () => {
     logout();
@@ -43,11 +46,13 @@ const Navbar: React.FC = () => {
 
         <div className="hidden md:flex items-center gap-6">
           <Link to="/tournaments" className="text-white hover:text-primary transition">
-            Torneios
+            {t('common.tournaments')}
           </Link>
           <Link to="/athletes" className="text-white hover:text-primary transition">
-            Atletas
+            {t('common.athletes')}
           </Link>
+          
+          <LanguageSwitcher />
           
           {currentUser ? (
             <DropdownMenu>
@@ -80,10 +85,10 @@ const Navbar: React.FC = () => {
           ) : (
             <div className="flex items-center gap-2">
               <Button variant="ghost" onClick={() => navigate('/login')}>
-                Entrar
+                {t('common.login')}
               </Button>
               <Button className="bg-primary" onClick={() => navigate('/register')}>
-                Cadastrar
+                {t('common.register')}
               </Button>
             </div>
           )}
@@ -92,10 +97,10 @@ const Navbar: React.FC = () => {
         {isMenuOpen && (
           <div className="md:hidden absolute top-full left-0 right-0 bg-black border-b border-zinc-800 p-4 flex flex-col gap-4">
             <Link to="/tournaments" className="text-white hover:text-primary transition py-2" onClick={toggleMenu}>
-              Torneios
+              {t('common.tournaments')}
             </Link>
             <Link to="/athletes" className="text-white hover:text-primary transition py-2" onClick={toggleMenu}>
-              Atletas
+              {t('common.athletes')}
             </Link>
             
             {currentUser ? (

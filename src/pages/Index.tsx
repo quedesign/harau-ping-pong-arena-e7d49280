@@ -14,7 +14,7 @@ const Index = () => {
   const { currentUser } = useAuth();
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col">
+    <div className="min-h-screen bg-black/70 text-white flex flex-col">
       {/* Navbar */}
       <nav className="w-full p-6 flex justify-between items-center z-10">
         <div className="text-2xl font-bold flex items-center">
@@ -41,26 +41,16 @@ const Index = () => {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative flex-1 flex flex-col items-center justify-center px-6 pt-10 pb-24 text-center">
-        <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-20"
-          style={{
-            backgroundImage: 'url("/lovable-uploads/fc318ccc-fb5d-4761-a9e9-343ce07d9cd3.png")',
-            backgroundPosition: 'center 20%',
-          }}
-        >
-          <div className="absolute inset-0 bg-black/60" />
-        </div>
-        
+      <section className="flex-1 flex flex-col items-center justify-center px-6 pt-10 pb-24 text-center">
         <div className="relative z-10">
           <h1 className="text-5xl md:text-6xl font-bold mb-6 tracking-tight">
             Mais que um jogo, <span className="text-primary">uma comunidade</span>
           </h1>
-          <p className="text-lg md:text-xl text-zinc-400 max-w-2xl mb-10">
+          <p className="text-lg md:text-xl text-zinc-400 max-w-2xl mb-10 mx-auto text-center">
             Você poderá encontrar facilmente competições e outros jogadores amadores em sua proximidade para jogar partidas divertidas e competitivas.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/register">
               <Button size="lg" className="px-8">
                 Começar

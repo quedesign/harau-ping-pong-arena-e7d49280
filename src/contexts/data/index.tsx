@@ -34,7 +34,6 @@ export const useData = () => {
     createTournament: tournamentContext.createTournament,
     updateTournament: tournamentContext.updateTournament,
     deleteTournament: tournamentContext.deleteTournament,
-    generateBracket: tournamentContext.generateBracket,
     
     // Athlete related
     athleteProfiles: athleteContext.athleteProfiles,

@@ -9,7 +9,7 @@ interface MatchContextType {
   loading: boolean;
   createMatch: (match: Omit<Match, 'id'>) => Promise<Match>;
   updateMatch: (id: string, data: Partial<Match>) => Promise<Match>;
-  generateBracket: () => Promise<any>;
+  generateBracket: (tournamentId?: string) => Promise<any>;
 }
 
 const MatchContext = createContext<MatchContextType | undefined>(undefined);

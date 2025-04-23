@@ -16,7 +16,14 @@
     "name": "Nome",
     "loginButton": "Entrar",
     "registerButton": "Cadastrar",
-    "forgotPassword": "Esqueceu sua senha?"
+    "forgotPassword": "Esqueceu sua senha?",
+    "forgotPasswordTitle": "Esqueceu sua senha?",
+    "forgotPasswordDescription": "Digite seu e-mail e enviaremos um link para redefinir sua senha.",
+    "emailRequired": "Digite seu e-mail",
+    "sendResetLink": "Enviar link de redefinição",
+    "resetEmailSent": "E-mail enviado",
+    "checkEmailForReset": "Verifique seu e-mail para redefinir sua senha",
+    "backToLogin": "Voltar para o login"
   },
   "home": {
     "title": "Competição, diversão e equilíbrio no seu dia a dia",

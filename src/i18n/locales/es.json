@@ -16,7 +16,14 @@
     "name": "Nombre",
     "loginButton": "Iniciar sesión",
     "registerButton": "Registrarse",
-    "forgotPassword": "¿Olvidaste tu contraseña?"
+    "forgotPassword": "¿Olvidaste tu contraseña?",
+    "forgotPasswordTitle": "¿Olvidaste tu contraseña?",
+    "forgotPasswordDescription": "Ingresa tu correo electrónico y te enviaremos un enlace para restablecer tu contraseña.",
+    "emailRequired": "Ingresa tu correo electrónico",
+    "sendResetLink": "Enviar enlace de restablecimiento",
+    "resetEmailSent": "Correo enviado",
+    "checkEmailForReset": "Revisa tu correo para restablecer tu contraseña",
+    "backToLogin": "Volver al inicio de sesión"
   },
   "home": {
     "title": "Competición, diversión y equilibrio en tu día a día",

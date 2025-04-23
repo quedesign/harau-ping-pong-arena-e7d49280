@@ -1,25 +1,8 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User, UserRole } from '@/types';
-
-// Mock data for demonstration
-const MOCK_USERS = [
-  {
-    id: '1',
-    name: 'John Athlete',
-    email: 'john@example.com',
-    role: 'athlete' as UserRole,
-    profileImage: '/athlete1.jpg',
-    createdAt: new Date('2023-01-15')
-  },
-  {
-    id: '2',
-    name: 'Admin User',
-    email: 'admin@example.com',
-    role: 'admin' as UserRole,
-    createdAt: new Date('2022-12-01')
-  }
-];
+import { supabase } from '@/integrations/supabase/client';
+import { Session } from '@supabase/supabase-js';
 
 interface AuthContextType {
   currentUser: User | null;
@@ -34,84 +17,96 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Simulate checking for an existing session on mount
   useEffect(() => {
-    const storedUser = localStorage.getItem('harauUser');
-    if (storedUser) {
-      try {
-        setCurrentUser(JSON.parse(storedUser));
-      } catch (e) {
-        console.error('Failed to parse stored user data');
-        localStorage.removeItem('harauUser');
+    // Configurar o listener para mudanças de autenticação
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        setSession(session);
+        if (session?.user) {
+          const user: User = {
+            id: session.user.id,
+            name: session.user.user_metadata.name || 'Usuário',
+            email: session.user.email || '',
+            role: (session.user.user_metadata.role as UserRole) || 'athlete',
+            createdAt: new Date(session.user.created_at)
+          };
+          setCurrentUser(user);
+        } else {
+          setCurrentUser(null);
+        }
       }
-    }
-    setIsLoading(false);
+    );
+
+    // Verificar se já existe uma sessão
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      if (session?.user) {
+        const user: User = {
+          id: session.user.id,
+          name: session.user.user_metadata.name || 'Usuário',
+          email: session.user.email || '',
+          role: (session.user.user_metadata.role as UserRole) || 'athlete',
+          createdAt: new Date(session.user.created_at)
+        };
+        setCurrentUser(user);
+      }
+      setIsLoading(false);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
-  // Mock login function
   const login = async (email: string, password: string) => {
     setIsLoading(true);
     setError(null);
     
     try {
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 800));
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
       
-      const user = MOCK_USERS.find(u => u.email === email);
-      if (!user) {
-        throw new Error('Invalid email or password');
-      }
+      if (error) throw new Error(error.message);
       
-      // In a real app, we would validate the password here
-      
-      setCurrentUser(user);
-      localStorage.setItem('harauUser', JSON.stringify(user));
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An unexpected error occurred');
+      setError(err instanceof Error ? err.message : 'Falha ao fazer login');
       throw err;
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Mock logout function
-  const logout = () => {
+  const logout = async () => {
+    await supabase.auth.signOut();
     setCurrentUser(null);
-    localStorage.removeItem('harauUser');
   };
 
-  // Mock register function
   const register = async (name: string, email: string, password: string, role: UserRole) => {
     setIsLoading(true);
     setError(null);
     
     try {
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Check if email already exists
-      if (MOCK_USERS.some(u => u.email === email)) {
-        throw new Error('Email already in use');
-      }
-      
-      // Create new user
-      const newUser: User = {
-        id: `${MOCK_USERS.length + 1}`,
-        name,
+      const { data, error } = await supabase.auth.signUp({
         email,
-        role,
-        createdAt: new Date()
-      };
+        password,
+        options: {
+          data: {
+            name,
+            role
+          }
+        }
+      });
       
-      // In a real app, we would save this to a database
+      if (error) throw new Error(error.message);
       
-      setCurrentUser(newUser);
-      localStorage.setItem('harauUser', JSON.stringify(newUser));
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An unexpected error occurred');
+      setError(err instanceof Error ? err.message : 'Falha ao registrar');
       throw err;
     } finally {
       setIsLoading(false);

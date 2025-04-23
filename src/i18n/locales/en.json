@@ -1,3 +1,4 @@
+
 {
   "common": {
     "login": "Login",
@@ -32,7 +33,23 @@
     "sendResetLink": "Send Reset Link",
     "resetEmailSent": "Email Sent",
     "checkEmailForReset": "Check your email for a password reset link",
-    "backToLogin": "Back to Login"
+    "backToLogin": "Back to Login",
+    "registerTitle": "Create an Account",
+    "registerDescription": "Fill in your information to get started",
+    "confirmPassword": "Confirm Password",
+    "selectRole": "Select your role",
+    "athlete": "Athlete",
+    "admin": "Admin",
+    "register": "Register",
+    "allFieldsRequired": "All fields are required",
+    "passwordsDontMatch": "Passwords do not match",
+    "passwordTooShort": "Password must be at least 6 characters",
+    "emailAlreadyExists": "This email is already in use",
+    "registerSuccess": "Registration Successful",
+    "accountCreated": "Your account has been created successfully",
+    "namePlaceholder": "Your name",
+    "alreadyHaveAccount": "Already have an account?",
+    "loginNow": "Login now"
   },
   "home": {
     "title": "Competition, fun, and balance in your daily life",

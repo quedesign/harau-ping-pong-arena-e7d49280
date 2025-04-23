@@ -3,7 +3,7 @@ import { User, UserRole } from '@/types';
 import { supabase } from '@/integrations/supabase/client';
 import { Session } from '@supabase/supabase-js';
 import { useTranslation } from 'react-i18next';
-import { toast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
 
 interface AuthContextType {
   currentUser: User | null;
@@ -104,17 +104,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       if (error) {
         setError(error.message);
-        toast({
-          title: t('common.error'),
-          description: error.message,
-          variant: 'destructive',
+        toast(t('common.error'), {
+          description: error.message
         });
         return false;
       }
       
-      toast({
-        title: t('auth.loginSuccess'),
-        description: t('auth.welcomeBack'),
+      toast(t('auth.loginSuccess'), {
+        description: t('auth.welcomeBack')
       });
       
       return true;
@@ -122,10 +119,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : t('auth.loginFailed');
       setError(errorMessage);
-      toast({
-        title: t('common.error'),
-        description: errorMessage,
-        variant: 'destructive',
+      toast(t('common.error'), {
+        description: errorMessage
       });
       return false;
     } finally {
@@ -138,14 +133,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       await supabase.auth.signOut();
       setCurrentUser(null);
-      toast({
-        title: t('auth.logoutSuccess'),
-      });
+      toast(t('auth.logoutSuccess'));
     } catch (err) {
-      toast({
-        title: t('common.error'),
-        description: t('auth.logoutFailed'),
-        variant: 'destructive',
+      toast(t('common.error'), {
+        description: t('auth.logoutFailed')
       });
     } finally {
       setIsLoading(false);
@@ -188,20 +179,34 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         throw new Error(error.message);
       }
       
-      toast({
-        title: t('auth.registerSuccess'),
-        description: t('auth.accountCreated'),
-      });
+      // After successful signup, manually insert a profile record
+      // This is a backup in case the trigger doesn't work
+      if (data?.user) {
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .insert([
+            {
+              id: data.user.id,
+              name: name,
+              email: email,
+              role: role,
+              created_at: new Date().toISOString()
+            }
+          ]);
+          
+        if (profileError) {
+          console.warn('Failed to create profile manually:', profileError);
+          // Continue anyway as the trigger might have created it
+        }
+      }
       
       return true;
       
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : t('auth.registerFailed');
       setError(errorMessage);
-      toast({
-        title: t('common.error'),
-        description: errorMessage,
-        variant: 'destructive',
+      toast(t('common.error'), {
+        description: errorMessage
       });
       return false;
     } finally {

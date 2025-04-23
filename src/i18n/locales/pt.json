@@ -1,3 +1,4 @@
+
 {
   "common": {
     "login": "Entrar",
@@ -8,7 +9,8 @@
     "tournaments": "Torneios",
     "athletes": "Atletas",
     "messages": "Mensagens",
-    "settings": "Configurações"
+    "settings": "Configurações",
+    "loading": "Carregando..."
   },
   "auth": {
     "email": "E-mail",
@@ -23,7 +25,23 @@
     "sendResetLink": "Enviar link de redefinição",
     "resetEmailSent": "E-mail enviado",
     "checkEmailForReset": "Verifique seu e-mail para redefinir sua senha",
-    "backToLogin": "Voltar para o login"
+    "backToLogin": "Voltar para o login",
+    "registerTitle": "Criar uma Conta",
+    "registerDescription": "Preencha suas informações para começar",
+    "confirmPassword": "Confirmar Senha",
+    "selectRole": "Selecione sua função",
+    "athlete": "Atleta",
+    "admin": "Administrador",
+    "register": "Cadastrar",
+    "allFieldsRequired": "Todos os campos são obrigatórios",
+    "passwordsDontMatch": "As senhas não coincidem",
+    "passwordTooShort": "A senha deve ter pelo menos 6 caracteres",
+    "emailAlreadyExists": "Este e-mail já está em uso",
+    "registerSuccess": "Cadastro Bem-sucedido",
+    "accountCreated": "Sua conta foi criada com sucesso",
+    "namePlaceholder": "Seu nome",
+    "alreadyHaveAccount": "Já possui uma conta?",
+    "loginNow": "Entre agora"
   },
   "home": {
     "title": "Competição, diversão e equilíbrio no seu dia a dia",

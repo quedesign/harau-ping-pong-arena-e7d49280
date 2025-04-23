@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { AthleteProfile } from '@/types';
-import { Search, MapPin, Filter, Trophy, UserRound } from 'lucide-react';
+import { Search, MapPin, Filter, Trophy, UserRound, MessageCircle } from 'lucide-react';
 import MessageDialog from "@/components/athlete/MessageDialog";
 
 const AthleteList = () => {
@@ -151,7 +151,6 @@ const AthleteList = () => {
 
 const AthleteCard = ({ profile }: { profile: AthleteProfile }) => {
   const playerName = `Player ${profile.userId}`;
-
   const totalMatches = profile.wins + profile.losses;
   const winPercentage = totalMatches > 0
     ? Math.round((profile.wins / totalMatches) * 100)
@@ -172,7 +171,6 @@ const AthleteCard = ({ profile }: { profile: AthleteProfile }) => {
           <div className="w-16 h-16 rounded-full bg-black flex items-center justify-center text-zinc-200">
             <span className="text-xl font-semibold">{playerName.charAt(0)}</span>
           </div>
-
           <div className="flex-1">
             <h3 className="font-medium text-lg">{playerName}</h3>
             <div className="flex items-center text-sm text-zinc-400 mb-2">
@@ -214,8 +212,17 @@ const AthleteCard = ({ profile }: { profile: AthleteProfile }) => {
                   </span>
                 </div>
               </div>
-
               <div className="flex gap-2">
+                <MessageDialog
+                  athleteName={playerName}
+                  onSchedule={handleSchedule}
+                  trigger={
+                    <Button size="sm" variant="secondary" className="flex gap-1 items-center">
+                      <MessageCircle size={16} className="mr-1 text-primary" />
+                      Chat
+                    </Button>
+                  }
+                />
                 <MessageDialog
                   athleteName={playerName}
                   onSchedule={handleSchedule}

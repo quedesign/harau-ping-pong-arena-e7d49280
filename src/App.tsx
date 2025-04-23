@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -25,6 +26,7 @@ import MessageDetail from "./pages/messages/MessageDetail";
 
 // Admin pages
 import CreateTournament from "./pages/admin/CreateTournament";
+import ManageTournament from "./pages/admin/ManageTournament";
 import MyProfile from "./pages/MyProfile";
 
 const queryClient = new QueryClient();
@@ -61,6 +63,7 @@ const App = () => (
               {/* Admin routes */}
               <Route path="/admin/tournaments" element={<Navigate to="/tournaments" />} />
               <Route path="/admin/create-tournament" element={<CreateTournament />} />
+              <Route path="/admin/tournaments/:id/manage" element={<ManageTournament />} />
               
               {/* Catch-all route */}
               <Route path="*" element={<NotFound />} />

@@ -108,5 +108,5 @@ body::before {
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  background: rgba(0,0,0,0.7); /* Increased darkness */
+  background: rgba(0,0,0,0.5); /* Reduced overlay darkness for more image visibility */
 }

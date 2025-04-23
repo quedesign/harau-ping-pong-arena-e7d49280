@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -26,6 +25,7 @@ import MessageDetail from "./pages/messages/MessageDetail";
 
 // Admin pages
 import CreateTournament from "./pages/admin/CreateTournament";
+import MyProfile from "./pages/MyProfile";
 
 const queryClient = new QueryClient();
 
@@ -50,6 +50,9 @@ const App = () => (
               <Route path="/athletes" element={<AthleteList />} />
               <Route path="/athletes/:id" element={<AthleteProfile />} />
               <Route path="/profile" element={<AthleteProfile />} />
+              
+              {/* My Profile page */}
+              <Route path="/my-profile" element={<MyProfile />} />
               
               {/* Message routes */}
               <Route path="/messages" element={<MessageList />} />

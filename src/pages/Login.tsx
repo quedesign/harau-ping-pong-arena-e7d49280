@@ -14,7 +14,7 @@ import { AlertCircle, Loader2 } from 'lucide-react';
 const Login = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { login, isLoading, error } = useAuth();
+  const { login, isLoading, error, createTestUser } = useAuth();
   
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -36,6 +36,20 @@ const Login = () => {
       }
     } catch (err) {
       console.error('Login error:', err);
+    }
+  };
+
+  const handleCreateTestUser = async () => {
+    try {
+      const success = await createTestUser();
+      if (success) {
+        // Wait briefly for authentication state to update
+        setTimeout(() => {
+          navigate('/dashboard');
+        }, 300);
+      }
+    } catch (err) {
+      console.error('Create test user error:', err);
     }
   };
   
@@ -102,6 +116,32 @@ const Login = () => {
                     </>
                   ) : (
                     t('auth.login')
+                  )}
+                </Button>
+                
+                <div className="relative my-4">
+                  <div className="absolute inset-0 flex items-center">
+                    <span className="w-full border-t border-zinc-700"></span>
+                  </div>
+                  <div className="relative flex justify-center text-xs">
+                    <span className="px-2 bg-zinc-900 text-zinc-400">or</span>
+                  </div>
+                </div>
+                
+                <Button 
+                  type="button"
+                  className="w-full"
+                  variant="outline"
+                  onClick={handleCreateTestUser}
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      {t('common.loading')}
+                    </>
+                  ) : (
+                    "Use Test Account"
                   )}
                 </Button>
               </div>

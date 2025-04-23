@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -28,7 +29,7 @@ const Register = () => {
     e.preventDefault();
     setLocalError(null);
     
-    // Validações básicas
+    // Basic validations
     if (!name || !email || !password || !confirmPassword) {
       setLocalError(t('auth.allFieldsRequired'));
       return;
@@ -47,8 +48,10 @@ const Register = () => {
     try {
       const success = await register(name, email, password, role);
       if (success) {
-        // Redirect to dashboard directly after successful registration
-        navigate('/dashboard');
+        // Wait briefly for authentication state to update
+        setTimeout(() => {
+          navigate('/dashboard');
+        }, 300);
       }
     } catch (err) {
       console.error('Registration error:', err);

@@ -84,3 +84,9 @@ export interface Bracket {
   }[];
   seeds: Seed[];
 }
+
+// Extend the existing AuthContextType
+export interface AuthContextType {
+  // ... keep existing properties
+  createTestUser?: () => Promise<boolean>;
+}

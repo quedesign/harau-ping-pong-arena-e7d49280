@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User, UserRole } from '@/types';
 import { supabase } from '@/integrations/supabase/client';
@@ -175,9 +176,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         throw new Error(error.message);
       }
       
+      // The user is now automatically logged in after registration
+      // No need to redirect to login page
       toast({
         title: t('auth.registerSuccess'),
-        description: t('auth.checkEmailVerification'),
+        description: t('auth.accountCreated'),
       });
       
       return true;

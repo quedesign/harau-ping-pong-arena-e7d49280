@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -48,6 +47,7 @@ const Register = () => {
     try {
       const success = await register(name, email, password, role);
       if (success) {
+        // Redirect to dashboard directly after successful registration
         navigate('/dashboard');
       }
     } catch (err) {

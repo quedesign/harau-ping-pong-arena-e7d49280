@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useData } from '@/contexts/DataContext';
@@ -120,8 +119,8 @@ const ResultsEntry = ({ tournament }: ResultsEntryProps) => {
         const nextMatchExists = matches.some(m => m.id === nextMatchId);
         
         if (!nextMatchExists) {
+          // FIX: Remove the id property from the match object since createMatch expects Omit<Match, "id">
           await createMatch({
-            id: nextMatchId,
             tournamentId: tournament.id,
             playerOneId: winner,
             playerTwoId: 'TBD', // This would be determined by another match

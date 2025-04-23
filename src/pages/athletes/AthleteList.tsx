@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useData } from '@/contexts/DataContext';
 import Layout from '@/components/layout/Layout';
@@ -8,14 +9,39 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { AthleteProfile } from '@/types';
-import { Search, MapPin, Filter, Trophy, UserRound, MessageCircle } from 'lucide-react';
+import { Search, MapPin, Filter, Trophy, UserRound, MessageCircle, Users } from 'lucide-react';
 import { Link } from 'react-router-dom';
+
+// --- Begin: Add following state ---
+const getInitialFollowing = () => {
+  // For demo: Try sessionStorage
+  const stored = sessionStorage.getItem('followingAthletes');
+  return stored ? JSON.parse(stored) : [];
+};
+// --- End: Add following state ---
 
 const AthleteList = () => {
   const { athleteProfiles } = useData();
   const [searchQuery, setSearchQuery] = useState('');
   const [filterHandedness, setFilterHandedness] = useState<string>('all');
   const [filterLevel, setFilterLevel] = useState<string>('all');
+  // --- Begin: Following state ---
+  const [following, setFollowing] = useState<string[]>(getInitialFollowing());
+
+  // Sync sessionStorage for persistence between reloads
+  const updateFollowing = (newList: string[]) => {
+    setFollowing(newList);
+    sessionStorage.setItem('followingAthletes', JSON.stringify(newList));
+  };
+
+  const handleFollowToggle = (athleteId: string) => {
+    if (following.includes(athleteId)) {
+      updateFollowing(following.filter(id => id !== athleteId));
+    } else {
+      updateFollowing([...following, athleteId]);
+    }
+  };
+  // --- End: Following state ---
 
   const filteredAthletes = athleteProfiles.filter(profile => {
     const matchesSearch = 
@@ -30,6 +56,10 @@ const AthleteList = () => {
     return matchesSearch && matchesHandedness && matchesLevel;
   });
 
+  // --- Begin: Filter for followed athletes ---
+  const followedProfiles = athleteProfiles.filter(profile => following.includes(profile.userId));
+  // --- End: Filter for followed athletes ---
+
   return (
     <Layout>
       <div className="mb-8">
@@ -38,6 +68,45 @@ const AthleteList = () => {
           Connect with table tennis players and schedule matches
         </p>
       </div>
+
+      {/* --- Followed Athletes Section --- */}
+      {followedProfiles.length > 0 && (
+        <div className="mb-8">
+          <div className="flex items-center mb-2 gap-2">
+            <Users className="text-primary" size={20} />
+            <h2 className="text-xl font-semibold">Athletes You Follow</h2>
+          </div>
+          <div className="flex flex-wrap gap-4">
+            {followedProfiles.map(profile => (
+              <div
+                key={profile.userId}
+                className="flex items-center gap-2 p-2 bg-zinc-900 border border-zinc-800 rounded-lg"
+              >
+                <span className="w-8 h-8 rounded-full bg-black flex items-center justify-center text-zinc-200 font-bold text-lg">
+                  {`Player ${profile.userId}`.charAt(0)}
+                </span>
+                <span className="font-medium mr-2">{`Player ${profile.userId}`}</span>
+                <Link to={`/messages/${profile.userId}`}>
+                  <Button size="sm" variant="secondary" className="flex gap-1 items-center">
+                    <MessageCircle size={16} className="mr-1 text-primary" />
+                    Chat
+                  </Button>
+                </Link>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  onClick={() => handleFollowToggle(profile.userId)}
+                  aria-label="Unfollow"
+                  className="text-zinc-400 hover:text-red-400"
+                  title="Unfollow"
+                >
+                  ✕
+                </Button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="mb-6">
         <div className="flex flex-col md:flex-row gap-4">
@@ -108,7 +177,12 @@ const AthleteList = () => {
           {filteredAthletes.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredAthletes.map((profile) => (
-                <AthleteCard key={profile.userId} profile={profile} />
+                <AthleteCard
+                  key={profile.userId}
+                  profile={profile}
+                  isFollowed={following.includes(profile.userId)}
+                  handleFollowToggle={handleFollowToggle}
+                />
               ))}
             </div>
           ) : (
@@ -149,7 +223,13 @@ const AthleteList = () => {
   );
 };
 
-const AthleteCard = ({ profile }: { profile: AthleteProfile }) => {
+interface AthleteCardProps {
+  profile: AthleteProfile;
+  isFollowed: boolean;
+  handleFollowToggle: (athleteId: string) => void;
+}
+
+const AthleteCard = ({ profile, isFollowed, handleFollowToggle }: AthleteCardProps) => {
   const playerName = `Player ${profile.userId}`;
   const totalMatches = profile.wins + profile.losses;
   const winPercentage = totalMatches > 0
@@ -211,14 +291,13 @@ const AthleteCard = ({ profile }: { profile: AthleteProfile }) => {
                     Chat
                   </Button>
                 </Link>
-                <Button size="sm" onClick={() => {
-                  window.setTimeout(() => {
-                    import("@/components/ui/sonner").then(({ toast }) =>
-                      toast.success(`Connection request sent to ${playerName}`)
-                    );
-                  }, 300);
-                }}>
-                  Connect
+                <Button
+                  size="sm"
+                  variant={isFollowed ? "ghost" : "default"}
+                  onClick={() => handleFollowToggle(profile.userId)}
+                  className={isFollowed ? "text-primary border border-primary" : ""}
+                >
+                  {isFollowed ? "Unfollow" : "Follow"}
                 </Button>
               </div>
             </div>
@@ -230,3 +309,4 @@ const AthleteCard = ({ profile }: { profile: AthleteProfile }) => {
 };
 
 export default AthleteList;
+

@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useData } from '@/contexts/DataContext';
 import Layout from '@/components/layout/Layout';
@@ -10,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { AthleteProfile } from '@/types';
 import { Search, MapPin, Filter, Trophy, UserRound } from 'lucide-react';
+import MessageDialog from "@/components/athlete/MessageDialog";
 
 const AthleteList = () => {
   const { athleteProfiles } = useData();
@@ -17,10 +17,8 @@ const AthleteList = () => {
   const [filterHandedness, setFilterHandedness] = useState<string>('all');
   const [filterLevel, setFilterLevel] = useState<string>('all');
 
-  // Filter athletes
   const filteredAthletes = athleteProfiles.filter(profile => {
     const matchesSearch = 
-      // In a real app, you would access user data linked to profile
       searchQuery === '' || 
       `Player ${profile.userId}`.toLowerCase().includes(searchQuery.toLowerCase()) ||
       profile.location.city.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -151,16 +149,21 @@ const AthleteList = () => {
   );
 };
 
-// Athlete card component
 const AthleteCard = ({ profile }: { profile: AthleteProfile }) => {
-  // In a real app, you would access user data linked to profile
   const playerName = `Player ${profile.userId}`;
-  
-  // Calculate win percentage
+
   const totalMatches = profile.wins + profile.losses;
-  const winPercentage = totalMatches > 0 
-    ? Math.round((profile.wins / totalMatches) * 100) 
+  const winPercentage = totalMatches > 0
+    ? Math.round((profile.wins / totalMatches) * 100)
     : 0;
+
+  const handleSchedule = () => {
+    window.setTimeout(() => {
+      import("@/components/ui/sonner").then(({ toast }) =>
+        toast.success(`Match request sent to ${playerName}`)
+      );
+    }, 300);
+  };
 
   return (
     <Card className="bg-zinc-900 border-zinc-800 hover:border-zinc-700 transition-colors">
@@ -169,14 +172,14 @@ const AthleteCard = ({ profile }: { profile: AthleteProfile }) => {
           <div className="w-16 h-16 rounded-full bg-black flex items-center justify-center text-zinc-200">
             <span className="text-xl font-semibold">{playerName.charAt(0)}</span>
           </div>
-          
+
           <div className="flex-1">
             <h3 className="font-medium text-lg">{playerName}</h3>
             <div className="flex items-center text-sm text-zinc-400 mb-2">
               <MapPin className="h-3 w-3 mr-1" />
               {profile.location.city}, {profile.location.country}
             </div>
-            
+
             <div className="flex flex-wrap gap-2 mb-3">
               <Badge variant="outline" className="text-xs bg-zinc-800 border-zinc-700">
                 {profile.handedness}-handed
@@ -190,11 +193,11 @@ const AthleteCard = ({ profile }: { profile: AthleteProfile }) => {
                 </Badge>
               )}
             </div>
-            
+
             {profile.bio && (
               <p className="text-sm text-zinc-400 mb-4 line-clamp-2">{profile.bio}</p>
             )}
-            
+
             <div className="flex justify-between items-center mt-3">
               <div className="flex gap-3">
                 <div className="text-sm">
@@ -211,10 +214,21 @@ const AthleteCard = ({ profile }: { profile: AthleteProfile }) => {
                   </span>
                 </div>
               </div>
-              
-              <Button size="sm">
-                Connect
-              </Button>
+
+              <div className="flex gap-2">
+                <MessageDialog
+                  athleteName={playerName}
+                  onSchedule={handleSchedule}
+                  trigger={
+                    <Button size="sm" variant="outline">
+                      Message
+                    </Button>
+                  }
+                />
+                <Button size="sm" onClick={handleSchedule}>
+                  Connect
+                </Button>
+              </div>
             </div>
           </div>
         </div>

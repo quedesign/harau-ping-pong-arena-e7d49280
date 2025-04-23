@@ -16,7 +16,8 @@
     "error": "Error",
     "share": "Share",
     "locale": "en-US",
-    "unauthorized": "Unauthorized"
+    "unauthorized": "Unauthorized",
+    "loading": "Loading..."
   },
   "auth": {
     "email": "Email",
@@ -24,7 +25,14 @@
     "name": "Name",
     "loginButton": "Login",
     "registerButton": "Register",
-    "forgotPassword": "Forgot your password?"
+    "forgotPassword": "Forgot your password?",
+    "forgotPasswordTitle": "Forgot Password?",
+    "forgotPasswordDescription": "Enter your email and we'll send you a link to reset your password.",
+    "emailRequired": "Please enter your email",
+    "sendResetLink": "Send Reset Link",
+    "resetEmailSent": "Email Sent",
+    "checkEmailForReset": "Check your email for a password reset link",
+    "backToLogin": "Back to Login"
   },
   "home": {
     "title": "Competition, fun, and balance in your daily life",

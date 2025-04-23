@@ -11,7 +11,7 @@ import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle, Loader2, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { toast } from '@/components/ui/sonner';
+import { toast } from 'sonner';
 
 const ForgotPassword = () => {
   const { t } = useTranslation();
@@ -31,8 +31,7 @@ const ForgotPassword = () => {
     
     try {
       await resetPassword(email);
-      toast({
-        title: t('auth.resetEmailSent'),
+      toast(t('auth.resetEmailSent'), {
         description: t('auth.checkEmailForReset')
       });
       navigate('/login');

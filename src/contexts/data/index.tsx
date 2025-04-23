@@ -1,8 +1,8 @@
 
 import React from 'react';
-import { TournamentProvider } from './TournamentContext';
-import { AthleteProvider } from './AthleteContext';
-import { MatchProvider } from './MatchContext';
+import { TournamentProvider, useTournament } from './TournamentContext';
+import { AthleteProvider, useAthlete } from './AthleteContext';
+import { MatchProvider, useMatch } from './MatchContext';
 
 export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (

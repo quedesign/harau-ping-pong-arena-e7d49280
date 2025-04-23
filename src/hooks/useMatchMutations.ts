@@ -1,4 +1,3 @@
-
 import { Match } from '@/types';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -160,8 +159,8 @@ export const useMatchMutations = (setMatches: React.Dispatch<React.SetStateActio
     return updatedMatch;
   };
 
-  const generateBracket = async () => {
-    // Currently returns empty bracket since this functionality will be implemented later
+  const generateBracket = async (tournamentId?: string) => {
+    console.log("Tournament ID for bracket generation:", tournamentId);
     return {} as any;
   };
 

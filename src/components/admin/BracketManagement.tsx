@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useData } from '@/contexts/DataContext';
@@ -23,7 +24,7 @@ const BracketManagement = ({ tournament }: BracketManagementProps) => {
   const handleGenerateBracket = async () => {
     setLoading(true);
     try {
-      const generatedBracket = await generateBracket();
+      const generatedBracket = await generateBracket(tournament.id);
       setBracket(generatedBracket);
       setShuffled(true);
       

@@ -4,7 +4,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { 
   Trophy, Calendar, Users, User, Settings, 
-  PlusCircle, Award, BarChart, PlayCircle 
+  PlusCircle, Award, BarChart 
 } from 'lucide-react';
 
 const Sidebar: React.FC = () => {
@@ -27,7 +27,6 @@ const Sidebar: React.FC = () => {
   const athleteMenuItems = [
     { path: '/dashboard', icon: <BarChart size={20} />, label: 'Dashboard' },
     { path: '/tournaments', icon: <Trophy size={20} />, label: 'Tournaments' },
-    { path: '/matches', icon: <PlayCircle size={20} />, label: 'My Matches' },
     { path: '/athletes', icon: <Users size={20} />, label: 'Find Athletes' },
     { path: '/profile', icon: <User size={20} />, label: 'My Profile' },
   ];
@@ -83,3 +82,4 @@ const Sidebar: React.FC = () => {
 };
 
 export default Sidebar;
+

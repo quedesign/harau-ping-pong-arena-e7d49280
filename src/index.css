@@ -8,8 +8,8 @@
     --primary: 338 76% 48%; /* Converted #D31C74 to HSL */
     --accent: 338 76% 48%; /* Same as primary for consistency */
 
-    /* Black dominant theme for Harau Ping Pong */
-    --background: 0 0% 7%; /* Near black */
+    /* Darker background with #141412 */
+    --background: 0 0% 7.8%; /* Converted #141412 to HSL */
     --foreground: 0 0% 98%; /* Off-white text */
 
     --card: 0 0% 10%; /* Slightly lighter black for cards */
@@ -48,10 +48,8 @@
   }
 
   .dark {
-    /* Update primary and accent colors for dark mode */
-    --primary: 338 76% 48%;
-    --accent: 338 76% 48%;
-    --background: 222.2 84% 4.9%;
+    /* Update background for dark mode */
+    --background: 0 0% 7.8%; /* Same as light mode for consistency */
     --foreground: 210 40% 98%;
 
     --card: 222.2 84% 4.9%;
@@ -99,19 +97,16 @@
     background-repeat: no-repeat;
     background-attachment: fixed;
     background-position: center 20%;
-    /* Subtle overlay for readability */
     position: relative;
   }
 }
 
-/* Optional: subtle overlay for even higher readability */
+/* Darker overlay for increased readability */
 body::before {
   content: "";
   position: fixed;
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  background: rgba(255,255,255,0.16); /* light overlay (reduce for more/less effect) */
-  /* You can use pure white or a linear-gradient if preferred */
-  /* background: linear-gradient(to bottom, rgba(255,255,255,0.16), rgba(255,255,255,0.10)); */
+  background: rgba(0,0,0,0.7); /* Increased darkness */
 }

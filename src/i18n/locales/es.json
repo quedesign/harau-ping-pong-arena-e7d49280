@@ -1,4 +1,3 @@
-
 {
   "common": {
     "login": "Iniciar sesión",
@@ -20,7 +19,7 @@
     "forgotPassword": "¿Olvidaste tu contraseña?"
   },
   "home": {
-    "title": "Más que un juego, una comunidad",
+    "title": "Competición, diversión y equilibrio en tu día a día",
     "subtitle": "Podrás encontrar fácilmente competiciones y otros jugadores amateurs en tu proximidad para jugar partidos divertidos y competitivos.",
     "startButton": "Comenzar",
     "seeTournaments": "Ver Torneos"

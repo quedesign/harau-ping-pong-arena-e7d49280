@@ -1,3 +1,4 @@
+
 {
   "common": {
     "login": "Entrar",
@@ -9,7 +10,9 @@
     "athletes": "Atletas",
     "messages": "Mensagens",
     "settings": "Configurações",
-    "loading": "Carregando..."
+    "loading": "Carregando...",
+    "success": "Sucesso",
+    "error": "Erro"
   },
   "auth": {
     "email": "E-mail",
@@ -42,7 +45,9 @@
     "alreadyHaveAccount": "Ainda não possui conta?",
     "loginNow": "Cadastre-se",
     "loginTitle": "Boas vindas",
-    "loginDescription": "Entre com seus dados de acesso"
+    "loginDescription": "Entre com seus dados de acesso",
+    "noAccount": "Ainda não possui conta?",
+    "registerNow": "Cadastre-se"
   },
   "home": {
     "title": "Competição, diversão e equilíbrio no seu dia a dia",
@@ -67,5 +72,9 @@
       "title": "Acompanhamento",
       "description": "Monitore seu desempenho"
     }
+  },
+  "settings": {
+    "updateSuccess": "Configurações atualizadas com sucesso",
+    "updateError": "Erro ao atualizar configurações"
   }
 }

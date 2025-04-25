@@ -1,6 +1,6 @@
 
-import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
 import Layout from '@/components/layout/Layout';
@@ -14,12 +14,20 @@ import { AlertCircle, Loader2 } from 'lucide-react';
 const Login = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { login, isLoading, error, createTestUser } = useAuth();
+  const location = useLocation();
+  const { login, isLoading, error, createTestUser, currentUser } = useAuth();
   
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [localError, setLocalError] = useState<string | null>(null);
   
+  // Redirecionar se o usuário já estiver autenticado
+  useEffect(() => {
+    if (currentUser) {
+      navigate('/dashboard');
+    }
+  }, [currentUser, navigate]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLocalError(null);
@@ -53,6 +61,7 @@ const Login = () => {
     }
   };
   
+  // Resto do componente permanece o mesmo
   return (
     <Layout>
       <div className="flex justify-center items-center min-h-[calc(100vh-200px)]">

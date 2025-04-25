@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -5,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { DataProvider } from "@/contexts/DataContext";
+import { useAuth } from "@/contexts/AuthContext";
 
 // Pages
 import Index from "./pages/Index";
@@ -31,6 +33,115 @@ import MyProfile from "./pages/MyProfile";
 
 const queryClient = new QueryClient();
 
+// Componente para rotas protegidas
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const { currentUser, isLoading } = useAuth();
+  
+  if (isLoading) {
+    return <div>Carregando...</div>;
+  }
+  
+  if (!currentUser) {
+    return <Navigate to="/login" replace />;
+  }
+  
+  return <>{children}</>;
+};
+
+// Componente para App
+const AppRoutes = () => {
+  return (
+    <BrowserRouter>
+      <Routes>
+        {/* Public routes */}
+        <Route path="/" element={<Index />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        
+        {/* Protected routes */}
+        <Route path="/dashboard" element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        } />
+        
+        <Route path="/tournaments" element={
+          <ProtectedRoute>
+            <TournamentList />
+          </ProtectedRoute>
+        } />
+        
+        <Route path="/tournaments/:id" element={
+          <ProtectedRoute>
+            <TournamentDetail />
+          </ProtectedRoute>
+        } />
+        
+        <Route path="/athletes" element={
+          <ProtectedRoute>
+            <AthleteList />
+          </ProtectedRoute>
+        } />
+        
+        <Route path="/athletes/:id" element={
+          <ProtectedRoute>
+            <AthleteProfile />
+          </ProtectedRoute>
+        } />
+        
+        <Route path="/profile" element={
+          <ProtectedRoute>
+            <AthleteProfile />
+          </ProtectedRoute>
+        } />
+        
+        {/* My Profile page */}
+        <Route path="/my-profile" element={
+          <ProtectedRoute>
+            <MyProfile />
+          </ProtectedRoute>
+        } />
+        
+        {/* Message routes */}
+        <Route path="/messages" element={
+          <ProtectedRoute>
+            <MessageList />
+          </ProtectedRoute>
+        } />
+        
+        <Route path="/messages/:id" element={
+          <ProtectedRoute>
+            <MessageDetail />
+          </ProtectedRoute>
+        } />
+        
+        {/* Admin routes */}
+        <Route path="/admin/tournaments" element={
+          <ProtectedRoute>
+            <Navigate to="/tournaments" />
+          </ProtectedRoute>
+        } />
+        
+        <Route path="/admin/create-tournament" element={
+          <ProtectedRoute>
+            <CreateTournament />
+          </ProtectedRoute>
+        } />
+        
+        <Route path="/admin/tournaments/:id/manage" element={
+          <ProtectedRoute>
+            <ManageTournament />
+          </ProtectedRoute>
+        } />
+        
+        {/* Catch-all route */}
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </BrowserRouter>
+  );
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
@@ -38,38 +149,7 @@ const App = () => (
         <TooltipProvider>
           <Toaster />
           <Sonner />
-          <BrowserRouter>
-            <Routes>
-              {/* Public routes */}
-              <Route path="/" element={<Index />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/forgot-password" element={<ForgotPassword />} />
-              
-              {/* Shared routes */}
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/tournaments" element={<TournamentList />} />
-              <Route path="/tournaments/:id" element={<TournamentDetail />} />
-              <Route path="/athletes" element={<AthleteList />} />
-              <Route path="/athletes/:id" element={<AthleteProfile />} />
-              <Route path="/profile" element={<AthleteProfile />} />
-              
-              {/* My Profile page */}
-              <Route path="/my-profile" element={<MyProfile />} />
-              
-              {/* Message routes */}
-              <Route path="/messages" element={<MessageList />} />
-              <Route path="/messages/:id" element={<MessageDetail />} />
-              
-              {/* Admin routes */}
-              <Route path="/admin/tournaments" element={<Navigate to="/tournaments" />} />
-              <Route path="/admin/create-tournament" element={<CreateTournament />} />
-              <Route path="/admin/tournaments/:id/manage" element={<ManageTournament />} />
-              
-              {/* Catch-all route */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
+          <AppRoutes />
         </TooltipProvider>
       </DataProvider>
     </AuthProvider>

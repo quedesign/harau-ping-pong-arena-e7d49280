@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -16,6 +15,7 @@ import {
   Share2, Clock, Check, Settings
 } from 'lucide-react';
 import { Tournament, Match } from '@/types';
+import { PaymentQRCode } from '@/components/tournament/PaymentQRCode';
 
 const TournamentDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -26,7 +26,6 @@ const TournamentDetail = () => {
   const [isRegistering, setIsRegistering] = useState(false);
   const [registrationSuccess, setRegistrationSuccess] = useState(false);
 
-  // Find tournament and related matches
   const tournament = tournaments.find(t => t.id === id);
   const tournamentMatches = matches.filter(m => m.tournamentId === id);
   
@@ -63,12 +62,10 @@ const TournamentDetail = () => {
 
     setIsRegistering(true);
     try {
-      // Add current user to registered participants
       await updateTournament(tournament.id, {
         registeredParticipants: [...tournament.registeredParticipants, currentUser.id]
       });
       setRegistrationSuccess(true);
-      // Reset the success message after 3 seconds
       setTimeout(() => setRegistrationSuccess(false), 3000);
     } catch (err) {
       console.error('Failed to register:', err);
@@ -260,6 +257,12 @@ const TournamentDetail = () => {
             </Button>
           </CardContent>
         </Card>
+
+        {tournament.pixKey && (
+          <div className="md:col-span-3">
+            <PaymentQRCode pixKey={tournament.pixKey} />
+          </div>
+        )}
       </div>
       
       <Tabs defaultValue="bracket" className="mb-8">
@@ -355,11 +358,9 @@ const TournamentDetail = () => {
   );
 };
 
-// Match item component for the matches tab
 const MatchItem = ({ match }: { match: Match }) => {
   const { t } = useTranslation();
   
-  // Format date function
   const formatDate = (date: Date) => {
     return new Date(date).toLocaleDateString(t('common.locale', { defaultValue: 'pt-BR' }), {
       month: 'short',
@@ -369,7 +370,6 @@ const MatchItem = ({ match }: { match: Match }) => {
     });
   };
 
-  // Placeholder for player names (in a real app, you would fetch these)
   const playerOneName = t('tournaments.player', { number: 1 });
   const playerTwoName = t('tournaments.player', { number: 2 });
 

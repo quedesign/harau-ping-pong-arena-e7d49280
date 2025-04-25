@@ -1,7 +1,6 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User, UserRole } from '@/types';
-import { supabase } from '@/integrations/supabase/client';
-import { Session } from '@supabase/supabase-js';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
@@ -18,104 +17,59 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+const STORAGE_KEY = 'harauAuth';
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { t } = useTranslation();
   const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log("Auth state changed:", event, session?.user?.id);
-      setSession(session);
-      
-      if (session?.user) {
-        // Use setTimeout to avoid potential Supabase deadlocks
-        setTimeout(() => {
-          fetchUserProfile(session.user.id);
-        }, 0);
-      } else {
-        setCurrentUser(null);
-        setIsLoading(false);
+    // Check localStorage for existing session
+    const storedUser = localStorage.getItem(STORAGE_KEY);
+    if (storedUser) {
+      try {
+        setCurrentUser(JSON.parse(storedUser));
+      } catch (err) {
+        console.error('Error parsing stored user:', err);
       }
-    });
-
-    // Initial session check
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      console.log("Initial session check:", session?.user?.id);
-      setSession(session);
-      
-      if (session?.user) {
-        fetchUserProfile(session.user.id);
-      } else {
-        setIsLoading(false);
-      }
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
-
-  const fetchUserProfile = async (userId: string) => {
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', userId)
-        .maybeSingle();
-        
-      if (error) {
-        console.error('Error fetching profile:', error);
-        setIsLoading(false);
-        return;
-      }
-      
-      if (data) {
-        const user: User = {
-          id: data.id,
-          name: data.name,
-          email: data.email,
-          role: data.role as UserRole,
-          profileImage: data.profile_image,
-          createdAt: new Date(data.created_at)
-        };
-        setCurrentUser(user);
-      } else {
-        console.error('No user profile found for:', userId);
-      }
-    } catch (err) {
-      console.error('Unexpected error fetching profile:', err);
-    } finally {
-      setIsLoading(false);
     }
-  };
+    setIsLoading(false);
+  }, []);
 
   const login = async (email: string, password: string): Promise<boolean> => {
     setIsLoading(true);
     setError(null);
     
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password
-      });
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 500));
       
-      if (error) {
-        setError(error.message);
-        toast(t('common.error'), {
-          description: error.message
-        });
-        return false;
+      // Get stored users
+      const users = JSON.parse(localStorage.getItem('users') || '[]');
+      const user = users.find((u: any) => u.email === email && u.password === password);
+      
+      if (!user) {
+        throw new Error(t('auth.invalidCredentials'));
       }
+      
+      const authenticatedUser: User = {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        createdAt: new Date(user.createdAt)
+      };
+      
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(authenticatedUser));
+      setCurrentUser(authenticatedUser);
       
       toast(t('auth.loginSuccess'), {
         description: t('auth.welcomeBack')
       });
       
       return true;
-      
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : t('auth.loginFailed');
       setError(errorMessage);
@@ -131,7 +85,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const logout = async () => {
     setIsLoading(true);
     try {
-      await supabase.auth.signOut();
+      localStorage.removeItem(STORAGE_KEY);
       setCurrentUser(null);
       toast(t('auth.logoutSuccess'));
     } catch (err) {
@@ -148,60 +102,40 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setError(null);
     
     try {
-      // First check if email already exists
-      const { data: existingUsers, error: checkError } = await supabase
-        .from('profiles')
-        .select('email')
-        .eq('email', email)
-        .limit(1);
+      // Get existing users
+      const users = JSON.parse(localStorage.getItem('users') || '[]');
       
-      if (checkError) {
-        throw new Error(checkError.message);
-      }
-      
-      if (existingUsers && existingUsers.length > 0) {
+      // Check if email already exists
+      if (users.some((u: any) => u.email === email)) {
         throw new Error(t('auth.emailAlreadyExists'));
       }
       
-      // If email doesn't exist, proceed with registration
-      const { data, error } = await supabase.auth.signUp({
+      const newUser = {
+        id: crypto.randomUUID(),
+        name,
         email,
         password,
-        options: {
-          data: {
-            name,
-            role
-          }
-        }
-      });
+        role,
+        createdAt: new Date().toISOString()
+      };
       
-      if (error) {
-        throw new Error(error.message);
-      }
+      // Save to users list
+      users.push(newUser);
+      localStorage.setItem('users', JSON.stringify(users));
       
-      // After successful signup, manually insert a profile record
-      // This is a backup in case the trigger doesn't work
-      if (data?.user) {
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .insert([
-            {
-              id: data.user.id,
-              name: name,
-              email: email,
-              role: role,
-              created_at: new Date().toISOString()
-            }
-          ]);
-          
-        if (profileError) {
-          console.warn('Failed to create profile manually:', profileError);
-          // Continue anyway as the trigger might have created it
-        }
-      }
+      // Log user in
+      const authenticatedUser: User = {
+        id: newUser.id,
+        name: newUser.name,
+        email: newUser.email,
+        role: newUser.role,
+        createdAt: new Date(newUser.createdAt)
+      };
+      
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(authenticatedUser));
+      setCurrentUser(authenticatedUser);
       
       return true;
-      
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : t('auth.registerFailed');
       setError(errorMessage);
@@ -215,92 +149,47 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const createTestUser = async () => {
-    setIsLoading(true);
     try {
-      // First check if the test user already exists
-      const { data: existingUsers, error: checkError } = await supabase
-        .from('profiles')
-        .select('email')
-        .eq('email', 'monteiro.barboza@gmail.com')
-        .limit(1);
-      
-      if (checkError) {
-        console.error('Error checking existing user:', checkError.message);
-        toast({
-          title: t('common.error'),
-          description: checkError.message,
-          variant: 'destructive',
-        });
-        return false;
-      }
-      
-      // If user already exists, try to log them in directly
-      if (existingUsers && existingUsers.length > 0) {
-        const { data, error } = await supabase.auth.signInWithPassword({
-          email: 'monteiro.barboza@gmail.com',
-          password: '123456'
-        });
-        
-        if (error) {
-          toast({
-            title: t('common.error'),
-            description: 'Test user exists but cannot login: ' + error.message,
-            variant: 'destructive',
-          });
-          return false;
-        }
-        
-        toast({
-          title: 'Success',
-          description: 'Logged in as existing test user',
-        });
-        return true;
-      }
-      
-      // Create new test user if doesn't exist
-      const { data, error } = await supabase.auth.signUp({
+      const testUser = {
+        name: 'Test User',
         email: 'monteiro.barboza@gmail.com',
         password: '123456',
-        options: {
-          data: {
-            name: 'Test User',
-            role: 'athlete'
-          }
-        }
-      });
-
-      if (error) {
-        console.error('Error creating test user:', error.message);
-        toast({
-          title: t('common.error'),
-          description: error.message,
-          variant: 'destructive',
-        });
-        return false;
+        role: 'athlete' as UserRole
+      };
+      
+      const success = await register(
+        testUser.name,
+        testUser.email,
+        testUser.password,
+        testUser.role
+      );
+      
+      if (!success) {
+        // If registration fails, try logging in
+        return await login(testUser.email, testUser.password);
       }
-
-      toast({
-        title: t('auth.testUserCreated'),
-        description: 'Test user created successfully',
-      });
+      
       return true;
     } catch (err) {
-      console.error('Unexpected error creating test user:', err);
+      console.error('Error creating test user:', err);
       return false;
-    } finally {
-      setIsLoading(false);
     }
   };
 
   const resetPassword = async (email: string) => {
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/reset-password`,
-      });
+      const users = JSON.parse(localStorage.getItem('users') || '[]');
+      const userExists = users.some((u: any) => u.email === email);
       
-      if (error) {
-        throw error;
+      if (!userExists) {
+        throw new Error(t('auth.userNotFound'));
       }
+      
+      // In a real app, this would send an email
+      // For this demo, we'll just show a success message
+      toast(t('auth.resetPasswordSuccess'), {
+        description: t('auth.resetPasswordEmailSent')
+      });
       
       return true;
     } catch (err) {

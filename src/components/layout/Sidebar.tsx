@@ -33,10 +33,10 @@ const Sidebar: React.FC = () => {
   ];
   
   const adminMenuItems = [
-    { path: '/admin/dashboard', icon: <BarChart size={20} />, label: 'Dashboard' },
-    { path: '/admin/tournaments', icon: <Trophy size={20} />, label: 'Tournaments' },
+    { path: '/dashboard', icon: <BarChart size={20} />, label: 'Dashboard' },
+    { path: '/tournaments', icon: <Trophy size={20} />, label: 'Tournaments' },
     { path: '/admin/create-tournament', icon: <PlusCircle size={20} />, label: 'Create Tournament' },
-    { path: '/admin/athletes', icon: <Users size={20} />, label: 'Athletes' },
+    { path: '/athletes', icon: <Users size={20} />, label: 'Athletes' },
     { path: '/my-profile', icon: <User size={20} />, label: 'My Profile' },
     { path: '/settings', icon: <Settings size={20} />, label: 'Settings' },
   ];

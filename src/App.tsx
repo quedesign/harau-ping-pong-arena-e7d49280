@@ -54,9 +54,8 @@ const App = () => (
               <Route path="/tournaments/:id" element={<TournamentDetail />} />
               <Route path="/athletes" element={<AthleteList />} />
               <Route path="/athletes/:id" element={<AthleteProfile />} />
-              <Route path="/profile" element={<AthleteProfile />} />
               
-              {/* User profile and settings */}
+              {/* User profile and settings - accessible to all logged in users */}
               <Route path="/my-profile" element={<MyProfile />} />
               <Route path="/settings" element={<Settings />} />
               
@@ -65,9 +64,16 @@ const App = () => (
               <Route path="/messages/:id" element={<MessageDetail />} />
               
               {/* Admin routes */}
+              <Route path="/admin/dashboard" element={<Navigate to="/dashboard" />} />
               <Route path="/admin/tournaments" element={<Navigate to="/tournaments" />} />
               <Route path="/admin/create-tournament" element={<CreateTournament />} />
               <Route path="/admin/tournaments/:id/manage" element={<ManageTournament />} />
+              <Route path="/admin/athletes" element={<Navigate to="/athletes" />} />
+              
+              {/* Redirects for old profile paths */}
+              <Route path="/profile" element={<Navigate to="/my-profile" />} />
+              <Route path="/admin/profile" element={<Navigate to="/my-profile" />} />
+              <Route path="/admin/settings" element={<Navigate to="/settings" />} />
               
               {/* Catch-all route */}
               <Route path="*" element={<NotFound />} />

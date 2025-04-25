@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -16,7 +15,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/components/ui/use-toast';
 import { useTranslation } from 'react-i18next';
-import { Settings as SettingsIcon, Bell, Language, Monitor } from 'lucide-react';
+import { Settings as SettingsIcon, Bell, Languages, Monitor } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 
 const Settings = () => {
@@ -63,7 +62,7 @@ const Settings = () => {
               Notificações
             </TabsTrigger>
             <TabsTrigger value="language">
-              <Language className="h-4 w-4 mr-2" />
+              <Languages className="h-4 w-4 mr-2" />
               Idioma
             </TabsTrigger>
             <TabsTrigger value="general">

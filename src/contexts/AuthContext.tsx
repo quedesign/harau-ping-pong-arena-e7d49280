@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User, UserRole } from '@/types';
 import { supabase } from '@/integrations/supabase/client';
@@ -227,8 +226,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       if (checkError) {
         console.error('Error checking existing user:', checkError.message);
-        toast(t('common.error'), {
-          description: checkError.message
+        toast({
+          title: t('common.error'),
+          description: checkError.message,
+          variant: 'destructive',
         });
         return false;
       }
@@ -241,14 +242,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         });
         
         if (error) {
-          toast(t('common.error'), {
-            description: 'Test user exists but cannot login: ' + error.message
+          toast({
+            title: t('common.error'),
+            description: 'Test user exists but cannot login: ' + error.message,
+            variant: 'destructive',
           });
           return false;
         }
         
-        toast('Success', {
-          description: 'Logged in as existing test user'
+        toast({
+          title: 'Success',
+          description: 'Logged in as existing test user',
         });
         return true;
       }
@@ -267,14 +271,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (error) {
         console.error('Error creating test user:', error.message);
-        toast(t('common.error'), {
-          description: error.message
+        toast({
+          title: t('common.error'),
+          description: error.message,
+          variant: 'destructive',
         });
         return false;
       }
 
-      toast(t('auth.testUserCreated'), {
-        description: 'Test user created successfully'
+      toast({
+        title: t('auth.testUserCreated'),
+        description: 'Test user created successfully',
       });
       return true;
     } catch (err) {

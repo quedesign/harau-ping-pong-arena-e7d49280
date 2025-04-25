@@ -28,7 +28,8 @@ const Sidebar: React.FC = () => {
     { path: '/dashboard', icon: <BarChart size={20} />, label: 'Dashboard' },
     { path: '/tournaments', icon: <Trophy size={20} />, label: 'Tournaments' },
     { path: '/athletes', icon: <Users size={20} />, label: 'Find Athletes' },
-    { path: '/profile', icon: <User size={20} />, label: 'My Profile' },
+    { path: '/my-profile', icon: <User size={20} />, label: 'My Profile' },
+    { path: '/settings', icon: <Settings size={20} />, label: 'Settings' },
   ];
   
   const adminMenuItems = [
@@ -36,7 +37,8 @@ const Sidebar: React.FC = () => {
     { path: '/admin/tournaments', icon: <Trophy size={20} />, label: 'Tournaments' },
     { path: '/admin/create-tournament', icon: <PlusCircle size={20} />, label: 'Create Tournament' },
     { path: '/admin/athletes', icon: <Users size={20} />, label: 'Athletes' },
-    { path: '/admin/settings', icon: <Settings size={20} />, label: 'Settings' },
+    { path: '/my-profile', icon: <User size={20} />, label: 'My Profile' },
+    { path: '/settings', icon: <Settings size={20} />, label: 'Settings' },
   ];
   
   const menuItems = currentUser.role === 'admin' ? adminMenuItems : athleteMenuItems;
@@ -82,4 +84,3 @@ const Sidebar: React.FC = () => {
 };
 
 export default Sidebar;
-

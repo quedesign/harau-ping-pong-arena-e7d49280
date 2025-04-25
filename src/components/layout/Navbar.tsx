@@ -68,7 +68,7 @@ const Navbar: React.FC = () => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuItem className="p-2 cursor-pointer" onClick={() => navigate('/profile')}>
+                <DropdownMenuItem className="p-2 cursor-pointer" onClick={() => navigate('/my-profile')}>
                   <User size={16} className="mr-2" />
                   <span>{t('common.profile')}</span>
                 </DropdownMenuItem>
@@ -110,7 +110,7 @@ const Navbar: React.FC = () => {
             
             {currentUser ? (
               <>
-                <Link to="/profile" className="text-white hover:text-primary transition py-2" onClick={toggleMenu}>
+                <Link to="/my-profile" className="text-white hover:text-primary transition py-2" onClick={toggleMenu}>
                   {t('common.profile')}
                 </Link>
                 <Link to="/settings" className="text-white hover:text-primary transition py-2" onClick={toggleMenu}>

@@ -1,200 +1,269 @@
 
-import React, { useState } from "react";
-import { useAuth } from "@/contexts/AuthContext";
-import { useData } from "@/contexts/DataContext";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { useState } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import Layout from '@/components/layout/Layout';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useToast } from '@/components/ui/use-toast';
+import { useTranslation } from 'react-i18next';
+import { Shield, UserCog, Key } from 'lucide-react';
 
 const MyProfile = () => {
-  const { currentUser } = useAuth();
-  const { athleteProfiles, updateAthleteProfile } = useData();
-  const [editPhoto, setEditPhoto] = useState(false);
-  const [editLocation, setEditLocation] = useState(false);
-  const [editPassword, setEditPassword] = useState(false);
-
-  const [city, setCity] = useState("");
-  const [state, setState] = useState("");
-  const [photoUrl, setPhotoUrl] = useState(currentUser?.profileImage || "");
-  const [newPassword, setNewPassword] = useState("");
-  const [currPassword, setCurrPassword] = useState("");
+  const { currentUser, login } = useAuth();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const { t } = useTranslation();
+  
+  const [name, setName] = useState(currentUser?.name || '');
+  const [email, setEmail] = useState(currentUser?.email || '');
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  
+  // Table tennis specific fields
+  const [skills, setSkills] = useState({
+    handedness: 'right',
+    level: 'beginner',
+    yearsPlaying: '0',
+    playingStyle: '',
+  });
 
   if (!currentUser) {
-    return <div className="p-8">Not logged in.</div>;
+    navigate('/login');
+    return null;
   }
 
-  const athleteProfile = athleteProfiles.find((p) => p.userId === currentUser.id);
-  
-  // Location defaults
-  React.useEffect(() => {
-    if (athleteProfile) {
-      setCity(athleteProfile.location.city || "");
-      setState(athleteProfile.location.state || "");
-      // If the user has a profile image, set it
-      setPhotoUrl(currentUser.profileImage || "");
+  const handleUpdateProfile = (e: React.FormEvent) => {
+    e.preventDefault();
+    const users = JSON.parse(localStorage.getItem('users') || '[]');
+    const userIndex = users.findIndex((u: any) => u.id === currentUser.id);
+
+    if (userIndex >= 0) {
+      users[userIndex] = {
+        ...users[userIndex],
+        name,
+        email,
+        skills
+      };
+
+      localStorage.setItem('users', JSON.stringify(users));
+      localStorage.setItem('harauAuth', JSON.stringify({ ...currentUser, name, email }));
+
+      toast({
+        title: t('common.success'),
+        description: 'Perfil atualizado com sucesso',
+      });
     }
-  }, [athleteProfile, currentUser.profileImage]);
-
-  // --- Handlers ---
-
-  const handlePhotoSave = () => {
-    // In real app you would upload and save
-    // For now, just close the editor (simulate)
-    setEditPhoto(false);
-  };
-
-  const handleLocationSave = async () => {
-    if (!athleteProfile) return;
-    await updateAthleteProfile(currentUser.id, {
-      location: {
-        ...athleteProfile.location,
-        city,
-        state,
-      },
-    });
-    setEditLocation(false);
   };
 
   const handlePasswordChange = (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulate password change
-    setEditPassword(false);
+    if (newPassword !== confirmPassword) {
+      toast({
+        title: t('common.error'),
+        description: 'As senhas não coincidem',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    const users = JSON.parse(localStorage.getItem('users') || '[]');
+    const userIndex = users.findIndex((u: any) => u.id === currentUser.id);
+
+    if (userIndex >= 0 && users[userIndex].password === currentPassword) {
+      users[userIndex].password = newPassword;
+      localStorage.setItem('users', JSON.stringify(users));
+      
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+
+      toast({
+        title: t('common.success'),
+        description: 'Senha atualizada com sucesso',
+      });
+    } else {
+      toast({
+        title: t('common.error'),
+        description: 'Senha atual incorreta',
+        variant: 'destructive',
+      });
+    }
   };
 
-  // --- UI ---
   return (
-    <div className="max-w-2xl mx-auto my-10 space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>My Profile</CardTitle>
-          <CardDescription>Your login and athlete info</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center gap-4 mb-8">
-            <Avatar className="w-16 h-16">
-              {photoUrl ? (
-                <AvatarImage src={photoUrl} alt={currentUser.name} />
-              ) : (
-                <AvatarFallback>
-                  {currentUser.name
-                    .split(" ")
-                    .map((n) => n[0])
-                    .join("")
-                    .slice(0, 2)
-                    .toUpperCase()}
-                </AvatarFallback>
-              )}
-            </Avatar>
-            <div>
-              <div className="font-semibold text-lg">{currentUser.name}</div>
-              <div className="text-sm text-muted-foreground">{currentUser.email}</div>
-              <Button size="sm" variant="secondary" className="mt-2" onClick={() => setEditPhoto((v) => !v)}>
-                {editPhoto ? "Cancel" : "Change Photo"}
-              </Button>
-            </div>
-          </div>
-          {editPhoto && (
-            <form
-              className="mb-4"
-              onSubmit={e => {
-                e.preventDefault();
-                handlePhotoSave();
-              }}
-            >
-              <Input
-                type="url"
-                placeholder="Paste new photo URL"
-                value={photoUrl}
-                onChange={e => setPhotoUrl(e.target.value)}
-              />
-              <Button type="submit" className="mt-2">Save</Button>
-            </form>
-          )}
+    <Layout>
+      <div className="container max-w-4xl py-6">
+        <Tabs defaultValue="profile" className="space-y-6">
+          <TabsList>
+            <TabsTrigger value="profile">
+              <UserCog className="h-4 w-4 mr-2" />
+              Perfil
+            </TabsTrigger>
+            <TabsTrigger value="security">
+              <Key className="h-4 w-4 mr-2" />
+              Segurança
+            </TabsTrigger>
+            <TabsTrigger value="skills">
+              <Shield className="h-4 w-4 mr-2" />
+              Habilidades
+            </TabsTrigger>
+          </TabsList>
 
-          <hr className="my-4" />
-
-          <div>
-            <div className="font-semibold mb-2">Login Details</div>
-            <div className="text-sm">Email: {currentUser.email}</div>
-            <div className="text-sm">Account Created: {new Date(currentUser.createdAt).toLocaleDateString()}</div>
-            <Button
-              size="sm"
-              variant="secondary"
-              className="mt-2"
-              onClick={() => setEditPassword((v) => !v)}
-            >
-              {editPassword ? "Cancel" : "Change Password"}
-            </Button>
-            {editPassword && (
-              <form className="space-y-2 mt-2" onSubmit={handlePasswordChange}>
-                <Input
-                  type="password"
-                  placeholder="Current Password"
-                  value={currPassword}
-                  onChange={(e) => setCurrPassword(e.target.value)}
-                  required
-                />
-                <Input
-                  type="password"
-                  placeholder="New Password"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  required
-                />
-                <Button type="submit">Save Password</Button>
-              </form>
-            )}
-          </div>
-
-          {athleteProfile && (
-            <>
-              <hr className="my-4" />
-              <div>
-                <div className="font-semibold mb-2">Athlete Details</div>
-                <div className="text-sm">Handedness: {athleteProfile.handedness}</div>
-                <div className="text-sm">Level: {athleteProfile.level}</div>
-                <div className="text-sm">Wins: {athleteProfile.wins} | Losses: {athleteProfile.losses}</div>
-                <div className="text-sm mb-2">
-                  Years Playing: {athleteProfile.yearsPlaying || 0} | Bio: {athleteProfile.bio}
-                </div>
-                <div className="font-semibold mt-2">Location</div>
-                {editLocation ? (
-                  <form className="flex flex-col gap-2 mt-2" onSubmit={e => {
-                    e.preventDefault();
-                    handleLocationSave();
-                  }}>
+          <TabsContent value="profile">
+            <Card>
+              <CardHeader>
+                <CardTitle>Informações do Perfil</CardTitle>
+                <CardDescription>
+                  Atualize suas informações pessoais aqui.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleUpdateProfile} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="name">Nome</Label>
                     <Input
-                      value={city}
-                      onChange={e => setCity(e.target.value)}
-                      placeholder="City"
+                      id="name"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      required
                     />
-                    <Input
-                      value={state}
-                      onChange={e => setState(e.target.value)}
-                      placeholder="State"
-                    />
-                    <div className="flex gap-2">
-                      <Button size="sm" type="submit">Save</Button>
-                      <Button size="sm" variant="secondary" onClick={() => setEditLocation(false)}>Cancel</Button>
-                    </div>
-                  </form>
-                ) : (
-                  <div>
-                    <div className="text-sm">
-                      {athleteProfile.location.city}, {athleteProfile.location.state}, {athleteProfile.location.country}
-                    </div>
-                    <Button size="sm" variant="secondary" className="mt-2" onClick={() => setEditLocation(true)}>
-                      Change Location
-                    </Button>
                   </div>
-                )}
-              </div>
-            </>
-          )}
-        </CardContent>
-      </Card>
-    </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Email</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <Button type="submit">Salvar Alterações</Button>
+                </form>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="security">
+            <Card>
+              <CardHeader>
+                <CardTitle>Alterar Senha</CardTitle>
+                <CardDescription>
+                  Atualize sua senha de acesso aqui.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handlePasswordChange} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="currentPassword">Senha Atual</Label>
+                    <Input
+                      id="currentPassword"
+                      type="password"
+                      value={currentPassword}
+                      onChange={(e) => setCurrentPassword(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="newPassword">Nova Senha</Label>
+                    <Input
+                      id="newPassword"
+                      type="password"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="confirmPassword">Confirmar Nova Senha</Label>
+                    <Input
+                      id="confirmPassword"
+                      type="password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <Button type="submit">Alterar Senha</Button>
+                </form>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="skills">
+            <Card>
+              <CardHeader>
+                <CardTitle>Habilidades no Tênis de Mesa</CardTitle>
+                <CardDescription>
+                  Atualize suas informações de jogo aqui.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleUpdateProfile} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="handedness">Mão Dominante</Label>
+                    <select
+                      id="handedness"
+                      className="w-full p-2 border rounded-md"
+                      value={skills.handedness}
+                      onChange={(e) => setSkills({ ...skills, handedness: e.target.value })}
+                    >
+                      <option value="right">Destro</option>
+                      <option value="left">Canhoto</option>
+                      <option value="ambidextrous">Ambidestro</option>
+                    </select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="level">Nível</Label>
+                    <select
+                      id="level"
+                      className="w-full p-2 border rounded-md"
+                      value={skills.level}
+                      onChange={(e) => setSkills({ ...skills, level: e.target.value })}
+                    >
+                      <option value="beginner">Iniciante</option>
+                      <option value="intermediate">Intermediário</option>
+                      <option value="advanced">Avançado</option>
+                      <option value="professional">Profissional</option>
+                    </select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="yearsPlaying">Anos de Experiência</Label>
+                    <Input
+                      id="yearsPlaying"
+                      type="number"
+                      value={skills.yearsPlaying}
+                      onChange={(e) => setSkills({ ...skills, yearsPlaying: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="playingStyle">Estilo de Jogo</Label>
+                    <Input
+                      id="playingStyle"
+                      value={skills.playingStyle}
+                      onChange={(e) => setSkills({ ...skills, playingStyle: e.target.value })}
+                      placeholder="Ex: Ofensivo, Defensivo, All-around"
+                    />
+                  </div>
+                  <Button type="submit">Salvar Habilidades</Button>
+                </form>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      </div>
+    </Layout>
   );
 };
 

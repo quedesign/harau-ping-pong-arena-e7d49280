@@ -1,8 +1,8 @@
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useData } from '@/contexts/DataContext';
-import { useAuth } from '@/contexts/AuthContext';
+import { useTranslation } from 'react-i18next';
+import { useAuth } from '@/contexts/auth';
 import Layout from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -21,24 +21,21 @@ const AthleteProfile = () => {
   const { currentUser } = useAuth();
   const [isConnecting, setIsConnecting] = useState(false);
 
-  // Find athlete profile
-  const profile = athleteProfiles.find(p => p.userId === id);
-  
-  // Get athlete matches
-  const athleteMatches = matches.filter(m => 
-    m.playerOneId === id || m.playerTwoId === id
-  );
+  const { t } = useTranslation();
 
-  if (!profile) {
-    return (
-      <Layout>
-        <div className="text-center py-12">
-          <h2 className="text-2xl font-bold mb-4">Athlete not found</h2>
-          <Button onClick={() => navigate('/athletes')}>Back to Athletes</Button>
-        </div>
-      </Layout>
+  useEffect(() => {
+    // Find athlete profile
+    const profile = athleteProfiles.find(p => p.userId === id);
+    
+    // Get athlete matches
+    const athleteMatches = matches.filter(m => 
+      m.playerOneId === id || m.playerTwoId === id
     );
-  }
+
+    if (!profile) {
+      navigate('/athletes');
+    }
+  }, [id, athleteProfiles, matches, navigate]);
 
   // In a real app, you would fetch the user data
   const athleteName = `Player ${profile.userId}`;

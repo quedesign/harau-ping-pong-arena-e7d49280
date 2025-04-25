@@ -1,7 +1,7 @@
 
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/auth';
 import { supabase } from '@/integrations/supabase/client';
 import {
   Select,

@@ -1,9 +1,8 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from './Navbar';
 import Sidebar from './Sidebar';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/auth';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -14,7 +13,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const navigate = useNavigate();
   const isLoggedIn = !!currentUser;
   
-  // Redirect to login if not logged in
   React.useEffect(() => {
     if (!isLoading && !isLoggedIn) {
       navigate('/login');

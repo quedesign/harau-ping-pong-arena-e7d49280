@@ -3,6 +3,7 @@ import React, { createContext, useContext, useEffect } from 'react';
 import { AuthContextType } from './types';
 import { useAuthOperations } from './useAuthOperations';
 import { supabase } from '@/integrations/supabase/client';
+import { UserRole } from '@/types';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -38,7 +39,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 id: session.user.id,
                 name: profile.name,
                 email: profile.email,
-                role: profile.role,
+                role: profile.role as UserRole,
                 profileImage: profile.profile_image,
                 createdAt: new Date(session.user.created_at)
               });
@@ -63,7 +64,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 id: session.user.id,
                 name: profile.name,
                 email: profile.email,
-                role: profile.role,
+                role: profile.role as UserRole,
                 profileImage: profile.profile_image,
                 createdAt: new Date(session.user.created_at)
               });

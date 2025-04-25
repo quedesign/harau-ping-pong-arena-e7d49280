@@ -1,4 +1,4 @@
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/auth';
 import { useData } from '@/contexts/DataContext';
 import { Link } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
@@ -8,7 +8,6 @@ import { Users, MessageCircle, X } from 'lucide-react';
 import * as React from 'react';
 import { CalendarDays, Trophy, PlayCircle, PlusCircle } from 'lucide-react';
 
-// Utility to get following from sessionStorage (as in AthleteList page)
 const getInitialFollowing = () => {
   const stored = sessionStorage.getItem('followingAthletes');
   return stored ? JSON.parse(stored) : [];
@@ -18,10 +17,8 @@ const Dashboard = () => {
   const { currentUser } = useAuth();
   const { tournaments, matches, athleteProfiles } = useData();
 
-  // Followed athletes state (sync with sessionStorage)
   const [following, setFollowing] = React.useState<string[]>(getInitialFollowing());
 
-  // Keep following in sync with sessionStorage
   React.useEffect(() => {
     const handler = () => setFollowing(getInitialFollowing());
     window.addEventListener('storage', handler);
@@ -36,7 +33,6 @@ const Dashboard = () => {
     updateFollowing(following.filter((id) => id !== athleteId));
   };
 
-  // "Followed" profiles
   const followedProfiles = athleteProfiles.filter(profile => following.includes(profile.userId));
 
   if (!currentUser) {
@@ -52,7 +48,6 @@ const Dashboard = () => {
     );
   }
 
-  // Filter data based on user role and ID
   const userTournaments = currentUser.role === 'admin' 
     ? tournaments.filter(t => t.createdBy === currentUser.id)
     : tournaments.filter(t => t.registeredParticipants.includes(currentUser.id));
@@ -66,7 +61,6 @@ const Dashboard = () => {
 
   return (
     <Layout>
-      {/* --- Followed Athletes Area --- */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">Welcome, {currentUser.name}</h1>
         <p className="text-zinc-400">
@@ -76,7 +70,6 @@ const Dashboard = () => {
         </p>
       </div>
 
-      {/* New: Followed Athletes List */}
       <div className="mb-10">
         <div className="flex items-center mb-3 gap-2">
           <Users className="text-primary" size={22} />
@@ -88,8 +81,6 @@ const Dashboard = () => {
               <Card key={profile.userId} className="flex flex-col bg-zinc-900 border-zinc-800">
                 <CardContent className="p-5 flex flex-row gap-4 items-center">
                   <div className="w-16 h-16 rounded-full bg-black flex items-center justify-center text-zinc-200 text-xl font-bold overflow-hidden">
-                    {/* Placeholder image for athlete (initial or photo) */}
-                    {/* Replace below with a real photo if you have it in your data */}
                     <span>{`Player ${profile.userId}`.charAt(0)}</span>
                   </div>
                   <div className="flex-1">
@@ -126,8 +117,6 @@ const Dashboard = () => {
         )}
       </div>
 
-      {/* --- The rest of the dashboard content remains unchanged --- */}
-      
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
         <Card className="bg-zinc-900 border-zinc-800">
           <CardContent className="p-6">
@@ -190,7 +179,6 @@ const Dashboard = () => {
         </Card>
       </div>
       
-      {/* Featured content based on user role */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {currentUser.role === 'admin' ? (
           <>

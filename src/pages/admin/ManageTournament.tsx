@@ -1,149 +1,259 @@
-
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { useData } from '@/contexts/DataContext';
-import { useAuth } from '@/contexts/AuthContext';
+import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useTournamentFetch } from '@/hooks/useTournamentFetch';
+import { useTournamentMutations } from '@/hooks/useTournamentMutations';
+import { useAuth } from '@/contexts/auth';
 import Layout from '@/components/layout/Layout';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Button } from '@/components/ui/button';
-import { toast } from '@/hooks/use-toast';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { 
-  Check, Dices, Star, Trophy, ArrowRight, Flag, FilePen
-} from 'lucide-react';
-
-// Componentes para cada fase de gerenciamento
-import TournamentHeader from '@/components/admin/TournamentHeader';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Calendar } from 'lucide-react';
+import { format } from 'date-fns';
+import { DatePicker } from '@/components/ui/date-picker';
 import AthleteApprovalSection from '@/components/admin/AthleteApprovalSection';
-import SeedingSection from '@/components/admin/SeedingSection';
-import BracketManagement from '@/components/admin/BracketManagement';
-import ResultsEntry from '@/components/admin/ResultsEntry';
-import TournamentFinalization from '@/components/admin/TournamentFinalization';
 
 const ManageTournament = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { t } = useTranslation();
-  const { tournaments, updateTournament } = useData();
   const { currentUser } = useAuth();
-  const [tournament, setTournament] = useState(tournaments.find(t => t.id === id));
-  const [activeTab, setActiveTab] = useState('athletes');
+  const { tournament, isLoading, error } = useTournamentFetch(id as string);
+  const { updateTournament, deleteTournament } = useTournamentMutations();
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [formatType, setFormatType] = useState('');
+  const [startDate, setStartDate] = useState<Date | undefined>(undefined);
+  const [endDate, setEndDate] = useState<Date | undefined>(undefined);
+  const [location, setLocation] = useState('');
+  const [entryFee, setEntryFee] = useState(0);
+  const [maxParticipants, setMaxParticipants] = useState(0);
+  const [bannerImage, setBannerImage] = useState('');
+  const [status, setStatus] = useState('');
+  const [pixKey, setPixKey] = useState('');
 
-  // Verificar se o usuário é administrador e criador do torneio
   useEffect(() => {
-    if (!tournament) {
-      navigate('/tournaments');
-      return;
+    if (tournament) {
+      setName(tournament.name);
+      setDescription(tournament.description);
+      setFormatType(tournament.format);
+      setStartDate(tournament.startDate);
+      setEndDate(tournament.endDate);
+      setLocation(tournament.location);
+      setEntryFee(tournament.entryFee);
+      setMaxParticipants(tournament.maxParticipants);
+      setBannerImage(tournament.bannerImage || '');
+      setStatus(tournament.status);
+      setPixKey(tournament.pixKey || '');
     }
+  }, [tournament]);
 
-    if (!currentUser || currentUser.role !== 'admin' || tournament.createdBy !== currentUser.id) {
-      toast({
-        title: t('common.unauthorized'),
-        description: t('tournaments.notAdmin'),
-        variant: 'destructive'
-      });
-      navigate(`/tournaments/${id}`);
-    }
-  }, [currentUser, tournament, id, navigate, toast, t]);
-
-  // Atualiza o torneio quando há mudanças
-  useEffect(() => {
-    const updatedTournament = tournaments.find(t => t.id === id);
-    if (updatedTournament) {
-      setTournament(updatedTournament);
-    }
-  }, [tournaments, id]);
-
-  // Navega de volta se o torneio não existir mais
-  if (!tournament) {
-    return null;
+  if (!currentUser?.role === 'admin') {
+    return (
+      <Layout>
+        <div className="text-center py-12">
+          <h2 className="text-2xl font-bold">You do not have permission to view this page.</h2>
+        </div>
+      </Layout>
+    );
   }
 
-  // Determinar qual aba deve estar ativa com base no status do torneio
-  const getActiveTab = () => {
-    if (tournament.status === 'completed') return 'finalize';
-    if (tournament.status === 'ongoing') return 'results';
-    return activeTab;
+  if (isLoading) {
+    return (
+      <Layout>
+        <div className="min-h-screen bg-background flex items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+        </div>
+      </Layout>
+    );
+  }
+
+  if (error) {
+    return (
+      <Layout>
+        <div className="text-center py-12">
+          <h2 className="text-2xl font-bold">Error: {error.message}</h2>
+        </div>
+      </Layout>
+    );
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!id) return;
+
+    const updatedTournamentData = {
+      name,
+      description,
+      format: formatType,
+      startDate: startDate || new Date(),
+      endDate: endDate || new Date(),
+      location,
+      entryFee,
+      maxParticipants,
+      bannerImage,
+      status,
+      pixKey,
+    };
+
+    await updateTournament(id, updatedTournamentData);
   };
 
-  const updateStatus = async (newStatus: 'upcoming' | 'ongoing' | 'completed') => {
-    try {
-      await updateTournament(tournament.id, { status: newStatus });
-      toast({
-        title: t('tournaments.statusUpdated'),
-        description: t(`tournaments.statusTo${newStatus.charAt(0).toUpperCase() + newStatus.slice(1)}`),
-      });
-    } catch (error) {
-      console.error("Error updating tournament status:", error);
-      toast({
-        title: t('common.error'),
-        description: t('tournaments.statusUpdateError'),
-        variant: 'destructive',
-      });
-    }
+  const handleDelete = async () => {
+    if (!id) return;
+    await deleteTournament(id);
+    navigate('/admin/tournaments');
   };
 
   return (
     <Layout>
-      <TournamentHeader 
-        tournament={tournament} 
-        onStartTournament={() => updateStatus('ongoing')} 
-        onBackToSetup={() => updateStatus('upcoming')}
-      />
+      <div className="container max-w-4xl py-6">
+        <Card className="bg-zinc-900 border-zinc-800">
+          <CardHeader>
+            <CardTitle>Manage Tournament</CardTitle>
+            <CardDescription>Edit tournament details</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="name">Name</Label>
+                  <Input
+                    id="name"
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="bg-zinc-800 border-zinc-700"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="description">Description</Label>
+                  <Input
+                    id="description"
+                    type="text"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    className="bg-zinc-800 border-zinc-700"
+                  />
+                </div>
+              </div>
 
-      <Tabs 
-        defaultValue={getActiveTab()} 
-        value={getActiveTab()} 
-        onValueChange={setActiveTab}
-        className="mt-6"
-      >
-        <TabsList className="bg-zinc-900 border-zinc-800 grid grid-cols-5 w-full">
-          <TabsTrigger value="athletes" disabled={tournament.status === 'completed'}>
-            <Check className="mr-2" size={16} />
-            {t('admin.approveAthletes')}
-          </TabsTrigger>
-          <TabsTrigger value="seeding" disabled={tournament.status === 'completed'}>
-            <Star className="mr-2" size={16} />
-            {t('admin.seeding')}
-          </TabsTrigger>
-          <TabsTrigger value="bracket" disabled={tournament.status === 'completed'}>
-            <Dices className="mr-2" size={16} />
-            {t('admin.drawBracket')}
-          </TabsTrigger>
-          <TabsTrigger value="results" disabled={tournament.status !== 'ongoing'}>
-            <FilePen className="mr-2" size={16} />
-            {t('admin.enterResults')}
-          </TabsTrigger>
-          <TabsTrigger value="finalize">
-            <Flag className="mr-2" size={16} />
-            {t('admin.finalizeTournament')}
-          </TabsTrigger>
-        </TabsList>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="format">Format</Label>
+                  <Select value={formatType} onValueChange={setFormatType}>
+                    <SelectTrigger className="bg-zinc-800 border-zinc-700 text-zinc-400">
+                      <SelectValue placeholder="Select format" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-zinc-800 border-zinc-700 text-zinc-400">
+                      <SelectItem value="knockout">Knockout</SelectItem>
+                      <SelectItem value="round-robin">Round Robin</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
 
-        <TabsContent value="athletes" className="mt-4">
-          <AthleteApprovalSection tournament={tournament} />
-        </TabsContent>
-        
-        <TabsContent value="seeding" className="mt-4">
-          <SeedingSection tournament={tournament} />
-        </TabsContent>
-        
-        <TabsContent value="bracket" className="mt-4">
-          <BracketManagement tournament={tournament} />
-        </TabsContent>
-        
-        <TabsContent value="results" className="mt-4">
-          <ResultsEntry tournament={tournament} />
-        </TabsContent>
-        
-        <TabsContent value="finalize" className="mt-4">
-          <TournamentFinalization 
-            tournament={tournament} 
-            onFinalize={() => updateStatus('completed')} 
-          />
-        </TabsContent>
-      </Tabs>
+                <div>
+                  <Label>Start Date</Label>
+                  <DatePicker
+                    onSelect={setStartDate}
+                    defaultMonth={startDate}
+                    mode="single"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label>End Date</Label>
+                  <DatePicker
+                    onSelect={setEndDate}
+                    defaultMonth={endDate}
+                    mode="single"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="location">Location</Label>
+                  <Input
+                    id="location"
+                    type="text"
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                    className="bg-zinc-800 border-zinc-700"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="entryFee">Entry Fee</Label>
+                  <Input
+                    id="entryFee"
+                    type="number"
+                    value={entryFee}
+                    onChange={(e) => setEntryFee(Number(e.target.value))}
+                    className="bg-zinc-800 border-zinc-700"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="maxParticipants">Max Participants</Label>
+                  <Input
+                    id="maxParticipants"
+                    type="number"
+                    value={maxParticipants}
+                    onChange={(e) => setMaxParticipants(Number(e.target.value))}
+                    className="bg-zinc-800 border-zinc-700"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="bannerImage">Banner Image URL</Label>
+                  <Input
+                    id="bannerImage"
+                    type="text"
+                    value={bannerImage}
+                    onChange={(e) => setBannerImage(e.target.value)}
+                    className="bg-zinc-800 border-zinc-700"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="status">Status</Label>
+                  <Select value={status} onValueChange={setStatus}>
+                    <SelectTrigger className="bg-zinc-800 border-zinc-700 text-zinc-400">
+                      <SelectValue placeholder="Select status" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-zinc-800 border-zinc-700 text-zinc-400">
+                      <SelectItem value="upcoming">Upcoming</SelectItem>
+                      <SelectItem value="ongoing">Ongoing</SelectItem>
+                      <SelectItem value="completed">Completed</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="pixKey">PIX Key</Label>
+                <Input
+                  id="pixKey"
+                  type="text"
+                  value={pixKey}
+                  onChange={(e) => setPixKey(e.target.value)}
+                  className="bg-zinc-800 border-zinc-700"
+                />
+              </div>
+
+              <Button type="submit">Update Tournament</Button>
+            </form>
+          </CardContent>
+        </Card>
+
+        <AthleteApprovalSection tournament={tournament} />
+
+        <Button variant="destructive" onClick={handleDelete}>
+          Delete Tournament
+        </Button>
+      </div>
     </Layout>
   );
 };

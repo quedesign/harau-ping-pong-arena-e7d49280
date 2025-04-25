@@ -1,8 +1,8 @@
-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useData } from '@/contexts/DataContext';
-import { useAuth } from '@/contexts/AuthContext';
+import { useTranslation } from 'react-i18next';
+import { useAuth } from '@/contexts/auth';
+import { useTournamentFetch } from '@/hooks/useTournamentFetch';
 import Layout from '@/components/layout/Layout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -13,12 +13,11 @@ import { Calendar, Search, MapPin, Trophy, Users } from 'lucide-react';
 import { Tournament } from '@/types';
 
 const TournamentList = () => {
-  const { tournaments } = useData();
+  const { tournaments } = useTournamentFetch();
   const { currentUser } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState('upcoming');
 
-  // Filter tournaments based on status and search query
   const filteredTournaments = tournaments.filter(tournament => {
     const matchesStatus = tournament.status === activeTab;
     const matchesSearch = tournament.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
@@ -27,7 +26,6 @@ const TournamentList = () => {
     return matchesStatus && matchesSearch;
   });
 
-  // Sort tournaments by start date (most recent first)
   const sortedTournaments = [...filteredTournaments].sort((a, b) => {
     return new Date(a.startDate).getTime() - new Date(b.startDate).getTime();
   });
@@ -91,7 +89,6 @@ const TournamentList = () => {
   );
 };
 
-// Tournament card component
 const TournamentCard = ({ tournament }: { tournament: Tournament }) => {
   const { currentUser } = useAuth();
   const isRegistered = tournament.registeredParticipants.includes(currentUser?.id || '');

@@ -1,8 +1,7 @@
-
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useData } from '@/contexts/DataContext';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/auth';
 import { Tournament } from '@/types';
 import { toast } from '@/hooks/use-toast';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';

@@ -1,8 +1,8 @@
-
-import { useState, useEffect, useRef } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useData } from '@/contexts/DataContext';
-import { useAuth } from '@/contexts/AuthContext';
+import { useTranslation } from 'react-i18next';
+import { useAuth } from '@/contexts/auth';
 import Layout from '@/components/layout/Layout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -21,6 +21,8 @@ const MessageDetail = () => {
   const { id } = useParams<{ id: string }>();
   const { athleteProfiles } = useData();
   const { currentUser } = useAuth();
+  const { t } = useTranslation();
+  const navigate = useNavigate();
   const [newMessage, setNewMessage] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -28,7 +30,6 @@ const MessageDetail = () => {
   const athlete = athleteProfiles.find(p => p.userId === id);
   const athleteName = athlete ? `Player ${athlete.userId}` : 'Unknown Player';
 
-  // Generate some sample messages for demo purposes
   useEffect(() => {
     const sampleMessages: Message[] = [
       {
@@ -54,7 +55,6 @@ const MessageDetail = () => {
     setMessages(sampleMessages);
   }, [id]);
 
-  // Scroll to bottom of messages when messages change
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
@@ -72,7 +72,6 @@ const MessageDetail = () => {
     setMessages([...messages, message]);
     setNewMessage('');
     
-    // Mock server response after a delay
     setTimeout(() => {
       if (Math.random() > 0.7) {
         const responseMessage: Message = {

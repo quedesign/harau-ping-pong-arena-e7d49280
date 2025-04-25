@@ -1,17 +1,23 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { format } from 'date-fns';
+import { useTranslation } from 'react-i18next';
 import { useData } from '@/contexts/DataContext';
+import { useToast } from '@/components/ui/use-toast';
+import { useAuth } from '@/contexts/auth';
 import Layout from '@/components/layout/Layout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Search, MessageCircle } from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
 import { Link } from 'react-router-dom';
 
 const MessageList = () => {
   const { athleteProfiles } = useData();
   const { currentUser } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
+  const navigate = useNavigate();
+  const { t } = useTranslation();
 
   // For demo purposes, let's create mock conversations with the first 3 athletes
   const conversations = athleteProfiles.slice(0, 3).map(profile => ({
@@ -29,7 +35,7 @@ const MessageList = () => {
   return (
     <Layout>
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Messages</h1>
+        <h1 className="text-3xl font-bold mb-2">{t('messages.title')}</h1>
         <p className="text-zinc-400">
           Chat with other players and schedule matches
         </p>
@@ -56,12 +62,12 @@ const MessageList = () => {
         ) : (
           <div className="text-center py-12 bg-zinc-900 rounded-lg border border-zinc-800">
             <MessageCircle className="mx-auto h-12 w-12 text-zinc-600 mb-4" />
-            <h3 className="text-xl font-medium mb-2">No conversations yet</h3>
+            <h3 className="text-xl font-medium mb-2">{t('messages.noConversations')}</h3>
             <p className="text-zinc-400 mb-4">
               Start chatting with athletes to see conversations here
             </p>
             <Link to="/athletes">
-              <Button>Find Athletes</Button>
+              <Button>{t('messages.findAthletes')}</Button>
             </Link>
           </div>
         )}

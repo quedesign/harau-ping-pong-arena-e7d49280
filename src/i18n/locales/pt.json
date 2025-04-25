@@ -1,4 +1,3 @@
-
 {
   "common": {
     "login": "Entrar",
@@ -41,7 +40,9 @@
     "accountCreated": "Sua conta foi criada com sucesso",
     "namePlaceholder": "Seu nome",
     "alreadyHaveAccount": "Já possui uma conta?",
-    "loginNow": "Entre agora"
+    "loginNow": "Entre agora",
+    "loginTitle": "Boas vindas",
+    "loginDescription": "Entre com seus dados de acesso"
   },
   "home": {
     "title": "Competição, diversão e equilíbrio no seu dia a dia",

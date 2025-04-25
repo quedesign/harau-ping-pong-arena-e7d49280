@@ -39,8 +39,8 @@
     "registerSuccess": "Cadastro Bem-sucedido",
     "accountCreated": "Sua conta foi criada com sucesso",
     "namePlaceholder": "Seu nome",
-    "alreadyHaveAccount": "Já possui uma conta?",
-    "loginNow": "Entre agora",
+    "alreadyHaveAccount": "Ainda não possui conta?",
+    "loginNow": "Cadastre-se",
     "loginTitle": "Boas vindas",
     "loginDescription": "Entre com seus dados de acesso"
   },

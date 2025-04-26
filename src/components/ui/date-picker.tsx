@@ -69,7 +69,12 @@ export function DatePicker({
           <Calendar
             mode="range"
             selected={selected as { from: Date, to?: Date }}
-            onSelect={onSelect as DayPickerRangeProps['onSelect']}
+            onSelect={(range) => {
+              // Type-safe handling for range mode
+              if (onSelect && range?.from) {
+                onSelect(range.from);
+              }
+            }}
             initialFocus
             defaultMonth={defaultMonth}
             className="p-3 pointer-events-auto"
@@ -79,7 +84,12 @@ export function DatePicker({
           <Calendar
             mode="multiple"
             selected={selected as Date[]}
-            onSelect={onSelect as DayPickerMultipleProps['onSelect']}
+            onSelect={(days) => {
+              // Type-safe handling for multiple mode
+              if (onSelect && days && days.length > 0) {
+                onSelect(days[days.length - 1]);
+              }
+            }}
             initialFocus
             defaultMonth={defaultMonth}
             className="p-3 pointer-events-auto"

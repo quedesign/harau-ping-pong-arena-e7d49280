@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTournamentMutations } from '@/hooks/useTournamentMutations';
@@ -21,7 +20,7 @@ const CreateTournament = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { currentUser } = useAuth();
-  const { createTournament } = useTournamentMutations();
+  const { createTournament } = useTournamentMutations(undefined);
 
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -109,7 +108,10 @@ const CreateTournament = () => {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="format">{t('admin.format')}</Label>
-                <Select value={formatType} onValueChange={handleSetFormat}>
+                <Select 
+                  value={formatType} 
+                  onValueChange={(value) => setFormatType(value as TournamentFormat)}
+                >
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder={t('admin.selectFormat')} />
                   </SelectTrigger>

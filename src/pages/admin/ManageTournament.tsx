@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useTournament } from '@/contexts/data';
@@ -21,7 +20,7 @@ const ManageTournament = () => {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
   const { tournaments, loading } = useTournament();
-  const { updateTournament, deleteTournament } = useTournamentMutations();
+  const { updateTournament, deleteTournament } = useTournamentMutations(undefined);
   
   const [tournament, setTournament] = useState<Tournament | null>(null);
   const [error, setError] = useState<Error | null>(null);
@@ -65,7 +64,6 @@ const ManageTournament = () => {
     }
   }, [tournament]);
 
-  // Helper functions to handle type issues
   const handleSetFormat = (value: string) => {
     setFormatType(value as TournamentFormat);
   };
@@ -167,7 +165,7 @@ const ManageTournament = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="format">Format</Label>
-                  <Select value={formatType} onValueChange={handleSetFormat}>
+                  <Select value={formatType} onValueChange={(value) => setFormatType(value as TournamentFormat)}>
                     <SelectTrigger className="bg-zinc-800 border-zinc-700 text-zinc-400">
                       <SelectValue placeholder="Select format" />
                     </SelectTrigger>
@@ -247,7 +245,7 @@ const ManageTournament = () => {
                 </div>
                 <div>
                   <Label htmlFor="status">Status</Label>
-                  <Select value={status} onValueChange={handleSetStatus}>
+                  <Select value={status} onValueChange={(value) => setStatus(value as 'upcoming' | 'ongoing' | 'completed')}>
                     <SelectTrigger className="bg-zinc-800 border-zinc-700 text-zinc-400">
                       <SelectValue placeholder="Select status" />
                     </SelectTrigger>

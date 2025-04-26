@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { AlertCircle, Loader2 } from 'lucide-react';
+import { AlertCircle, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { UserRole } from '@/types';
 
 const Register = () => {
@@ -24,12 +24,14 @@ const Register = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [role, setRole] = useState<UserRole>('athlete');
   const [localError, setLocalError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLocalError(null);
     
-    // Basic validations
+    // Validações básicas
     if (!name || !email || !password || !confirmPassword) {
       setLocalError(t('auth.allFieldsRequired'));
       return;
@@ -46,10 +48,8 @@ const Register = () => {
     }
     
     try {
-      console.log('Registering user:', { name, email, password, role });
       const success = await register(name, email, password, role);
       if (success) {
-        // Wait briefly for authentication state to update
         setTimeout(() => {
           navigate('/dashboard');
         }, 300);
@@ -83,7 +83,9 @@ const Register = () => {
               
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="name">{t('auth.name')}</Label>
+                  <Label htmlFor="name" className="text-sm font-medium">
+                    {t('auth.name')}
+                  </Label>
                   <Input
                     id="name"
                     type="text"
@@ -91,11 +93,14 @@ const Register = () => {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     className="bg-zinc-800 border-zinc-700"
+                    autoComplete="name"
                   />
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="email">{t('auth.email')}</Label>
+                  <Label htmlFor="email" className="text-sm font-medium">
+                    {t('auth.email')}
+                  </Label>
                   <Input
                     id="email"
                     type="email"
@@ -103,34 +108,67 @@ const Register = () => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="bg-zinc-800 border-zinc-700"
+                    autoComplete="email"
                   />
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="password">{t('auth.password')}</Label>
-                  <Input
-                    id="password"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="bg-zinc-800 border-zinc-700"
-                  />
+                  <Label htmlFor="password" className="text-sm font-medium">
+                    {t('auth.password')}
+                  </Label>
+                  <div className="relative">
+                    <Input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="bg-zinc-800 border-zinc-700 pr-10"
+                      autoComplete="new-password"
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </Button>
+                  </div>
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="confirmPassword">{t('auth.confirmPassword')}</Label>
-                  <Input
-                    id="confirmPassword"
-                    type="password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="bg-zinc-800 border-zinc-700"
-                  />
+                  <Label htmlFor="confirmPassword" className="text-sm font-medium">
+                    {t('auth.confirmPassword')}
+                  </Label>
+                  <div className="relative">
+                    <Input
+                      id="confirmPassword"
+                      type={showConfirmPassword ? "text" : "password"}
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      className="bg-zinc-800 border-zinc-700 pr-10"
+                      autoComplete="new-password"
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    >
+                      {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </Button>
+                  </div>
                 </div>
                 
                 <div className="space-y-2">
-                  <Label>{t('auth.selectRole')}</Label>
-                  <RadioGroup value={role} onValueChange={(value) => setRole(value as UserRole)} className="flex gap-4">
+                  <Label className="text-sm font-medium">{t('auth.selectRole')}</Label>
+                  <RadioGroup 
+                    value={role} 
+                    onValueChange={(value) => setRole(value as UserRole)} 
+                    className="flex gap-4"
+                  >
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem value="athlete" id="athlete" />
                       <Label htmlFor="athlete">{t('auth.athlete')}</Label>
@@ -174,3 +212,4 @@ const Register = () => {
 };
 
 export default Register;
+

@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useData } from '@/contexts/DataContext';
@@ -13,6 +14,7 @@ import {
   User, MapPin, Calendar, Award, Clock, Trophy, 
   Mail, MessageSquare, BarChart 
 } from 'lucide-react';
+import { AthleteProfile as AthleteProfileType, Match } from '@/types';
 
 const AthleteProfile = () => {
   const { id } = useParams<{ id: string }>();
@@ -20,22 +22,40 @@ const AthleteProfile = () => {
   const { athleteProfiles, matches } = useData();
   const { currentUser } = useAuth();
   const [isConnecting, setIsConnecting] = useState(false);
+  const [profile, setProfile] = useState<AthleteProfileType | null>(null);
+  const [athleteMatches, setAthleteMatches] = useState<Match[]>([]);
 
   const { t } = useTranslation();
 
   useEffect(() => {
-    // Find athlete profile
-    const profile = athleteProfiles.find(p => p.userId === id);
-    
-    // Get athlete matches
-    const athleteMatches = matches.filter(m => 
-      m.playerOneId === id || m.playerTwoId === id
-    );
-
-    if (!profile) {
-      navigate('/athletes');
+    if (id && athleteProfiles.length > 0) {
+      // Find athlete profile
+      const foundProfile = athleteProfiles.find(p => p.userId === id);
+      
+      if (foundProfile) {
+        setProfile(foundProfile);
+        
+        // Get athlete matches
+        const foundMatches = matches.filter(m => 
+          m.playerOneId === id || m.playerTwoId === id
+        );
+        
+        setAthleteMatches(foundMatches);
+      } else {
+        navigate('/athletes');
+      }
     }
   }, [id, athleteProfiles, matches, navigate]);
+
+  if (!profile) {
+    return (
+      <Layout>
+        <div className="flex items-center justify-center min-h-[50vh]">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+        </div>
+      </Layout>
+    );
+  }
 
   // In a real app, you would fetch the user data
   const athleteName = `Player ${profile.userId}`;

@@ -5,14 +5,79 @@ import { supabase } from '@/integrations/supabase/client';
 import { useTranslation } from 'react-i18next';
 import { toast } from '@/hooks/use-toast';
 
-export const useTournamentFetch = () => {
+// Single tournament fetch
+export const useTournamentFetch = (tournamentId?: string) => {
   const { t } = useTranslation();
   const [tournaments, setTournaments] = useState<Tournament[]>([]);
+  const [tournament, setTournament] = useState<Tournament | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    fetchTournaments();
-  }, []);
+    if (tournamentId) {
+      fetchSingleTournament(tournamentId);
+    } else {
+      fetchTournaments();
+    }
+  }, [tournamentId]);
+
+  const fetchSingleTournament = async (id: string) => {
+    setIsLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('tournaments')
+        .select('*')
+        .eq('id', id)
+        .single();
+      
+      if (error) {
+        throw error;
+      }
+
+      if (data) {
+        const formattedTournament: Tournament = {
+          id: data.id,
+          name: data.name,
+          description: data.description,
+          format: data.format as TournamentFormat,
+          startDate: new Date(data.start_date),
+          endDate: new Date(data.end_date),
+          location: data.location,
+          entryFee: Number(data.entry_fee),
+          maxParticipants: data.max_participants,
+          registeredParticipants: [],
+          createdBy: data.created_by,
+          bannerImage: data.banner_image,
+          status: data.status as 'upcoming' | 'ongoing' | 'completed',
+          pixKey: data.pix_key
+        };
+
+        // Load participants
+        const { data: participants } = await supabase
+          .from('tournament_participants')
+          .select('athlete_id')
+          .eq('tournament_id', id)
+          .eq('approved', true);
+        
+        if (participants) {
+          formattedTournament.registeredParticipants = participants.map(p => p.athlete_id);
+        }
+
+        setTournament(formattedTournament);
+      }
+    } catch (err) {
+      console.error('Error fetching tournament:', err);
+      setError(err instanceof Error ? err : new Error('Unknown error'));
+      toast({
+        title: t('common.error'),
+        description: t('tournaments.fetchError'),
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const fetchTournaments = async () => {
     setLoading(true);
@@ -57,8 +122,8 @@ export const useTournamentFetch = () => {
 
         setTournaments(formattedTournaments);
       }
-    } catch (error) {
-      console.error('Error fetching tournaments:', error);
+    } catch (err) {
+      console.error('Error fetching tournaments:', err);
       toast({
         title: t('common.error'),
         description: t('tournaments.fetchError'),
@@ -69,5 +134,8 @@ export const useTournamentFetch = () => {
     }
   };
 
-  return { tournaments, setTournaments, loading };
+  // Return proper values based on whether we're fetching a single tournament or multiple
+  return tournamentId 
+    ? { tournament, isLoading, error }
+    : { tournaments, setTournaments, loading };
 };

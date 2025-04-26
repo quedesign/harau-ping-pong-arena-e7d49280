@@ -1,7 +1,7 @@
+
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useTournamentFetch } from '@/hooks/useTournamentFetch';
-import { useMatchFetch } from '@/hooks/useMatchFetch';
+import { useTournament, useMatch } from '@/contexts/data';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/contexts/auth';
 import Layout from '@/components/layout/Layout';
@@ -10,15 +10,35 @@ import { Button } from '@/components/ui/button';
 import { CalendarDays, MapPin, Users, Flag, Timer } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { Tournament, Match } from '@/types';
 
 const TournamentDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { currentUser } = useAuth();
-  const { tournament, isLoading: isTournamentLoading, error: tournamentError } = useTournamentFetch(id);
-  const { matches, isLoading: isMatchesLoading, error: matchesError } = useMatchFetch(id);
+  const { tournaments, loading: tournamentsLoading } = useTournament();
+  const { matches, loading: matchesLoading } = useMatch();
+  const [tournament, setTournament] = useState<Tournament | null>(null);
+  const [tournamentMatches, setTournamentMatches] = useState<Match[]>([]);
   const [isRegistered, setIsRegistered] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
+
+  useEffect(() => {
+    if (tournaments && id) {
+      const foundTournament = tournaments.find(t => t.id === id);
+      if (foundTournament) {
+        setTournament(foundTournament);
+        
+        if (matches) {
+          const filteredMatches = matches.filter(m => m.tournamentId === id);
+          setTournamentMatches(filteredMatches);
+        }
+      } else {
+        setError(new Error('Tournament not found'));
+      }
+    }
+  }, [tournaments, matches, id]);
 
   useEffect(() => {
     if (tournament && currentUser) {
@@ -26,7 +46,7 @@ const TournamentDetail = () => {
     }
   }, [tournament, currentUser]);
 
-  if (isTournamentLoading) {
+  if (tournamentsLoading) {
     return (
       <Layout>
         <div className="text-center py-12">
@@ -36,12 +56,12 @@ const TournamentDetail = () => {
     );
   }
 
-  if (tournamentError) {
+  if (error) {
     return (
       <Layout>
         <div className="text-center py-12">
           <h2 className="text-2xl font-bold">{t('common.error')}</h2>
-          <p>{tournamentError.message}</p>
+          <p>{error.message}</p>
         </div>
       </Layout>
     );
@@ -134,13 +154,13 @@ const TournamentDetail = () => {
             <CardDescription>{t('tournament.upcomingMatches')}</CardDescription>
           </CardHeader>
           <CardContent>
-            {isMatchesLoading ? (
+            {matchesLoading ? (
               <div className="text-center py-4">{t('common.loading')}</div>
-            ) : matchesError ? (
+            ) : error ? (
               <div className="text-center py-4">{t('common.error')}</div>
-            ) : matches && matches.length > 0 ? (
+            ) : tournamentMatches && tournamentMatches.length > 0 ? (
               <ul>
-                {matches.map((match) => (
+                {tournamentMatches.map((match) => (
                   <li key={match.id} className="py-2 border-b border-zinc-700">
                     {/* Display match details here */}
                     {match.playerOneId} vs {match.playerTwoId}

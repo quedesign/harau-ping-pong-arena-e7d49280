@@ -1,6 +1,7 @@
+
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { useTournamentFetch } from '@/hooks/useTournamentFetch';
+import { useTournament } from '@/contexts/data';
 import { useTournamentMutations } from '@/hooks/useTournamentMutations';
 import { useAuth } from '@/contexts/auth';
 import Layout from '@/components/layout/Layout';
@@ -13,24 +14,40 @@ import { Calendar } from 'lucide-react';
 import { format } from 'date-fns';
 import { DatePicker } from '@/components/ui/date-picker';
 import AthleteApprovalSection from '@/components/admin/AthleteApprovalSection';
+import { TournamentFormat, Tournament } from '@/types';
 
 const ManageTournament = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { currentUser } = useAuth();
-  const { tournament, isLoading, error } = useTournamentFetch(id as string);
+  const { tournaments, loading } = useTournament();
   const { updateTournament, deleteTournament } = useTournamentMutations();
+  
+  const [tournament, setTournament] = useState<Tournament | null>(null);
+  const [error, setError] = useState<Error | null>(null);
+  
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
-  const [formatType, setFormatType] = useState('');
+  const [formatType, setFormatType] = useState<TournamentFormat>('knockout');
   const [startDate, setStartDate] = useState<Date | undefined>(undefined);
   const [endDate, setEndDate] = useState<Date | undefined>(undefined);
   const [location, setLocation] = useState('');
   const [entryFee, setEntryFee] = useState(0);
   const [maxParticipants, setMaxParticipants] = useState(0);
   const [bannerImage, setBannerImage] = useState('');
-  const [status, setStatus] = useState('');
+  const [status, setStatus] = useState<'upcoming' | 'ongoing' | 'completed'>('upcoming');
   const [pixKey, setPixKey] = useState('');
+
+  useEffect(() => {
+    if (tournaments && id) {
+      const foundTournament = tournaments.find(t => t.id === id);
+      if (foundTournament) {
+        setTournament(foundTournament);
+      } else {
+        setError(new Error('Tournament not found'));
+      }
+    }
+  }, [tournaments, id]);
 
   useEffect(() => {
     if (tournament) {
@@ -48,7 +65,7 @@ const ManageTournament = () => {
     }
   }, [tournament]);
 
-  if (!currentUser?.role === 'admin') {
+  if (!currentUser || currentUser.role !== 'admin') {
     return (
       <Layout>
         <div className="text-center py-12">
@@ -58,7 +75,7 @@ const ManageTournament = () => {
     );
   }
 
-  if (isLoading) {
+  if (loading) {
     return (
       <Layout>
         <div className="min-h-screen bg-background flex items-center justify-center">
@@ -248,7 +265,7 @@ const ManageTournament = () => {
           </CardContent>
         </Card>
 
-        <AthleteApprovalSection tournament={tournament} />
+        {tournament && <AthleteApprovalSection tournament={tournament} />}
 
         <Button variant="destructive" onClick={handleDelete}>
           Delete Tournament

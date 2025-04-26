@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTournamentMutations } from '@/hooks/useTournamentMutations';
@@ -13,7 +14,8 @@ import { Calendar } from 'lucide-react';
 import { DatePicker } from '@/components/ui/date-picker';
 import { cn } from '@/lib/utils';
 import { addDays, format } from 'date-fns';
-import { toast } from 'sonner';
+import { toast } from '@/components/ui/sonner';
+import { TournamentFormat } from '@/types';
 
 const CreateTournament = () => {
   const { t } = useTranslation();
@@ -23,7 +25,7 @@ const CreateTournament = () => {
 
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
-  const [formatType, setFormatType] = useState('knockout');
+  const [formatType, setFormatType] = useState<TournamentFormat>('knockout');
   const [startDate, setStartDate] = useState<Date | undefined>(undefined);
   const [endDate, setEndDate] = useState<Date | undefined>(undefined);
   const [location, setLocation] = useState('');
@@ -57,7 +59,7 @@ const CreateTournament = () => {
       registeredParticipants: [],
       createdBy: currentUser.id,
       bannerImage,
-      status: 'upcoming',
+      status: 'upcoming' as 'upcoming' | 'ongoing' | 'completed',
       pixKey,
     };
 

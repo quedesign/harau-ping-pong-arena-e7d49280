@@ -39,6 +39,10 @@ const CreateTournament = () => {
     return null;
   }
 
+  const handleSetFormat = (value: string) => {
+    setFormatType(value as TournamentFormat);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -105,7 +109,7 @@ const CreateTournament = () => {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="format">{t('admin.format')}</Label>
-                <Select value={formatType} onValueChange={setFormatType}>
+                <Select value={formatType} onValueChange={handleSetFormat}>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder={t('admin.selectFormat')} />
                   </SelectTrigger>

@@ -65,6 +65,15 @@ const ManageTournament = () => {
     }
   }, [tournament]);
 
+  // Helper functions to handle type issues
+  const handleSetFormat = (value: string) => {
+    setFormatType(value as TournamentFormat);
+  };
+  
+  const handleSetStatus = (value: string) => {
+    setStatus(value as 'upcoming' | 'ongoing' | 'completed');
+  };
+
   if (!currentUser || currentUser.role !== 'admin') {
     return (
       <Layout>
@@ -158,7 +167,7 @@ const ManageTournament = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="format">Format</Label>
-                  <Select value={formatType} onValueChange={setFormatType}>
+                  <Select value={formatType} onValueChange={handleSetFormat}>
                     <SelectTrigger className="bg-zinc-800 border-zinc-700 text-zinc-400">
                       <SelectValue placeholder="Select format" />
                     </SelectTrigger>
@@ -172,8 +181,9 @@ const ManageTournament = () => {
                 <div>
                   <Label>Start Date</Label>
                   <DatePicker
+                    date={startDate}
                     onSelect={setStartDate}
-                    defaultMonth={startDate}
+                    selected={startDate}
                     mode="single"
                   />
                 </div>
@@ -183,8 +193,9 @@ const ManageTournament = () => {
                 <div>
                   <Label>End Date</Label>
                   <DatePicker
+                    date={endDate}
                     onSelect={setEndDate}
-                    defaultMonth={endDate}
+                    selected={endDate}
                     mode="single"
                   />
                 </div>
@@ -236,7 +247,7 @@ const ManageTournament = () => {
                 </div>
                 <div>
                   <Label htmlFor="status">Status</Label>
-                  <Select value={status} onValueChange={setStatus}>
+                  <Select value={status} onValueChange={handleSetStatus}>
                     <SelectTrigger className="bg-zinc-800 border-zinc-700 text-zinc-400">
                       <SelectValue placeholder="Select status" />
                     </SelectTrigger>

@@ -23,6 +23,7 @@ interface DatePickerProps {
   placeholder?: string
   id?: string
   required?: boolean
+  defaultMonth?: Date
 }
 
 export function DatePicker({
@@ -33,7 +34,8 @@ export function DatePicker({
   className,
   placeholder = "Select date",
   id,
-  required
+  required,
+  defaultMonth
 }: DatePickerProps) {
   return (
     <Popover>
@@ -52,13 +54,36 @@ export function DatePicker({
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0" align="start">
-        <Calendar
-          mode={mode}
-          selected={selected}
-          onSelect={onSelect}
-          initialFocus
-          className="p-3 pointer-events-auto"
-        />
+        {mode === "single" && (
+          <Calendar
+            mode="single"
+            selected={selected as Date}
+            onSelect={onSelect}
+            initialFocus
+            defaultMonth={defaultMonth}
+            className="p-3 pointer-events-auto"
+          />
+        )}
+        {mode === "range" && (
+          <Calendar
+            mode="range"
+            selected={selected as {from: Date, to?: Date}}
+            onSelect={onSelect}
+            initialFocus
+            defaultMonth={defaultMonth}
+            className="p-3 pointer-events-auto"
+          />
+        )}
+        {mode === "multiple" && (
+          <Calendar
+            mode="multiple"
+            selected={selected as Date[]}
+            onSelect={onSelect}
+            initialFocus
+            defaultMonth={defaultMonth}
+            className="p-3 pointer-events-auto"
+          />
+        )}
       </PopoverContent>
     </Popover>
   )

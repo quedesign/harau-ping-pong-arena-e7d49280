@@ -43,7 +43,7 @@ export const useMatchFetch = (tournamentId?: string) => {
             playerOne: [],
             playerTwo: []
           },
-          winner: item.winner,
+          winner: undefined, // Set as undefined since it's not in the database response
           scheduledTime: new Date(item.scheduled_time),
           status: item.status as 'scheduled' | 'completed' | 'cancelled',
           location: item.location

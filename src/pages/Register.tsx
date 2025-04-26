@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/auth';
@@ -46,6 +47,7 @@ const Register = () => {
     }
     
     try {
+      console.log('Registering user:', { name, email, password, role });
       const success = await register(name, email, password, role);
       if (success) {
         toast(t('auth.registerSuccess'), {

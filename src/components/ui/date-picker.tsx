@@ -13,12 +13,13 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import { DayPickerSingleProps, DayPickerRangeProps, DayPickerMultipleProps } from "react-day-picker"
 
 interface DatePickerProps {
   date?: Date
   onSelect?: (date: Date | undefined) => void
   mode?: "single" | "range" | "multiple"
-  selected?: Date | Date[] | undefined
+  selected?: Date | Date[] | { from: Date, to?: Date }
   className?: string
   placeholder?: string
   id?: string
@@ -58,7 +59,7 @@ export function DatePicker({
           <Calendar
             mode="single"
             selected={selected as Date}
-            onSelect={onSelect}
+            onSelect={onSelect as DayPickerSingleProps['onSelect']}
             initialFocus
             defaultMonth={defaultMonth}
             className="p-3 pointer-events-auto"
@@ -67,8 +68,8 @@ export function DatePicker({
         {mode === "range" && (
           <Calendar
             mode="range"
-            selected={selected as {from: Date, to?: Date}}
-            onSelect={onSelect}
+            selected={selected as { from: Date, to?: Date }}
+            onSelect={onSelect as DayPickerRangeProps['onSelect']}
             initialFocus
             defaultMonth={defaultMonth}
             className="p-3 pointer-events-auto"
@@ -78,7 +79,7 @@ export function DatePicker({
           <Calendar
             mode="multiple"
             selected={selected as Date[]}
-            onSelect={onSelect}
+            onSelect={onSelect as DayPickerMultipleProps['onSelect']}
             initialFocus
             defaultMonth={defaultMonth}
             className="p-3 pointer-events-auto"

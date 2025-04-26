@@ -57,7 +57,8 @@ export const useAuthOperations = () => {
     setError(null);
 
     try {
-      const { error } = await supabase.auth.signUp({
+      // Primeiro, registre o usuário com autenticação
+      const { error: signUpError, data } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -68,7 +69,31 @@ export const useAuthOperations = () => {
         },
       });
 
-      if (error) throw error;
+      if (signUpError) throw signUpError;
+
+      // Verifique se o user foi criado corretamente
+      if (!data.user) {
+        throw new Error(t('auth.registerFailed'));
+      }
+
+      // Crie manualmente um perfil para garantir que existe
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .insert([
+          {
+            id: data.user.id,
+            name,
+            email,
+            role,
+          },
+        ])
+        .select('*')
+        .single();
+
+      if (profileError) {
+        console.error('Error creating profile:', profileError);
+        // Não vamos falhar aqui porque o trigger pode ter criado o perfil
+      }
 
       toast(t('auth.registerSuccess'), {
         description: t('auth.accountCreated'),

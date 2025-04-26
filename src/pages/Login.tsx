@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/auth';
@@ -8,33 +9,42 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertCircle, Loader2 } from 'lucide-react';
+import { AlertCircle, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+
+const loginSchema = z.object({
+  email: z.string().email({ message: 'Email inválido' }),
+  password: z.string().min(6, { message: 'A senha deve ter pelo menos 6 caracteres' }),
+});
+
+type LoginFormValues = z.infer<typeof loginSchema>;
 
 const Login = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { login, isLoading, error, createTestUser } = useAuth();
   
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [localError, setLocalError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
   
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLocalError(null);
-    
-    if (!email || !password) {
-      setLocalError(t('auth.allFieldsRequired'));
-      return;
-    }
-    
+  const form = useForm<LoginFormValues>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  });
+  
+  const onSubmit = async (values: LoginFormValues) => {
     try {
-      const success = await login(email, password);
+      const success = await login(values.email, values.password);
       if (success) {
         navigate('/dashboard');
       }
     } catch (err) {
-      console.error('Login error:', err);
+      console.error('Erro ao fazer login:', err);
     }
   };
 
@@ -42,13 +52,13 @@ const Login = () => {
     try {
       const success = await createTestUser();
       if (success) {
-        // Wait briefly for authentication state to update
+        // Aguardar brevemente para o estado de autenticação ser atualizado
         setTimeout(() => {
           navigate('/dashboard');
         }, 300);
       }
     } catch (err) {
-      console.error('Create test user error:', err);
+      console.error('Erro ao criar usuário de teste:', err);
     }
   };
   
@@ -61,47 +71,72 @@ const Login = () => {
             <CardDescription>{t('auth.loginDescription')}</CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit}>
-              {(error || localError) && (
-                <Alert variant="destructive" className="mb-4">
-                  <AlertCircle className="h-4 w-4" />
-                  <AlertDescription>
-                    {localError || error}
-                  </AlertDescription>
-                </Alert>
-              )}
-              
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="email">{t('auth.email')}</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="exemplo@email.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="bg-zinc-800 border-zinc-700"
-                  />
-                </div>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                {error && (
+                  <Alert variant="destructive" className="mb-4">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription>{error}</AlertDescription>
+                  </Alert>
+                )}
                 
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="password">{t('auth.password')}</Label>
-                    <Link
-                      to="/forgot-password"
-                      className="text-sm text-primary hover:underline"
-                    >
-                      {t('auth.forgotPassword')}
-                    </Link>
-                  </div>
-                  <Input
-                    id="password"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="bg-zinc-800 border-zinc-700"
-                  />
-                </div>
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('auth.email')}</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          type="email"
+                          placeholder="exemplo@email.com"
+                          className="bg-zinc-800 border-zinc-700"
+                          autoComplete="email"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <div className="flex items-center justify-between">
+                        <FormLabel>{t('auth.password')}</FormLabel>
+                        <Link
+                          to="/forgot-password"
+                          className="text-sm text-primary hover:underline"
+                        >
+                          {t('auth.forgotPassword')}
+                        </Link>
+                      </div>
+                      <FormControl>
+                        <div className="relative">
+                          <Input
+                            {...field}
+                            type={showPassword ? "text" : "password"}
+                            className="bg-zinc-800 border-zinc-700 pr-10"
+                            autoComplete="current-password"
+                          />
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                            onClick={() => setShowPassword(!showPassword)}
+                          >
+                            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                          </Button>
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 
                 <Button
                   type="submit"
@@ -123,7 +158,7 @@ const Login = () => {
                     <span className="w-full border-t border-zinc-700"></span>
                   </div>
                   <div className="relative flex justify-center text-xs">
-                    <span className="px-2 bg-zinc-900 text-zinc-400">or</span>
+                    <span className="px-2 bg-zinc-900 text-zinc-400">ou</span>
                   </div>
                 </div>
                 
@@ -140,11 +175,11 @@ const Login = () => {
                       {t('common.loading')}
                     </>
                   ) : (
-                    "Use Test Account"
+                    "Usar Conta de Teste"
                   )}
                 </Button>
-              </div>
-            </form>
+              </form>
+            </Form>
           </CardContent>
           <CardFooter>
             <p className="text-center text-sm text-zinc-400 w-full">

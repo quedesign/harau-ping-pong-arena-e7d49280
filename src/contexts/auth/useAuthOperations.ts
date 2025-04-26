@@ -42,10 +42,12 @@ export const useAuthOperations = () => {
     try {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
+      setCurrentUser(null);
       toast.success(t('auth.logoutSuccess'));
     } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : t('auth.logoutFailed');
       toast.error(t('common.error'), {
-        description: t('auth.logoutFailed'),
+        description: errorMessage,
       });
     } finally {
       setIsLoading(false);
@@ -57,7 +59,7 @@ export const useAuthOperations = () => {
     setError(null);
 
     try {
-      console.log("Registering user with:", { name, email, role });
+      console.log("Registrando usuário:", { name, email, role });
       
       // Primeiro, registre o usuário com autenticação
       const { error: signUpError, data } = await supabase.auth.signUp({
@@ -72,17 +74,17 @@ export const useAuthOperations = () => {
       });
 
       if (signUpError) {
-        console.error("Signup error:", signUpError);
+        console.error("Erro no cadastro:", signUpError);
         throw signUpError;
       }
 
       // Verifique se o user foi criado corretamente
       if (!data.user) {
-        console.error("No user data returned");
+        console.error("Dados de usuário não retornados");
         throw new Error(t('auth.registerFailed'));
       }
 
-      console.log("User registered successfully:", data.user.id);
+      console.log("Usuário registrado com sucesso:", data.user.id);
       
       // Crie manualmente um perfil para garantir que existe
       const { error: profileError } = await supabase
@@ -97,8 +99,8 @@ export const useAuthOperations = () => {
         ]);
 
       if (profileError) {
-        console.error('Error creating profile:', profileError);
-        // Não vamos falhar aqui porque o trigger pode ter criado o perfil
+        console.error('Erro ao criar perfil:', profileError);
+        // Não falharemos aqui pois o trigger pode ter criado o perfil
       }
 
       toast.success(t('auth.registerSuccess'), {
@@ -107,7 +109,7 @@ export const useAuthOperations = () => {
 
       return true;
     } catch (err) {
-      console.error("Registration error details:", err);
+      console.error("Detalhes do erro de registro:", err);
       const errorMessage = err instanceof Error ? err.message : t('auth.registerFailed');
       setError(errorMessage);
       toast.error(t('common.error'), {
@@ -122,8 +124,8 @@ export const useAuthOperations = () => {
   const createTestUser = async () => {
     try {
       const testUser = {
-        name: 'Test User',
-        email: 'monteiro.barboza@gmail.com',
+        name: 'Usuário de Teste',
+        email: 'teste@exemplo.com',
         password: '123456',
         role: 'athlete' as UserRole,
       };
@@ -141,7 +143,7 @@ export const useAuthOperations = () => {
 
       return true;
     } catch (err) {
-      console.error('Error creating test user:', err);
+      console.error('Erro ao criar usuário de teste:', err);
       return false;
     }
   };
@@ -160,7 +162,7 @@ export const useAuthOperations = () => {
 
       return true;
     } catch (err) {
-      console.error('Reset password error:', err);
+      console.error('Erro ao redefinir senha:', err);
       throw err;
     }
   };

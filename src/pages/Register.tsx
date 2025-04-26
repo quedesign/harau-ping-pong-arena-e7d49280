@@ -13,44 +13,59 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { AlertCircle, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { UserRole } from '@/types';
 import { toast } from 'sonner';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+
+const registerSchema = z.object({
+  name: z.string().min(3, { message: 'O nome deve ter pelo menos 3 caracteres' }),
+  email: z.string().email({ message: 'Email inválido' }),
+  password: z.string().min(6, { message: 'A senha deve ter pelo menos 6 caracteres' }),
+  confirmPassword: z.string().min(6, { message: 'A senha deve ter pelo menos 6 caracteres' }),
+  role: z.enum(['athlete', 'admin'], { 
+    required_error: 'Por favor, selecione um perfil' 
+  }),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "As senhas não coincidem",
+  path: ["confirmPassword"],
+});
+
+type RegisterFormValues = z.infer<typeof registerSchema>;
 
 const Register = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { register, isLoading, error } = useAuth();
+  const { register: registerUser, isLoading, error } = useAuth();
   
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [role, setRole] = useState<UserRole>('athlete');
-  const [localError, setLocalError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLocalError(null);
-    
-    // Validações básicas
-    if (!name || !email || !password || !confirmPassword) {
-      setLocalError(t('auth.allFieldsRequired'));
-      return;
-    }
-    
-    if (password !== confirmPassword) {
-      setLocalError(t('auth.passwordsDontMatch'));
-      return;
-    }
-    
-    if (password.length < 6) {
-      setLocalError(t('auth.passwordTooShort'));
-      return;
-    }
-    
+  const form = useForm<RegisterFormValues>({
+    resolver: zodResolver(registerSchema),
+    defaultValues: {
+      name: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+      role: 'athlete' as UserRole,
+    },
+  });
+  
+  const onSubmit = async (values: RegisterFormValues) => {
     try {
-      console.log("Attempting to register with:", { name, email, password, role });
-      const success = await register(name, email, password, role);
+      console.log("Tentando registrar com:", { 
+        name: values.name, 
+        email: values.email, 
+        role: values.role 
+      });
+      
+      const success = await registerUser(
+        values.name, 
+        values.email, 
+        values.password, 
+        values.role
+      );
       
       if (success) {
         toast.success(t('auth.registerSuccess'));
@@ -59,9 +74,9 @@ const Register = () => {
         }, 300);
       }
     } catch (err) {
-      console.error('Registration error:', err);
+      console.error('Erro no registro:', err);
       if (err instanceof Error) {
-        setLocalError(err.message);
+        toast.error(err.message);
       }
     }
   };
@@ -75,114 +90,140 @@ const Register = () => {
             <CardDescription>{t('auth.registerDescription')}</CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit}>
-              {(error || localError) && (
-                <Alert variant="destructive" className="mb-4">
-                  <AlertCircle className="h-4 w-4" />
-                  <AlertDescription>
-                    {localError || error}
-                  </AlertDescription>
-                </Alert>
-              )}
-              
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="name" className="text-sm font-medium">
-                    {t('auth.name')}
-                  </Label>
-                  <Input
-                    id="name"
-                    type="text"
-                    placeholder={t('auth.namePlaceholder')}
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="bg-zinc-800 border-zinc-700"
-                    autoComplete="name"
-                  />
-                </div>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                {error && (
+                  <Alert variant="destructive" className="mb-4">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription>{error}</AlertDescription>
+                  </Alert>
+                )}
                 
-                <div className="space-y-2">
-                  <Label htmlFor="email" className="text-sm font-medium">
-                    {t('auth.email')}
-                  </Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="exemplo@email.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="bg-zinc-800 border-zinc-700"
-                    autoComplete="email"
-                  />
-                </div>
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('auth.name')}</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          placeholder={t('auth.namePlaceholder')}
+                          className="bg-zinc-800 border-zinc-700"
+                          autoComplete="name"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 
-                <div className="space-y-2">
-                  <Label htmlFor="password" className="text-sm font-medium">
-                    {t('auth.password')}
-                  </Label>
-                  <div className="relative">
-                    <Input
-                      id="password"
-                      type={showPassword ? "text" : "password"}
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="bg-zinc-800 border-zinc-700 pr-10"
-                      autoComplete="new-password"
-                    />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
-                      onClick={() => setShowPassword(!showPassword)}
-                    >
-                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                    </Button>
-                  </div>
-                </div>
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('auth.email')}</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          type="email"
+                          placeholder="exemplo@email.com"
+                          className="bg-zinc-800 border-zinc-700"
+                          autoComplete="email"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 
-                <div className="space-y-2">
-                  <Label htmlFor="confirmPassword" className="text-sm font-medium">
-                    {t('auth.confirmPassword')}
-                  </Label>
-                  <div className="relative">
-                    <Input
-                      id="confirmPassword"
-                      type={showConfirmPassword ? "text" : "password"}
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      className="bg-zinc-800 border-zinc-700 pr-10"
-                      autoComplete="new-password"
-                    />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    >
-                      {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                    </Button>
-                  </div>
-                </div>
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('auth.password')}</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <Input
+                            {...field}
+                            type={showPassword ? "text" : "password"}
+                            className="bg-zinc-800 border-zinc-700 pr-10"
+                            autoComplete="new-password"
+                          />
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                            onClick={() => setShowPassword(!showPassword)}
+                          >
+                            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                          </Button>
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium">{t('auth.selectRole')}</Label>
-                  <RadioGroup 
-                    value={role} 
-                    onValueChange={(value) => setRole(value as UserRole)} 
-                    className="flex gap-4"
-                  >
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="athlete" id="athlete" />
-                      <Label htmlFor="athlete">{t('auth.athlete')}</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="admin" id="admin" />
-                      <Label htmlFor="admin">{t('auth.admin')}</Label>
-                    </div>
-                  </RadioGroup>
-                </div>
+                <FormField
+                  control={form.control}
+                  name="confirmPassword"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('auth.confirmPassword')}</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <Input
+                            {...field}
+                            type={showConfirmPassword ? "text" : "password"}
+                            className="bg-zinc-800 border-zinc-700 pr-10"
+                            autoComplete="new-password"
+                          />
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                          >
+                            {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                          </Button>
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={form.control}
+                  name="role"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('auth.selectRole')}</FormLabel>
+                      <FormControl>
+                        <RadioGroup 
+                          value={field.value} 
+                          onValueChange={field.onChange}
+                          className="flex gap-4"
+                        >
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="athlete" id="athlete" />
+                            <Label htmlFor="athlete">{t('auth.athlete')}</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="admin" id="admin" />
+                            <Label htmlFor="admin">{t('auth.admin')}</Label>
+                          </div>
+                        </RadioGroup>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 
                 <Button
                   type="submit"
@@ -198,8 +239,8 @@ const Register = () => {
                     t('auth.register')
                   )}
                 </Button>
-              </div>
-            </form>
+              </form>
+            </Form>
           </CardContent>
           <CardFooter>
             <p className="text-center text-sm text-zinc-400 w-full">

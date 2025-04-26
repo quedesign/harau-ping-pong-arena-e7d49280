@@ -23,43 +23,48 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   } = useAuthOperations();
 
   useEffect(() => {
-    console.log("Setting up auth listener...");
+    console.log("Configurando listener de autenticação...");
+    setIsLoading(true);
+    
     // Primeiro configurar o listener para mudanças de autenticação
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log("Auth state changed:", event, session?.user?.id);
+      console.log("Estado de autenticação alterado:", event, session?.user?.id);
       setSession(session);
       
       if (session?.user) {
-        // Buscar perfil do usuário
-        supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', session.user.id)
-          .single()
-          .then(({ data: profile, error: profileError }) => {
-            if (profileError) {
-              console.error('Error fetching profile:', profileError);
+        // Buscar perfil do usuário de forma assíncrona
+        setTimeout(() => {
+          supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', session.user!.id)
+            .single()
+            .then(({ data: profile, error: profileError }) => {
+              if (profileError) {
+                console.error('Erro ao buscar perfil:', profileError);
+                setIsLoading(false);
+                return;
+              }
+              
+              if (profile) {
+                console.log("Perfil encontrado:", profile);
+                setCurrentUser({
+                  id: session.user!.id,
+                  name: profile.name,
+                  email: profile.email,
+                  role: profile.role as UserRole,
+                  profileImage: profile.profile_image,
+                  createdAt: new Date(session.user.created_at)
+                });
+              } else {
+                console.log("Nenhum perfil encontrado para o usuário");
+                setCurrentUser(null);
+              }
               setIsLoading(false);
-              return;
-            }
-            
-            if (profile) {
-              console.log("Profile found:", profile);
-              setCurrentUser({
-                id: session.user.id,
-                name: profile.name,
-                email: profile.email,
-                role: profile.role as UserRole,
-                profileImage: profile.profile_image,
-                createdAt: new Date(session.user.created_at)
-              });
-            } else {
-              console.log("No profile found for user");
-            }
-            setIsLoading(false);
-          });
+            });
+        }, 0);
       } else {
         setCurrentUser(null);
         setIsLoading(false);
@@ -68,33 +73,35 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // Depois, verificar a sessão atual
     supabase.auth.getSession().then(({ data: { session } }) => {
-      console.log("Getting current session:", session?.user?.id);
+      console.log("Obtendo sessão atual:", session?.user?.id);
       if (session?.user) {
-        supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', session.user.id)
-          .single()
-          .then(({ data: profile, error: profileError }) => {
-            if (profileError) {
-              console.error('Error fetching profile:', profileError);
+        setTimeout(() => {
+          supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', session.user!.id)
+            .single()
+            .then(({ data: profile, error: profileError }) => {
+              if (profileError) {
+                console.error('Erro ao buscar perfil:', profileError);
+                setIsLoading(false);
+                return;
+              }
+              
+              if (profile) {
+                console.log("Perfil carregado da sessão:", profile);
+                setCurrentUser({
+                  id: session.user!.id,
+                  name: profile.name,
+                  email: profile.email,
+                  role: profile.role as UserRole,
+                  profileImage: profile.profile_image,
+                  createdAt: new Date(session.user.created_at)
+                });
+              }
               setIsLoading(false);
-              return;
-            }
-            
-            if (profile) {
-              console.log("Profile loaded from session:", profile);
-              setCurrentUser({
-                id: session.user.id,
-                name: profile.name,
-                email: profile.email,
-                role: profile.role as UserRole,
-                profileImage: profile.profile_image,
-                createdAt: new Date(session.user.created_at)
-              });
-            }
-            setIsLoading(false);
-          });
+            });
+        }, 0);
       } else {
         setIsLoading(false);
       }

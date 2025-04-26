@@ -23,11 +23,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   } = useAuthOperations();
 
   useEffect(() => {
+    console.log("Setting up auth listener...");
     // Primeiro configurar o listener para mudanças de autenticação
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log("Auth state changed:", event, session?.user?.id);
       setSession(session);
+      
       if (session?.user) {
         // Buscar perfil do usuário
         supabase
@@ -43,6 +46,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             }
             
             if (profile) {
+              console.log("Profile found:", profile);
               setCurrentUser({
                 id: session.user.id,
                 name: profile.name,
@@ -51,6 +55,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 profileImage: profile.profile_image,
                 createdAt: new Date(session.user.created_at)
               });
+            } else {
+              console.log("No profile found for user");
             }
             setIsLoading(false);
           });
@@ -62,6 +68,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // Depois, verificar a sessão atual
     supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log("Getting current session:", session?.user?.id);
       if (session?.user) {
         supabase
           .from('profiles')
@@ -76,6 +83,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             }
             
             if (profile) {
+              console.log("Profile loaded from session:", profile);
               setCurrentUser({
                 id: session.user.id,
                 name: profile.name,

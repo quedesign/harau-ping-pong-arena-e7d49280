@@ -12,6 +12,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { AlertCircle, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { UserRole } from '@/types';
+import { toast } from 'sonner';
 
 const Register = () => {
   const { t } = useTranslation();
@@ -48,8 +49,11 @@ const Register = () => {
     }
     
     try {
+      console.log("Attempting to register with:", { name, email, password, role });
       const success = await register(name, email, password, role);
+      
       if (success) {
+        toast.success(t('auth.registerSuccess'));
         setTimeout(() => {
           navigate('/dashboard');
         }, 300);
@@ -212,4 +216,3 @@ const Register = () => {
 };
 
 export default Register;
-

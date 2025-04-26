@@ -12,7 +12,6 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { AlertCircle, Loader2 } from 'lucide-react';
 import { UserRole } from '@/types';
-import { toast } from 'sonner';
 
 const Register = () => {
   const { t } = useTranslation();
@@ -50,10 +49,6 @@ const Register = () => {
       console.log('Registering user:', { name, email, password, role });
       const success = await register(name, email, password, role);
       if (success) {
-        toast(t('auth.registerSuccess'), {
-          description: t('auth.accountCreated')
-        });
-        
         // Wait briefly for authentication state to update
         setTimeout(() => {
           navigate('/dashboard');

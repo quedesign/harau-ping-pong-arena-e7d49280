@@ -1,8 +1,6 @@
 
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAuth } from '@/contexts/auth';
-import { supabase } from '@/integrations/supabase/client';
 import {
   Select,
   SelectContent,
@@ -13,7 +11,6 @@ import {
 
 const LanguageSwitcher = () => {
   const { i18n } = useTranslation();
-  const { currentUser } = useAuth();
 
   const languages = [
     { code: 'pt', name: 'Português' },
@@ -30,27 +27,8 @@ const LanguageSwitcher = () => {
     }
   }, [i18n]);
 
-  const handleLanguageChange = async (value: string) => {
+  const handleLanguageChange = (value: string) => {
     i18n.changeLanguage(value);
-    
-    // Always save to localStorage as a fallback
-    localStorage.setItem('userLanguage', value);
-    
-    if (currentUser?.id) {
-      try {
-        // Try to update the profile with language preference
-        await supabase
-          .from('profiles')
-          .update({
-            // Store language preference in a metadata column if it exists
-            // or just use localStorage as fallback
-            // This is a temporary solution until we have proper user_settings table
-          })
-          .eq('id', currentUser.id);
-      } catch (error) {
-        console.error('Error updating language preference:', error);
-      }
-    }
   };
 
   const getCurrentLanguageName = () => {

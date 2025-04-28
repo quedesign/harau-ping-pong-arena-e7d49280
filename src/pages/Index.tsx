@@ -1,3 +1,4 @@
+
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/home/Navbar";
 import Hero from "@/components/home/Hero";
@@ -18,7 +19,15 @@ const Index = () => {
     <div className="min-h-screen flex flex-col">
       <Navbar />
 
-      <section className="flex-1 flex flex-col items-center justify-center px-6 pt-10 pb-24 text-center">
+      <section className="hero-section relative flex-1 flex flex-col items-center justify-center px-6 pt-10 pb-24 text-center">
+        <div className="absolute inset-0 z-0">
+          <img 
+            src="/lovable-uploads/928ccf4d-245a-43e9-a23a-cd466878548b.png" 
+            alt="Table Tennis Player" 
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+        </div>
         <Hero onRegister={handleRegister} />
         <Features />
       </section>

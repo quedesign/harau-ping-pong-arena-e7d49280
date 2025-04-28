@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -120,5 +121,5 @@ td {
 }
 
 .glass-card {
-  @apply bg-black/40 backdrop-blur-md border border-white/10;
+  @apply bg-black/50 backdrop-blur-md border border-white/10;
 }

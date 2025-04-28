@@ -36,7 +36,7 @@ const Index = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-            <div className="bg-black border border-zinc-800 rounded-xl p-8 h-fit">
+            <div className=" border border-zinc-800 rounded-xl p-8 h-fit">
               <h3 className="text-2xl font-bold mb-6 flex items-center">
                 <Users className="mr-3 text-primary" /> Para Atletas
               </h3>

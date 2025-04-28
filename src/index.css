@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -63,7 +64,7 @@
     position: relative;
     z-index: 0;
     background-color: #141412;
-    background-image: url('/lovable-uploads/589d1b8d-12c8-440d-8b03-95d40aca087d.png');
+    background-image: url('/lovable-uploads/fdf02ceb-4e4f-46f9-963a-578fe5e22231.png');
     background-size: cover;
     background-position: right;
     background-repeat: no-repeat;
@@ -116,5 +117,6 @@ td {
 }
 
 nav {
-  @apply bg-black/80 backdrop-blur-sm border-b border-zinc-800;
+  @apply backdrop-blur-sm border-b border-zinc-800;
 }
+

@@ -1,4 +1,3 @@
-
 {
   "common": {
     "login": "Entrar",
@@ -50,7 +49,7 @@
     "registerNow": "Cadastre-se"
   },
   "home": {
-    "title": "Competição, diversão e equilíbrio no seu dia a dia",
+    "title": "Encontre Competições. Marque Partidas. Jogue Sempre.",
     "subtitle": "Você poderá encontrar facilmente competições e outros jogadores amadores em sua proximidade para jogar partidas divertidas e competitivas.",
     "startButton": "Começar",
     "seeTournaments": "Ver Torneios"

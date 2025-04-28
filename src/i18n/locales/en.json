@@ -1,4 +1,3 @@
-
 {
   "common": {
     "login": "Login",
@@ -52,7 +51,7 @@
     "loginNow": "Login now"
   },
   "home": {
-    "title": "Competition, fun, and balance in your daily life",
+    "title": "Find Competitions. Schedule Matches. Play Always.",
     "subtitle": "You can easily find competitions and other amateur players in your proximity to play fun and competitive matches.",
     "startButton": "Get Started",
     "seeTournaments": "See Tournaments"

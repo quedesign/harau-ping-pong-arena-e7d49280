@@ -15,6 +15,7 @@ import { registerSchema, type RegisterFormValues } from './schema';
 import { PasswordInput } from '@/components/auth/PasswordInput';
 import { RoleSelector } from '@/components/auth/RoleSelector';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 
 const Register = () => {
   const { t } = useTranslation();
@@ -47,6 +48,7 @@ const Register = () => {
       if (success) {
         console.log("Registro bem-sucedido!");
         setRegistrationSuccess(true);
+        toast.success("Conta criada com sucesso!");
         
         // Redirecionar após um pequeno atraso para que o usuário possa ver a mensagem de sucesso
         setTimeout(() => {
@@ -54,29 +56,33 @@ const Register = () => {
         }, 2000);
       } else {
         console.log("Registro falhou!");
+        toast.error("Falha ao criar conta. Verifique os dados e tente novamente.");
       }
     } catch (err) {
       console.error('Erro no registro:', err);
+      toast.error("Ocorreu um erro durante o registro.");
     }
   };
   
   return (
     <Layout>
-      <div className="flex justify-center items-center py-8">
+      <div className="flex justify-center items-center py-8 px-4">
         <Card className="w-full max-w-md bg-zinc-900 border-zinc-800">
           <CardHeader>
             <CardTitle className="text-2xl text-center">
-              Faça parte da maior comunidade de tênis de mesa
+              {t('auth.registerTitle', 'Faça parte da maior comunidade de tênis de mesa')}
             </CardTitle>
             <CardDescription className="text-center">
-              Crie sua conta para começar
+              {t('auth.registerSubtitle', 'Crie sua conta para começar')}
             </CardDescription>
           </CardHeader>
           <CardContent>
             {registrationSuccess ? (
               <Alert className="bg-green-600/20 border-green-500 text-green-500 mb-4">
                 <AlertCircle className="h-4 w-4" />
-                <AlertDescription>Conta criada com sucesso! Redirecionando...</AlertDescription>
+                <AlertDescription>
+                  {t('auth.accountCreated', 'Conta criada com sucesso! Redirecionando...')}
+                </AlertDescription>
               </Alert>
             ) : (
               <Form {...form}>
@@ -93,11 +99,11 @@ const Register = () => {
                     name="name"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Nome completo</FormLabel>
+                        <FormLabel>{t('auth.fullName', 'Nome completo')}</FormLabel>
                         <FormControl>
                           <Input
                             {...field}
-                            placeholder="Digite seu nome completo"
+                            placeholder={t('auth.fullNamePlaceholder', 'Digite seu nome completo')}
                             className="bg-zinc-800 border-zinc-700"
                             autoComplete="name"
                           />
@@ -112,7 +118,7 @@ const Register = () => {
                     name="email"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Email</FormLabel>
+                        <FormLabel>{t('auth.email', 'Email')}</FormLabel>
                         <FormControl>
                           <Input
                             {...field}
@@ -130,14 +136,14 @@ const Register = () => {
                   <PasswordInput
                     form={form}
                     name="password"
-                    label="Senha"
+                    label={t('auth.password', 'Senha')}
                     autoComplete="new-password"
                   />
                   
                   <PasswordInput
                     form={form}
                     name="confirmPassword"
-                    label="Confirme sua senha"
+                    label={t('auth.confirmPassword', 'Confirme sua senha')}
                     autoComplete="new-password"
                   />
                   
@@ -151,10 +157,10 @@ const Register = () => {
                     {isLoading ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Criando conta...
+                        {t('auth.creatingAccount', 'Criando conta...')}
                       </>
                     ) : (
-                      'Criar conta'
+                      t('auth.createAccount', 'Criar conta')
                     )}
                   </Button>
                 </form>
@@ -163,9 +169,9 @@ const Register = () => {
           </CardContent>
           <CardFooter>
             <p className="text-center text-sm text-zinc-400 w-full">
-              Já possui uma conta?{' '}
+              {t('auth.alreadyHaveAccount', 'Já possui uma conta?')}{' '}
               <Link to="/login" className="text-primary hover:underline">
-                Entre agora!
+                {t('auth.loginNow', 'Entre agora!')}
               </Link>
             </p>
           </CardFooter>

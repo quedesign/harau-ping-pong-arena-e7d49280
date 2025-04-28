@@ -64,7 +64,7 @@
     z-index: 0;
     background-color: #141412;
   background-image: url('/lovable-uploads/fdf02ceb-4e4f-46f9-963a-578fe5e22231.png');
-  background-size: cover;
+  
   background-position: right;
   background-repeat: no-repeat;
   background-attachment: fixed;
@@ -115,7 +115,4 @@ td {
   @apply bg-black/40 backdrop-blur-md border border-white/10;
 }
 
-nav {
-  
-  
-}
+

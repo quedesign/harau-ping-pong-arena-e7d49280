@@ -4,6 +4,7 @@
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
+  background-color: transparent;
 }
 
 /* Remove any background colors or images that might be overriding our global background */
@@ -42,6 +43,7 @@
 
 .card {
   padding: 2em;
+  background-color: var(--card);
 }
 
 .read-the-docs {

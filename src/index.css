@@ -63,6 +63,14 @@
     position: relative;
     z-index: 0;
     background-color: #141412;
+  }
+
+  #root {
+    min-height: 100vh;
+    width: 100%;
+    position: relative;
+    z-index: 0;
+    background-color: #141412;
     background-image: url('/lovable-uploads/76c4e3a1-450f-415c-8c0e-ac52a97832c9.png');
     background-position: center;
     background-size: cover;

@@ -53,7 +53,7 @@ const Login = () => {
       <div className="flex justify-center items-center min-h-[calc(100vh-200px)]">
         <Card className="w-full max-w-md border-zinc-800">
           <CardHeader>
-            <CardTitle className="text-2xl text-center">Faça parte da maior comunidade de tênis de mesa</CardTitle>
+            <CardTitle className="text-2xl text-center">Acessar sua conta</CardTitle>
             <CardDescription className="text-center">Entre na sua conta para continuar</CardDescription>
           </CardHeader>
           <CardContent>

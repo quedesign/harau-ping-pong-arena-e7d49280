@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/auth';
 import Layout from '@/components/layout/Layout';
@@ -14,10 +14,13 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { registerSchema, type RegisterFormValues } from './schema';
 import { PasswordInput } from '@/components/auth/PasswordInput';
 import { RoleSelector } from '@/components/auth/RoleSelector';
+import { useTranslation } from 'react-i18next';
 
 const Register = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { register: registerUser, isLoading, error } = useAuth();
+  const [registrationSuccess, setRegistrationSuccess] = useState(false);
   
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
@@ -32,6 +35,7 @@ const Register = () => {
   
   const onSubmit = async (values: RegisterFormValues) => {
     try {
+      console.log("Enviando dados de registro:", values);
       const success = await registerUser(
         values.name, 
         values.email, 
@@ -40,7 +44,12 @@ const Register = () => {
       );
       
       if (success) {
-        navigate('/dashboard');
+        setRegistrationSuccess(true);
+        console.log("Registro bem-sucedido!");
+        // Redirecionar após um pequeno atraso para que o usuário possa ver a mensagem de sucesso
+        setTimeout(() => {
+          navigate('/dashboard');
+        }, 1500);
       }
     } catch (err) {
       console.error('Erro no registro:', err);
@@ -60,86 +69,93 @@ const Register = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                {error && (
-                  <Alert variant="destructive" className="mb-4">
-                    <AlertCircle className="h-4 w-4" />
-                    <AlertDescription>{error}</AlertDescription>
-                  </Alert>
-                )}
-                
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Nome completo</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          placeholder="Digite seu nome completo"
-                          className="bg-zinc-800 border-zinc-700"
-                          autoComplete="name"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
+            {registrationSuccess ? (
+              <Alert className="bg-green-600/20 border-green-500 text-green-500 mb-4">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>Conta criada com sucesso! Redirecionando...</AlertDescription>
+              </Alert>
+            ) : (
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                  {error && (
+                    <Alert variant="destructive" className="mb-4">
+                      <AlertCircle className="h-4 w-4" />
+                      <AlertDescription>{error}</AlertDescription>
+                    </Alert>
                   )}
-                />
-                
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          type="email"
-                          placeholder="exemplo@email.com"
-                          className="bg-zinc-800 border-zinc-700"
-                          autoComplete="email"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <PasswordInput
-                  form={form}
-                  name="password"
-                  label="Senha"
-                  autoComplete="new-password"
-                />
-                
-                <PasswordInput
-                  form={form}
-                  name="confirmPassword"
-                  label="Confirme sua senha"
-                  autoComplete="new-password"
-                />
-                
-                <RoleSelector form={form} />
-                
-                <Button
-                  type="submit"
-                  className="w-full"
-                  disabled={isLoading}
-                >
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Criando conta...
-                    </>
-                  ) : (
-                    'Criar conta'
-                  )}
-                </Button>
-              </form>
-            </Form>
+                  
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Nome completo</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            placeholder="Digite seu nome completo"
+                            className="bg-zinc-800 border-zinc-700"
+                            autoComplete="name"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            type="email"
+                            placeholder="exemplo@email.com"
+                            className="bg-zinc-800 border-zinc-700"
+                            autoComplete="email"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <PasswordInput
+                    form={form}
+                    name="password"
+                    label="Senha"
+                    autoComplete="new-password"
+                  />
+                  
+                  <PasswordInput
+                    form={form}
+                    name="confirmPassword"
+                    label="Confirme sua senha"
+                    autoComplete="new-password"
+                  />
+                  
+                  <RoleSelector form={form} />
+                  
+                  <Button
+                    type="submit"
+                    className="w-full"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Criando conta...
+                      </>
+                    ) : (
+                      'Criar conta'
+                    )}
+                  </Button>
+                </form>
+              </Form>
+            )}
           </CardContent>
           <CardFooter>
             <p className="text-center text-sm text-zinc-400 w-full">

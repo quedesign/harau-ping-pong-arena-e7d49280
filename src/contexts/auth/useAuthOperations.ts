@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { User, UserRole } from '@/types';
 import { useTranslation } from 'react-i18next';
@@ -59,9 +58,9 @@ export const useAuthOperations = () => {
     setError(null);
 
     try {
-      console.log("Registrando usuário:", { name, email, role });
+      console.log("Iniciando processo de registro para:", { name, email, role });
       
-      // Primeiro, registre o usuário com autenticação
+      // Registra o usuário com autenticação
       const { error: signUpError, data } = await supabase.auth.signUp({
         email,
         password,
@@ -78,7 +77,7 @@ export const useAuthOperations = () => {
         throw signUpError;
       }
 
-      // Verifique se o user foi criado corretamente
+      // Verifica se o user foi criado corretamente
       if (!data.user) {
         console.error("Dados de usuário não retornados");
         throw new Error(t('auth.registerFailed'));
@@ -86,7 +85,7 @@ export const useAuthOperations = () => {
 
       console.log("Usuário registrado com sucesso:", data.user.id);
       
-      // Crie manualmente um perfil para garantir que existe
+      // Cria manualmente um perfil para garantir que existe
       const { error: profileError } = await supabase
         .from('profiles')
         .insert([
@@ -100,7 +99,7 @@ export const useAuthOperations = () => {
 
       if (profileError) {
         console.error('Erro ao criar perfil:', profileError);
-        // Não falharemos aqui pois o trigger pode ter criado o perfil
+        // Mesmo com erro no perfil, continuamos pois o trigger pode ter criado o perfil
       }
 
       toast.success(t('auth.registerSuccess'), {
@@ -110,7 +109,13 @@ export const useAuthOperations = () => {
       return true;
     } catch (err) {
       console.error("Detalhes do erro de registro:", err);
-      const errorMessage = err instanceof Error ? err.message : t('auth.registerFailed');
+      let errorMessage = err instanceof Error ? err.message : t('auth.registerFailed');
+      
+      // Melhor tratamento de erros comuns
+      if (errorMessage.includes('already registered')) {
+        errorMessage = 'Este email já está registrado. Tente fazer login.';
+      }
+      
       setError(errorMessage);
       toast.error(t('common.error'), {
         description: errorMessage,

@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useEffect } from 'react';
 import { AuthContextType } from './types';
 import { useAuthOperations } from './useAuthOperations';
@@ -40,7 +39,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             .from('profiles')
             .select('*')
             .eq('id', session.user!.id)
-            .single()
+            .maybeSingle()
             .then(({ data: profile, error: profileError }) => {
               if (profileError) {
                 console.error('Erro ao buscar perfil:', profileError);
@@ -80,7 +79,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             .from('profiles')
             .select('*')
             .eq('id', session.user!.id)
-            .single()
+            .maybeSingle()
             .then(({ data: profile, error: profileError }) => {
               if (profileError) {
                 console.error('Erro ao buscar perfil:', profileError);

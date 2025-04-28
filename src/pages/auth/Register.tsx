@@ -36,6 +36,7 @@ const Register = () => {
   const onSubmit = async (values: RegisterFormValues) => {
     try {
       console.log("Enviando dados de registro:", values);
+      
       const success = await registerUser(
         values.name, 
         values.email, 
@@ -44,12 +45,15 @@ const Register = () => {
       );
       
       if (success) {
-        setRegistrationSuccess(true);
         console.log("Registro bem-sucedido!");
+        setRegistrationSuccess(true);
+        
         // Redirecionar após um pequeno atraso para que o usuário possa ver a mensagem de sucesso
         setTimeout(() => {
           navigate('/dashboard');
-        }, 1500);
+        }, 2000);
+      } else {
+        console.log("Registro falhou!");
       }
     } catch (err) {
       console.error('Erro no registro:', err);

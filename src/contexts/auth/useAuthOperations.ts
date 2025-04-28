@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { User, UserRole } from '@/types';
 import { useTranslation } from 'react-i18next';
@@ -60,6 +61,22 @@ export const useAuthOperations = () => {
     try {
       console.log("Iniciando processo de registro para:", { name, email, role });
       
+      // Verificar se o usuário já existe
+      const { data: existingUsers, error: existingError } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('email', email)
+        .maybeSingle();
+        
+      if (existingError) {
+        console.error("Erro ao verificar email existente:", existingError);
+      }
+      
+      if (existingUsers) {
+        console.log("Email já registrado:", email);
+        throw new Error('Este email já está registrado. Tente fazer login.');
+      }
+      
       // Registra o usuário com autenticação
       const { error: signUpError, data } = await supabase.auth.signUp({
         email,
@@ -100,6 +117,8 @@ export const useAuthOperations = () => {
       if (profileError) {
         console.error('Erro ao criar perfil:', profileError);
         // Mesmo com erro no perfil, continuamos pois o trigger pode ter criado o perfil
+      } else {
+        console.log("Perfil criado com sucesso");
       }
 
       toast.success(t('auth.registerSuccess'), {
@@ -112,7 +131,7 @@ export const useAuthOperations = () => {
       let errorMessage = err instanceof Error ? err.message : t('auth.registerFailed');
       
       // Melhor tratamento de erros comuns
-      if (errorMessage.includes('already registered')) {
+      if (typeof errorMessage === 'string' && errorMessage.includes('already registered')) {
         errorMessage = 'Este email já está registrado. Tente fazer login.';
       }
       

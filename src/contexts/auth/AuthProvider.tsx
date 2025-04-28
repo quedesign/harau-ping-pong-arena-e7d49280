@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useEffect } from 'react';
 import { AuthContextType } from './types';
 import { useAuthOperations } from './useAuthOperations';
@@ -58,8 +59,44 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                   createdAt: new Date(session.user.created_at)
                 });
               } else {
-                console.log("Nenhum perfil encontrado para o usuário");
-                setCurrentUser(null);
+                console.log("Nenhum perfil encontrado para o usuário, verificando dados do auth");
+                // Tenta criar um perfil baseado nos metadados do usuário
+                const userData = session.user.user_metadata;
+                if (userData && userData.name) {
+                  const newProfile = {
+                    id: session.user.id,
+                    name: userData.name,
+                    email: session.user.email,
+                    role: (userData.role || 'athlete') as UserRole,
+                    profileImage: null,
+                  };
+                  
+                  // Criar perfil se necessário
+                  supabase
+                    .from('profiles')
+                    .insert([{
+                      id: session.user.id,
+                      name: newProfile.name,
+                      email: newProfile.email,
+                      role: newProfile.role
+                    }])
+                    .then(({ error: insertError }) => {
+                      if (insertError) {
+                        console.error("Erro ao criar perfil:", insertError);
+                      } else {
+                        console.log("Perfil criado com sucesso");
+                        setCurrentUser({
+                          ...newProfile,
+                          createdAt: new Date(session.user!.created_at)
+                        });
+                      }
+                      setIsLoading(false);
+                    });
+                } else {
+                  console.log("Dados insuficientes para criar perfil");
+                  setCurrentUser(null);
+                  setIsLoading(false);
+                }
               }
               setIsLoading(false);
             });
@@ -97,6 +134,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                   profileImage: profile.profile_image,
                   createdAt: new Date(session.user.created_at)
                 });
+              } else {
+                console.log("Nenhum perfil encontrado na sessão atual");
               }
               setIsLoading(false);
             });

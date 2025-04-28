@@ -11,7 +11,7 @@ import {
   DropdownMenuSeparator, 
   DropdownMenuTrigger 
 } from '@/components/ui/dropdown-menu';
-import { Menu, X, User, LogOut, Settings } from 'lucide-react';
+import { Menu, X, User, LogOut, Settings, Trophy, Plus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from '../LanguageSwitcher';
 
@@ -24,12 +24,6 @@ const Navbar: React.FC = () => {
   const handleLogout = () => {
     logout();
     navigate('/login');
-  };
-
-  const handleRegister = () => {
-    console.log('Navegando para a página de registro');
-    navigate('/register');
-    setIsMenuOpen(false);
   };
 
   const toggleMenu = () => {
@@ -52,12 +46,27 @@ const Navbar: React.FC = () => {
         </button>
 
         <div className="hidden md:flex items-center gap-6">
-          <Link to="/tournaments" className="text-white hover:text-primary transition">
+          <Link to="/tournaments" className="text-white hover:text-primary transition flex items-center gap-2">
+            <Trophy size={20} />
             {t('common.tournaments')}
           </Link>
-          <Link to="/athletes" className="text-white hover:text-primary transition">
-            {t('common.athletes')}
-          </Link>
+          
+          {currentUser && (
+            <>
+              <Link to="/athletes" className="text-white hover:text-primary transition">
+                {t('common.athletes')}
+              </Link>
+              {currentUser.role === 'admin' && (
+                <Button 
+                  onClick={() => navigate('/admin/create-tournament')}
+                  className="bg-primary flex items-center gap-2"
+                >
+                  <Plus size={20} />
+                  {t('common.createTournament')}
+                </Button>
+              )}
+            </>
+          )}
           
           <LanguageSwitcher />
           
@@ -103,12 +112,30 @@ const Navbar: React.FC = () => {
 
         {isMenuOpen && (
           <div className="md:hidden absolute top-full left-0 right-0 bg-black border-b border-zinc-800 p-4 flex flex-col gap-4">
-            <Link to="/tournaments" className="text-white hover:text-primary transition py-2" onClick={toggleMenu}>
+            <Link to="/tournaments" className="text-white hover:text-primary transition py-2 flex items-center gap-2" onClick={toggleMenu}>
+              <Trophy size={20} />
               {t('common.tournaments')}
             </Link>
-            <Link to="/athletes" className="text-white hover:text-primary transition py-2" onClick={toggleMenu}>
-              {t('common.athletes')}
-            </Link>
+            
+            {currentUser && (
+              <>
+                <Link to="/athletes" className="text-white hover:text-primary transition py-2" onClick={toggleMenu}>
+                  {t('common.athletes')}
+                </Link>
+                {currentUser.role === 'admin' && (
+                  <Button 
+                    onClick={() => {
+                      navigate('/admin/create-tournament');
+                      toggleMenu();
+                    }}
+                    className="bg-primary flex items-center gap-2"
+                  >
+                    <Plus size={20} />
+                    {t('common.createTournament')}
+                  </Button>
+                )}
+              </>
+            )}
             
             <div className="my-2">
               <LanguageSwitcher />
@@ -140,7 +167,10 @@ const Navbar: React.FC = () => {
                 }}>
                   {t('common.login')}
                 </Button>
-                <Button className="bg-primary" onClick={handleRegister}>
+                <Button className="bg-primary" onClick={() => {
+                  navigate('/register');
+                  toggleMenu();
+                }}>
                   {t('common.register')}
                 </Button>
               </div>

@@ -1,7 +1,11 @@
+
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/home/Navbar";
 import Hero from "@/components/home/Hero";
 import Features from "@/components/home/Features";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
+import { Check, Trophy, Users } from "lucide-react";
 
 const Index = () => {
   const navigate = useNavigate();

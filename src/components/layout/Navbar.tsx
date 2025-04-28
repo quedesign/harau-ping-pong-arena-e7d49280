@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/auth';
@@ -23,6 +24,12 @@ const Navbar: React.FC = () => {
   const handleLogout = () => {
     logout();
     navigate('/login');
+  };
+
+  const handleRegister = () => {
+    console.log('Navegando para a página de registro');
+    navigate('/register');
+    setIsMenuOpen(false);
   };
 
   const toggleMenu = () => {
@@ -133,10 +140,7 @@ const Navbar: React.FC = () => {
                 }}>
                   {t('common.login')}
                 </Button>
-                <Button className="bg-primary" onClick={() => {
-                  navigate('/register');
-                  toggleMenu();
-                }}>
+                <Button className="bg-primary" onClick={handleRegister}>
                   {t('common.register')}
                 </Button>
               </div>

@@ -1,4 +1,5 @@
-import { Link } from "react-router-dom";
+
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/auth";
 import { useTranslation } from 'react-i18next';
@@ -14,6 +15,12 @@ import {
 const Index = () => {
   const { currentUser } = useAuth();
   const { t } = useTranslation();
+  const navigate = useNavigate();
+
+  const handleRegister = () => {
+    console.log("Redirecionando para a página de registro");
+    navigate('/register');
+  };
 
   return (
     <div className="min-h-screen bg-black/70 text-white flex flex-col">
@@ -34,9 +41,7 @@ const Index = () => {
               <Link to="/login">
                 <Button variant="ghost">Entrar</Button>
               </Link>
-              <Link to="/register">
-                <Button>Cadastrar</Button>
-              </Link>
+              <Button onClick={handleRegister}>Cadastrar</Button>
             </>
           )}
         </div>
@@ -53,12 +58,10 @@ const Index = () => {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/register">
-              <Button size="lg" className="px-8">
-                {t('home.startButton')}
-                <ChevronRight size={16} className="ml-2" />
-              </Button>
-            </Link>
+            <Button size="lg" className="px-8" onClick={handleRegister}>
+              {t('home.startButton')}
+              <ChevronRight size={16} className="ml-2" />
+            </Button>
             <Link to="/tournaments">
               <Button size="lg" variant="outline" className="px-8">
                 {t('home.seeTournaments')}
@@ -167,11 +170,9 @@ const Index = () => {
             Junte-se à comunidade Harau hoje e leve seu jogo para o próximo nível.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/register">
-              <Button size="lg" className="px-8">
-                Criar uma Conta
-              </Button>
-            </Link>
+            <Button size="lg" className="px-8" onClick={handleRegister}>
+              Criar uma Conta
+            </Button>
             <Link to="/login">
               <Button size="lg" variant="outline" className="px-8">
                 Entrar

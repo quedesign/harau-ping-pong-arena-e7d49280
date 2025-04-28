@@ -1,19 +1,9 @@
-import { Link, useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { useAuth } from "@/contexts/auth";
-import { useTranslation } from 'react-i18next';
-import {
-  Trophy,
-  Users,
-  Calendar,
-  PlayCircle,
-  ChevronRight,
-  Check,
-} from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import Navbar from "@/components/home/Navbar";
+import Hero from "@/components/home/Hero";
+import Features from "@/components/home/Features";
 
 const Index = () => {
-  const { currentUser } = useAuth();
-  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const handleRegister = () => {
@@ -23,30 +13,8 @@ const Index = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Navbar */}
-      <nav className="w-full p-6 flex justify-between items-center z-10">
-        <div className="text-2xl font-bold flex items-center">
-          <span className="text-white font-light tracking-wide">Harau</span>
-          <span className="text-primary text-2xl">.</span>
-        </div>
+      <Navbar />
 
-        <div className="space-x-4">
-          {currentUser ? (
-            <Link to="/dashboard">
-              <Button>Ir para Dashboard</Button>
-            </Link>
-          ) : (
-            <>
-              <Link to="/login">
-                <Button variant="ghost">Entrar</Button>
-              </Link>
-              <Button onClick={handleRegister}>Cadastrar</Button>
-            </>
-          )}
-        </div>
-      </nav>
-
-      {/* Hero Section */}
       <section className="flex-1 flex flex-col items-center justify-center px-6 pt-10 pb-24 text-center relative">
         {/* Background Image */}
         <div className="absolute inset-0 z-[-1]">
@@ -54,60 +22,8 @@ const Index = () => {
           <div className="absolute inset-0 bg-[#141412]/70"></div>
         </div>
 
-        <div className="relative z-10">
-          <h1 className="text-5xl md:text-6xl font-bold mb-6 tracking-tight">
-            {t('home.title')}
-          </h1>
-          <p className="text-lg md:text-xl text-zinc-400 max-w-2xl mb-10 mx-auto text-center">
-            {t('home.subtitle')}
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="px-8" onClick={handleRegister}>
-              {t('home.startButton')}
-              <ChevronRight size={16} className="ml-2" />
-            </Button>
-            <Link to="/tournaments">
-              <Button size="lg" variant="outline" className="px-8">
-                {t('home.seeTournaments')}
-              </Button>
-            </Link>
-          </div>
-        </div>
-
-        <div className="relative z-10 mt-16 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl w-full">
-          {[
-            {
-              icon: <Trophy className="h-12 w-12" />,
-              titleKey: 'features.tournaments.title',
-              descKey: 'features.tournaments.description',
-            },
-            {
-              icon: <Users className="h-12 w-12" />,
-              titleKey: 'features.findPlayers.title',
-              descKey: 'features.findPlayers.description',
-            },
-            {
-              icon: <Calendar className="h-12 w-12" />,
-              titleKey: 'features.scheduling.title',
-              descKey: 'features.scheduling.description',
-            },
-            {
-              icon: <PlayCircle className="h-12 w-12" />,
-              titleKey: 'features.tracking.title',
-              descKey: 'features.tracking.description',
-            },
-          ].map((feature, index) => (
-            <div
-              key={index}
-              className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 flex flex-col items-center text-center hover:border-zinc-700 transition-colors"
-            >
-              <div className="text-primary mb-4">{feature.icon}</div>
-              <h3 className="text-xl font-semibold mb-2">{t(feature.titleKey)}</h3>
-              <p className="text-zinc-400 text-sm">{t(feature.descKey)}</p>
-            </div>
-          ))}
-        </div>
+        <Hero onRegister={handleRegister} />
+        <Features />
       </section>
 
       <section className="bg-zinc-900 py-20 px-6">

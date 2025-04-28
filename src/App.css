@@ -1,8 +1,15 @@
+
 #root {
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
+}
+
+/* Remove any background colors or images that might be overriding our global background */
+#root::before,
+#root::after {
+  display: none;
 }
 
 .logo {

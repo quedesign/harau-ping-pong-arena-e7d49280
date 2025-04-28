@@ -50,23 +50,27 @@
     @apply border-border;
   }
 
-  body {
+  html, body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
-    position: relative;
+    margin: 0;
+    padding: 0;
     min-height: 100vh;
     width: 100%;
+    position: relative;
   }
 
-  /* Updated background image implementation */
+  /* Global background image implementation */
   body::before {
     content: '';
     position: fixed;
     top: 0;
     left: 0;
-    width: 100vw;
-    height: 100vh;
-    background-image: url('/lovable-uploads/cf41e92d-9e68-45c4-bf4f-5d594c3dd665.png');
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('/lovable-uploads/76814866-09cb-4f97-abd4-38c2f4967683.png');
     background-size: cover;
     background-position: center;
     background-attachment: fixed;

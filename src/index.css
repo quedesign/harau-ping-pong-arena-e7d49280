@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -53,18 +54,22 @@
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
     position: relative;
+    min-height: 100vh;
+    width: 100%;
   }
 
+  /* Updated background image implementation */
   body::before {
     content: '';
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 100vh;
     background-image: url('/lovable-uploads/cf41e92d-9e68-45c4-bf4f-5d594c3dd665.png');
     background-size: cover;
     background-position: center;
+    background-attachment: fixed;
     background-repeat: no-repeat;
     opacity: 0.5;
     z-index: -1;

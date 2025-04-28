@@ -1,4 +1,3 @@
-
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/auth";
@@ -23,7 +22,7 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black/70 text-white flex flex-col">
+    <div className="min-h-screen flex flex-col">
       {/* Navbar */}
       <nav className="w-full p-6 flex justify-between items-center z-10">
         <div className="text-2xl font-bold flex items-center">

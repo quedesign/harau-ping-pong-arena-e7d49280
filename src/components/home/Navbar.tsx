@@ -1,3 +1,4 @@
+
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/auth";
@@ -12,7 +13,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="w-full p-6 flex justify-between items-center z-10 border-b border-[#4A4A48] border-[1px]">
+    <nav className="w-full p-6 flex justify-between items-center z-10 border-b-[1px] border-b-[#4A4A48]">
       <div className="text-2xl font-bold flex items-center">
         <span className="text-white font-light tracking-wide">Harau</span>
         <span className="text-primary text-2xl">.</span>
@@ -37,3 +38,4 @@ const Navbar = () => {
 };
 
 export default Navbar;
+

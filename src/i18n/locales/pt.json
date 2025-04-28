@@ -1,58 +1,84 @@
+
 {
   "common": {
-    "login": "Entrar",
-    "register": "Cadastrar",
-    "logout": "Sair",
-    "dashboard": "Painel",
-    "profile": "Perfil",
-    "tournaments": "Torneios",
-    "athletes": "Atletas",
-    "messages": "Mensagens",
-    "settings": "Configurações",
-    "loading": "Carregando...",
-    "success": "Sucesso",
-    "error": "Erro"
+    "actions": {
+      "login": "Entrar",
+      "register": "Cadastrar",
+      "logout": "Sair",
+      "back": "Voltar",
+      "save": "Salvar",
+      "saving": "Salvando...",
+      "processing": "Processando...",
+      "share": "Compartilhar"
+    },
+    "navigation": {
+      "dashboard": "Painel",
+      "profile": "Perfil",
+      "tournaments": "Torneios",
+      "athletes": "Atletas",
+      "messages": "Mensagens",
+      "settings": "Configurações"
+    },
+    "status": {
+      "error": "Erro",
+      "loading": "Carregando...",
+      "success": "Sucesso"
+    }
   },
   "auth": {
-    "email": "E-mail",
-    "password": "Senha",
-    "name": "Nome",
-    "loginButton": "Entrar",
-    "registerButton": "Cadastrar",
-    "forgotPassword": "Esqueceu sua senha?",
-    "forgotPasswordTitle": "Esqueceu sua senha?",
-    "forgotPasswordDescription": "Digite seu e-mail e enviaremos um link para redefinir sua senha.",
-    "emailRequired": "Digite seu e-mail",
-    "sendResetLink": "Enviar link de redefinição",
-    "resetEmailSent": "E-mail enviado",
-    "checkEmailForReset": "Verifique seu e-mail para redefinir sua senha",
-    "backToLogin": "Voltar para o login",
-    "registerTitle": "Criar uma Conta",
-    "registerDescription": "Preencha suas informações para começar",
-    "confirmPassword": "Confirmar Senha",
-    "selectRole": "Selecione sua função",
-    "athlete": "Atleta",
-    "admin": "Administrador",
-    "register": "Cadastrar",
-    "allFieldsRequired": "Todos os campos são obrigatórios",
-    "passwordsDontMatch": "As senhas não coincidem",
-    "passwordTooShort": "A senha deve ter pelo menos 6 caracteres",
-    "emailAlreadyExists": "Este e-mail já está em uso",
-    "registerSuccess": "Cadastro Bem-sucedido",
-    "accountCreated": "Sua conta foi criada com sucesso",
-    "namePlaceholder": "Seu nome",
-    "alreadyHaveAccount": "Ainda não possui conta?",
-    "loginNow": "Cadastre-se",
-    "loginTitle": "Boas vindas",
-    "loginDescription": "Entre com seus dados de acesso",
-    "noAccount": "Ainda não possui conta?",
-    "registerNow": "Cadastre-se"
+    "fields": {
+      "email": "E-mail",
+      "password": "Senha",
+      "name": "Nome",
+      "confirmPassword": "Confirmar Senha"
+    },
+    "actions": {
+      "loginButton": "Entrar",
+      "registerButton": "Cadastrar",
+      "sendResetLink": "Enviar link de redefinição",
+      "backToLogin": "Voltar para o login"
+    },
+    "messages": {
+      "allFieldsRequired": "Todos os campos são obrigatórios",
+      "passwordsDontMatch": "As senhas não coincidem",
+      "passwordTooShort": "A senha deve ter pelo menos 6 caracteres",
+      "emailAlreadyExists": "Este e-mail já está em uso",
+      "registerSuccess": "Cadastro Bem-sucedido",
+      "accountCreated": "Sua conta foi criada com sucesso"
+    },
+    "forgotPassword": {
+      "title": "Esqueceu sua senha?",
+      "description": "Digite seu e-mail e enviaremos um link para redefinir sua senha.",
+      "emailRequired": "Digite seu e-mail",
+      "resetEmailSent": "E-mail enviado",
+      "checkEmailForReset": "Verifique seu e-mail para redefinir sua senha"
+    },
+    "register": {
+      "title": "Criar uma Conta",
+      "description": "Preencha suas informações para começar",
+      "selectRole": "Selecione sua função",
+      "roles": {
+        "athlete": "Atleta",
+        "admin": "Administrador"
+      }
+    },
+    "placeholders": {
+      "namePlaceholder": "Seu nome"
+    },
+    "links": {
+      "alreadyHaveAccount": "Ainda não possui conta?",
+      "loginNow": "Cadastre-se"
+    }
   },
   "home": {
-    "title": "Encontre Competições. Marque Partidas. Jogue Sempre.",
-    "subtitle": "Você poderá encontrar facilmente competições e outros jogadores amadores em sua proximidade para jogar partidas divertidas e competitivas.",
-    "startButton": "Começar",
-    "seeTournaments": "Ver Torneios"
+    "hero": {
+      "title": "Encontre Competições. Marque Partidas. Jogue Sempre.",
+      "subtitle": "Você poderá encontrar facilmente competições e outros jogadores amadores em sua proximidade para jogar partidas divertidas e competitivas."
+    },
+    "actions": {
+      "startButton": "Começar",
+      "seeTournaments": "Ver Torneios"
+    }
   },
   "features": {
     "tournaments": {
@@ -73,7 +99,9 @@
     }
   },
   "settings": {
-    "updateSuccess": "Configurações atualizadas com sucesso",
-    "updateError": "Erro ao atualizar configurações"
+    "messages": {
+      "updateSuccess": "Configurações atualizadas com sucesso",
+      "updateError": "Erro ao atualizar configurações"
+    }
   }
 }

@@ -1,35 +1,49 @@
+
 {
   "common": {
-    "login": "Iniciar sesión",
-    "register": "Registrarse",
-    "logout": "Cerrar sesión",
-    "dashboard": "Panel",
-    "profile": "Perfil",
-    "tournaments": "Torneos",
-    "athletes": "Atletas",
-    "messages": "Mensajes",
-    "settings": "Configuración"
+    "actions": {
+      "login": "Iniciar sesión",
+      "register": "Registrarse",
+      "logout": "Cerrar sesión"
+    },
+    "navigation": {
+      "dashboard": "Panel",
+      "profile": "Perfil",
+      "tournaments": "Torneos",
+      "athletes": "Atletas",
+      "messages": "Mensajes",
+      "settings": "Configuración"
+    }
   },
   "auth": {
-    "email": "Correo electrónico",
-    "password": "Contraseña",
-    "name": "Nombre",
-    "loginButton": "Iniciar sesión",
-    "registerButton": "Registrarse",
-    "forgotPassword": "¿Olvidaste tu contraseña?",
-    "forgotPasswordTitle": "¿Olvidaste tu contraseña?",
-    "forgotPasswordDescription": "Ingresa tu correo electrónico y te enviaremos un enlace para restablecer tu contraseña.",
-    "emailRequired": "Ingresa tu correo electrónico",
-    "sendResetLink": "Enviar enlace de restablecimiento",
-    "resetEmailSent": "Correo enviado",
-    "checkEmailForReset": "Revisa tu correo para restablecer tu contraseña",
-    "backToLogin": "Volver al inicio de sesión"
+    "fields": {
+      "email": "Correo electrónico",
+      "password": "Contraseña",
+      "name": "Nombre"
+    },
+    "actions": {
+      "loginButton": "Iniciar sesión",
+      "registerButton": "Registrarse",
+      "sendResetLink": "Enviar enlace de restablecimiento",
+      "backToLogin": "Volver al inicio de sesión"
+    },
+    "forgotPassword": {
+      "title": "¿Olvidaste tu contraseña?",
+      "description": "Ingresa tu correo electrónico y te enviaremos un enlace para restablecer tu contraseña.",
+      "emailRequired": "Ingresa tu correo electrónico",
+      "resetEmailSent": "Correo enviado",
+      "checkEmailForReset": "Revisa tu correo para restablecer tu contraseña"
+    }
   },
   "home": {
-    "title": "Encuentra Competiciones. Programa Partidos. Juega Siempre.",
-    "subtitle": "Podrás encontrar fácilmente competiciones y otros jugadores amateurs en tu proximidad para jugar partidos divertidos y competitivos.",
-    "startButton": "Comenzar",
-    "seeTournaments": "Ver Torneos"
+    "hero": {
+      "title": "Encuentra Competiciones. Programa Partidos. Juega Siempre.",
+      "subtitle": "Podrás encontrar fácilmente competiciones y otros jugadores amateurs en tu proximidad para jugar partidos divertidos y competitivos."
+    },
+    "actions": {
+      "startButton": "Comenzar",
+      "seeTournaments": "Ver Torneos"
+    }
   },
   "features": {
     "tournaments": {

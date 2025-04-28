@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from './Navbar';
@@ -14,8 +15,17 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const isLoggedIn = !!currentUser;
   
   React.useEffect(() => {
+    // If the user is not logged in and we're trying to access a protected route,
+    // redirect to login
     if (!isLoading && !isLoggedIn) {
-      navigate('/login');
+      const protectedRoutes = ['/dashboard', '/my-profile', '/settings', '/admin'];
+      const isProtectedRoute = protectedRoutes.some(route => 
+        window.location.pathname.startsWith(route)
+      );
+      
+      if (isProtectedRoute) {
+        navigate('/login');
+      }
     }
   }, [isLoading, isLoggedIn, navigate]);
 

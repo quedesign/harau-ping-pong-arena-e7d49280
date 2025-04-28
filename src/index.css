@@ -1,112 +1,107 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    /* Update primary and accent colors to #D31C74 */
-    --primary: 338 76% 48%; /* Converted #D31C74 to HSL */
-    --accent: 338 76% 48%; /* Same as primary for consistency */
-
-    /* Darker background with #141412 */
-    --background: 0 0% 7.8%; /* Converted #141412 to HSL */
+    --background: 60 2% 8%; /* Dark background - #141412 */
     --foreground: 0 0% 98%; /* Off-white text */
-
-    --card: 0 0% 10%; /* Slightly lighter black for cards */
-    --card-foreground: 0 0% 98%;
-
-    --popover: 0 0% 10%;
-    --popover-foreground: 0 0% 98%;
-
-    --primary-foreground: 0 0% 100%;
-
-    --secondary: 240 4% 16%; /* Dark gray */
-    --secondary-foreground: 0 0% 98%;
-
-    --muted: 240 4% 16%;
-    --muted-foreground: 240 5% 65%;
-
-    --accent-foreground: 0 0% 100%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-
-    --border: 240 4% 16%;
-    --input: 240 4% 16%;
-    --ring: 348 95% 49%;
-
-    --radius: 0.5rem;
-
-    --sidebar-background: 0 0% 5%; /* Darker sidebar */
-    --sidebar-foreground: 0 0% 90%;
-    --sidebar-primary: 348 95% 49%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 0 0% 90%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 348 95% 49%;
+    
+    --card: 60 2% 12%; /* Slightly lighter than background */
+    --card-foreground: 0 0% 98%; /* Off-white text */
+    
+    --popover: 60 2% 10%; /* Dark popover background */
+    --popover-foreground: 0 0% 98%; /* Off-white text */
+    
+    --primary: 336 75% 47%; /* Magenta - #D31C74 */
+    --primary-foreground: 0 0% 98%; /* Off-white on primary */
+    
+    --secondary: 240 4% 20%; /* Dark gray for secondary elements */
+    --secondary-foreground: 0 0% 98%; /* Off-white text */
+    
+    --muted: 240 4% 16%; /* Dark muted background */
+    --muted-foreground: 240 5% 65%; /* Gray muted text */
+    
+    --accent: 336 75% 47%; /* Magenta accent - same as primary */
+    --accent-foreground: 0 0% 98%; /* Off-white text */
+    
+    --destructive: 0 63% 31%; /* Dark red for destructive actions */
+    --destructive-foreground: 0 0% 98%; /* Off-white text */
+    
+    --border: 240 4% 16%; /* Dark border color */
+    --input: 240 4% 16%; /* Dark input background */
+    --ring: 336 75% 47%; /* Magenta ring - same as primary */
+    
+    --radius: 0.75rem; /* Rounded corners for UI elements */
+    
+    /* Sidebar specific colors */
+    --sidebar-background: 0 0% 0%; /* Black sidebar */
+    --sidebar-foreground: 0 0% 100%; /* White text */
+    --sidebar-primary: 336 75% 47%; /* Magenta - #D31C74 */
+    --sidebar-primary-foreground: 0 0% 100%; /* White text */
+    --sidebar-accent: 240 4% 16%; /* Dark accent */
+    --sidebar-accent-foreground: 0 0% 100%; /* White text */
+    --sidebar-border: 240 4% 16%; /* Dark border */
+    --sidebar-ring: 336 75% 47%; /* Magenta ring */
   }
 
-  .dark {
-    /* Update background for dark mode */
-    --background: 0 0% 7.8%; /* Same as light mode for consistency */
-    --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
-  }
-}
-
-@layer base {
   * {
     @apply border-border;
   }
 
   body {
     @apply bg-background text-foreground;
-    background-image: url("/lovable-uploads/af5d12e4-99ac-4058-adb5-89d0e41ab75b.png");
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    background-position: center 20%;
-    position: relative;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading font-bold;
+  }
+
+  p, span, div, li {
+    @apply font-body;
+  }
+
+  a, button {
+    @apply font-body transition-colors;
   }
 }
 
-/* Darker overlay for increased readability */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background: rgba(0,0,0,0.3); /* Further reduced overlay darkness for more image visibility */
+/* Button styles with rounded corners */
+.btn, button, [type='button'], [type='reset'], [type='submit'] {
+  @apply rounded-lg;
+}
+
+/* Form input styles */
+input, textarea, select {
+  @apply rounded-md;
+}
+
+/* Card styles */
+.card {
+  @apply rounded-lg;
+}
+
+/* Navigation tabs with underline */
+.tab-active {
+  @apply border-b-2 border-primary;
+}
+
+/* Table styling */
+table {
+  @apply w-full border-collapse;
+}
+
+th {
+  @apply font-bold text-left p-2 border-b border-zinc-800;
+}
+
+td {
+  @apply p-2 border-b border-zinc-800;
+}
+
+/* Glassmorphism effect for certain UI elements */
+.glass-card {
+  @apply bg-black/40 backdrop-blur-md border border-white/10;
 }

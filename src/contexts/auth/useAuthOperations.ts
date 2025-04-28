@@ -11,6 +11,7 @@ import { useTestUser } from './operations/useTestUser';
 export const useAuthOperations = () => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
+  const [isLoading, setIsLoading] = useState(false); // Add explicit isLoading state
   
   const { login, isLoading: isLoginLoading, error: loginError } = useLogin();
   const { logout, isLoading: isLogoutLoading } = useLogout();
@@ -18,13 +19,14 @@ export const useAuthOperations = () => {
   const { resetPassword, isLoading: isResetLoading } = useResetPassword();
   const { createTestUser, isLoading: isTestUserLoading } = useTestUser(register, login);
 
-  const isLoading = isLoginLoading || isLogoutLoading || isRegisterLoading || isResetLoading || isTestUserLoading;
+  const combinedIsLoading = isLoginLoading || isLogoutLoading || isRegisterLoading || isResetLoading || isTestUserLoading;
   const error = loginError || registerError;
 
   return {
     currentUser,
     setCurrentUser,
-    isLoading,
+    isLoading: combinedIsLoading || isLoading, // Combine all loading states
+    setIsLoading, // Export the setter
     error,
     session,
     setSession,

@@ -59,7 +59,7 @@ const Navbar: React.FC = () => {
               {currentUser.role === 'admin' && (
                 <Button 
                   onClick={() => navigate('/admin/create-tournament')}
-                  className="bg-primary flex items-center gap-2"
+                  className="bg-primary hover:bg-primary/90 flex items-center gap-2"
                 >
                   <Plus size={20} />
                   {t('common.createTournament')}
@@ -103,7 +103,7 @@ const Navbar: React.FC = () => {
               <Button variant="ghost" onClick={() => navigate('/login')}>
                 {t('common.login')}
               </Button>
-              <Button className="bg-primary" onClick={() => navigate('/register')}>
+              <Button className="bg-primary hover:bg-primary/90" onClick={() => navigate('/register')}>
                 {t('common.register')}
               </Button>
             </div>
@@ -128,7 +128,7 @@ const Navbar: React.FC = () => {
                       navigate('/admin/create-tournament');
                       toggleMenu();
                     }}
-                    className="bg-primary flex items-center gap-2"
+                    className="bg-primary hover:bg-primary/90 flex items-center gap-2"
                   >
                     <Plus size={20} />
                     {t('common.createTournament')}
@@ -167,7 +167,7 @@ const Navbar: React.FC = () => {
                 }}>
                   {t('common.login')}
                 </Button>
-                <Button className="bg-primary" onClick={() => {
+                <Button className="bg-primary hover:bg-primary/90" onClick={() => {
                   navigate('/register');
                   toggleMenu();
                 }}>

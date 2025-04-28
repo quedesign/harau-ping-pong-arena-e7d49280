@@ -25,7 +25,7 @@ const Register = () => {
   return (
     <Layout>
       <div className="flex justify-center items-center py-8 px-4">
-        <Card className="w-full max-w-md bg-zinc-900 border-zinc-800">
+        <Card className="w-full max-w-md border-zinc-800">
           <CardHeader>
             <CardTitle className="text-2xl text-center">
               {t('auth.registerTitle', 'Faça parte da maior comunidade de tênis de mesa')}

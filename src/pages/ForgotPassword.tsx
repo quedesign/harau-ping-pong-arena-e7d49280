@@ -44,7 +44,7 @@ const ForgotPassword = () => {
   return (
     <Layout>
       <div className="flex justify-center items-center min-h-[calc(100vh-200px)]">
-        <Card className="w-full max-w-md bg-zinc-900 border-zinc-800">
+        <Card className="w-full max-w-md border-zinc-800">
           <CardHeader>
             <CardTitle className="text-2xl">Esqueceu sua senha?</CardTitle>
             <CardDescription>Digite seu email para receber um link de redefinição de senha.</CardDescription>
@@ -67,7 +67,7 @@ const ForgotPassword = () => {
                     placeholder="exemplo@email.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="bg-zinc-800 border-zinc-700"
+                    className="border-zinc-700"
                   />
                 </div>
                 

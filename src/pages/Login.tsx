@@ -51,7 +51,7 @@ const Login = () => {
   return (
     <Layout>
       <div className="flex justify-center items-center min-h-[calc(100vh-200px)]">
-        <Card className="w-full max-w-md bg-zinc-900 border-zinc-800">
+        <Card className="w-full max-w-md border-zinc-800">
           <CardHeader>
             <CardTitle className="text-2xl text-center">Faça parte da maior comunidade de tênis de mesa</CardTitle>
             <CardDescription className="text-center">Entre na sua conta para continuar</CardDescription>
@@ -77,7 +77,7 @@ const Login = () => {
                           {...field}
                           type="email"
                           placeholder="exemplo@email.com"
-                          className="bg-zinc-800 border-zinc-700"
+                          className="border-zinc-700"
                           autoComplete="email"
                         />
                       </FormControl>
@@ -105,7 +105,7 @@ const Login = () => {
                           <Input
                             {...field}
                             type={showPassword ? "text" : "password"}
-                            className="bg-zinc-800 border-zinc-700 pr-10"
+                            className="border-zinc-700 pr-10"
                             autoComplete="current-password"
                           />
                           <Button

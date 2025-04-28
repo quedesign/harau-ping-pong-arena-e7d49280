@@ -67,14 +67,14 @@
     left: 0;
     right: 0;
     bottom: 0;
-    width: 100%;
-    height: 100%;
-    background-image: url('/lovable-uploads/f329436c-ee52-4cbd-8a73-2614922aac3f.png');
+    width: 100vw;
+    height: 100vh;
+    background-image: url('/lovable-uploads/06bf3c35-38c9-4886-a10b-98fc4c527ad5.png');
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
     background-repeat: no-repeat;
-    opacity: 0.8; /* Increased opacity from 0.5 to 0.8 */
+    opacity: 1;
     z-index: -1;
     pointer-events: none;
   }
@@ -87,9 +87,9 @@
     left: 0;
     right: 0;
     bottom: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); /* Adding a semi-transparent black overlay */
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.3);
     z-index: -1;
     pointer-events: none;
   }

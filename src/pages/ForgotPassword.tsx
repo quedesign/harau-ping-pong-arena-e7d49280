@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/auth';
@@ -24,18 +25,18 @@ const ForgotPassword = () => {
     setError(null);
     
     if (!email) {
-      setError(t('auth.emailRequired'));
+      setError('O email é obrigatório');
       return;
     }
     
     try {
       await resetPassword(email);
-      toast(t('auth.resetEmailSent'), {
-        description: t('auth.checkEmailForReset')
+      toast('Email enviado!', {
+        description: 'Verifique sua caixa de entrada para redefinir sua senha.'
       });
       navigate('/login');
     } catch (err: any) {
-      console.error('Password reset error:', err);
+      console.error('Erro ao redefinir senha:', err);
       setError(err.message);
     }
   };
@@ -45,8 +46,8 @@ const ForgotPassword = () => {
       <div className="flex justify-center items-center min-h-[calc(100vh-200px)]">
         <Card className="w-full max-w-md bg-zinc-900 border-zinc-800">
           <CardHeader>
-            <CardTitle className="text-2xl">{t('auth.forgotPasswordTitle')}</CardTitle>
-            <CardDescription>{t('auth.forgotPasswordDescription')}</CardDescription>
+            <CardTitle className="text-2xl">Esqueceu sua senha?</CardTitle>
+            <CardDescription>Digite seu email para receber um link de redefinição de senha.</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit}>
@@ -59,7 +60,7 @@ const ForgotPassword = () => {
               
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="email">{t('auth.email')}</Label>
+                  <Label htmlFor="email">Email</Label>
                   <Input
                     id="email"
                     type="email"
@@ -78,10 +79,10 @@ const ForgotPassword = () => {
                   {isLoading ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      {t('common.loading')}
+                      Enviando...
                     </>
                   ) : (
-                    t('auth.sendResetLink')
+                    'Enviar link de redefinição'
                   )}
                 </Button>
 
@@ -90,7 +91,7 @@ const ForgotPassword = () => {
                   className="flex items-center justify-center text-sm text-primary hover:underline mt-4"
                 >
                   <ArrowLeft className="mr-2 h-4 w-4" />
-                  {t('auth.backToLogin')}
+                  Voltar para o login
                 </Link>
               </div>
             </form>

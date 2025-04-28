@@ -12,7 +12,6 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { AlertCircle, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { UserRole } from '@/types';
-import { toast } from 'sonner';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -54,12 +53,6 @@ const Register = () => {
   
   const onSubmit = async (values: RegisterFormValues) => {
     try {
-      console.log("Tentando registrar com:", { 
-        name: values.name, 
-        email: values.email, 
-        role: values.role 
-      });
-      
       const success = await registerUser(
         values.name, 
         values.email, 
@@ -68,16 +61,10 @@ const Register = () => {
       );
       
       if (success) {
-        toast.success(t('auth.registerSuccess'));
-        setTimeout(() => {
-          navigate('/dashboard');
-        }, 300);
+        navigate('/dashboard');
       }
     } catch (err) {
       console.error('Erro no registro:', err);
-      if (err instanceof Error) {
-        toast.error(err.message);
-      }
     }
   };
   
@@ -86,8 +73,8 @@ const Register = () => {
       <div className="flex justify-center items-center py-8">
         <Card className="w-full max-w-md bg-zinc-900 border-zinc-800">
           <CardHeader>
-            <CardTitle className="text-2xl">{t('auth.registerTitle')}</CardTitle>
-            <CardDescription>{t('auth.registerDescription')}</CardDescription>
+            <CardTitle className="text-2xl text-center">Faça parte da maior comunidade de tênis de mesa</CardTitle>
+            <CardDescription className="text-center">Crie sua conta para começar</CardDescription>
           </CardHeader>
           <CardContent>
             <Form {...form}>
@@ -104,11 +91,11 @@ const Register = () => {
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('auth.name')}</FormLabel>
+                      <FormLabel>Nome completo</FormLabel>
                       <FormControl>
                         <Input
                           {...field}
-                          placeholder={t('auth.namePlaceholder')}
+                          placeholder="Digite seu nome completo"
                           className="bg-zinc-800 border-zinc-700"
                           autoComplete="name"
                         />
@@ -123,7 +110,7 @@ const Register = () => {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('auth.email')}</FormLabel>
+                      <FormLabel>Email</FormLabel>
                       <FormControl>
                         <Input
                           {...field}
@@ -143,7 +130,7 @@ const Register = () => {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('auth.password')}</FormLabel>
+                      <FormLabel>Senha</FormLabel>
                       <FormControl>
                         <div className="relative">
                           <Input
@@ -173,7 +160,7 @@ const Register = () => {
                   name="confirmPassword"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('auth.confirmPassword')}</FormLabel>
+                      <FormLabel>Confirme sua senha</FormLabel>
                       <FormControl>
                         <div className="relative">
                           <Input
@@ -203,7 +190,7 @@ const Register = () => {
                   name="role"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('auth.selectRole')}</FormLabel>
+                      <FormLabel>Tipo de conta</FormLabel>
                       <FormControl>
                         <RadioGroup 
                           value={field.value} 
@@ -212,11 +199,11 @@ const Register = () => {
                         >
                           <div className="flex items-center space-x-2">
                             <RadioGroupItem value="athlete" id="athlete" />
-                            <Label htmlFor="athlete">{t('auth.athlete')}</Label>
+                            <Label htmlFor="athlete">Atleta</Label>
                           </div>
                           <div className="flex items-center space-x-2">
                             <RadioGroupItem value="admin" id="admin" />
-                            <Label htmlFor="admin">{t('auth.admin')}</Label>
+                            <Label htmlFor="admin">Administrador</Label>
                           </div>
                         </RadioGroup>
                       </FormControl>
@@ -233,10 +220,10 @@ const Register = () => {
                   {isLoading ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      {t('common.loading')}
+                      Criando conta...
                     </>
                   ) : (
-                    t('auth.register')
+                    'Criar conta'
                   )}
                 </Button>
               </form>
@@ -244,9 +231,9 @@ const Register = () => {
           </CardContent>
           <CardFooter>
             <p className="text-center text-sm text-zinc-400 w-full">
-              {t('auth.alreadyHaveAccount')}{' '}
+              Já possui uma conta?{' '}
               <Link to="/login" className="text-primary hover:underline">
-                {t('auth.loginNow')}
+                Entre agora!
               </Link>
             </p>
           </CardFooter>

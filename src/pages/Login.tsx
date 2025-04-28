@@ -25,7 +25,7 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 const Login = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { login, isLoading, error, createTestUser } = useAuth();
+  const { login, isLoading, error } = useAuth();
   
   const [showPassword, setShowPassword] = useState(false);
   
@@ -47,28 +47,14 @@ const Login = () => {
       console.error('Erro ao fazer login:', err);
     }
   };
-
-  const handleCreateTestUser = async () => {
-    try {
-      const success = await createTestUser();
-      if (success) {
-        // Aguardar brevemente para o estado de autenticação ser atualizado
-        setTimeout(() => {
-          navigate('/dashboard');
-        }, 300);
-      }
-    } catch (err) {
-      console.error('Erro ao criar usuário de teste:', err);
-    }
-  };
   
   return (
     <Layout>
       <div className="flex justify-center items-center min-h-[calc(100vh-200px)]">
         <Card className="w-full max-w-md bg-zinc-900 border-zinc-800">
           <CardHeader>
-            <CardTitle className="text-2xl">{t('auth.loginTitle')}</CardTitle>
-            <CardDescription>{t('auth.loginDescription')}</CardDescription>
+            <CardTitle className="text-2xl text-center">Faça parte da maior comunidade de tênis de mesa</CardTitle>
+            <CardDescription className="text-center">Entre na sua conta para continuar</CardDescription>
           </CardHeader>
           <CardContent>
             <Form {...form}>
@@ -85,7 +71,7 @@ const Login = () => {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('auth.email')}</FormLabel>
+                      <FormLabel>Email</FormLabel>
                       <FormControl>
                         <Input
                           {...field}
@@ -106,12 +92,12 @@ const Login = () => {
                   render={({ field }) => (
                     <FormItem>
                       <div className="flex items-center justify-between">
-                        <FormLabel>{t('auth.password')}</FormLabel>
+                        <FormLabel>Senha</FormLabel>
                         <Link
                           to="/forgot-password"
                           className="text-sm text-primary hover:underline"
                         >
-                          {t('auth.forgotPassword')}
+                          Esqueceu sua senha?
                         </Link>
                       </div>
                       <FormControl>
@@ -146,36 +132,10 @@ const Login = () => {
                   {isLoading ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      {t('common.loading')}
+                      Entrando...
                     </>
                   ) : (
-                    t('auth.login')
-                  )}
-                </Button>
-                
-                <div className="relative my-4">
-                  <div className="absolute inset-0 flex items-center">
-                    <span className="w-full border-t border-zinc-700"></span>
-                  </div>
-                  <div className="relative flex justify-center text-xs">
-                    <span className="px-2 bg-zinc-900 text-zinc-400">ou</span>
-                  </div>
-                </div>
-                
-                <Button 
-                  type="button"
-                  className="w-full"
-                  variant="outline"
-                  onClick={handleCreateTestUser}
-                  disabled={isLoading}
-                >
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      {t('common.loading')}
-                    </>
-                  ) : (
-                    "Usar Conta de Teste"
+                    'Entrar'
                   )}
                 </Button>
               </form>
@@ -183,9 +143,9 @@ const Login = () => {
           </CardContent>
           <CardFooter>
             <p className="text-center text-sm text-zinc-400 w-full">
-              {t('auth.noAccount')}{' '}
+              Ainda não possui uma conta?{' '}
               <Link to="/register" className="text-primary hover:underline">
-                {t('auth.registerNow')}
+                Cadastre-se!
               </Link>
             </p>
           </CardFooter>

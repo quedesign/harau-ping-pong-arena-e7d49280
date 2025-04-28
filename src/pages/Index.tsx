@@ -56,7 +56,7 @@ const Index = () => {
               </ul>
             </div>
 
-            <div className="bg-black border border-zinc-800 rounded-xl p-8 h-fit">
+            <div className=" border border-zinc-800 rounded-xl p-8 h-fit">
               <h3 className="text-2xl font-bold mb-6 flex items-center">
                 <Trophy className="mr-3 text-primary" /> Para Organizadores
               </h3>

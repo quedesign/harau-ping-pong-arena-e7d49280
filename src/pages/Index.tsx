@@ -47,7 +47,13 @@ const Index = () => {
       </nav>
 
       {/* Hero Section */}
-      <section className="flex-1 flex flex-col items-center justify-center px-6 pt-10 pb-24 text-center">
+      <section className="flex-1 flex flex-col items-center justify-center px-6 pt-10 pb-24 text-center relative">
+        {/* Background Image */}
+        <div className="absolute inset-0 z-[-1]">
+          <div className="absolute inset-0 bg-[url('/lovable-uploads/0c6dee71-c086-48a2-9628-4d91ffe60c89.png')] bg-cover bg-top-right bg-no-repeat"></div>
+          <div className="absolute inset-0 bg-[#141412]/70"></div>
+        </div>
+
         <div className="relative z-10">
           <h1 className="text-5xl md:text-6xl font-bold mb-6 tracking-tight">
             {t('home.title')}

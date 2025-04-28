@@ -65,39 +65,6 @@
     background-color: #141412;
   }
 
-  /* Global background image implementation */
-  body::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    right: 0;
-    width: 100%;
-    height: 100%;
-    background-image: url('/lovable-uploads/0c6dee71-c086-48a2-9628-4d91ffe60c89.png');
-    background-size: cover;
-    background-position: top right;
-    background-attachment: fixed;
-    background-repeat: no-repeat;
-    opacity: 100%;
-    z-index: -3;
-    pointer-events: none;
-  }
-
-  /* Dark overlay for better contrast */
-  body::after {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(20, 20, 18, 0.7);
-    z-index: -2;
-    pointer-events: none;
-  }
-
   h1, h2, h3, h4, h5, h6 {
     @apply font-heading font-bold;
   }
@@ -111,27 +78,22 @@
   }
 }
 
-/* Button styles with rounded corners */
 .btn, button, [type='button'], [type='reset'], [type='submit'] {
   @apply rounded-lg;
 }
 
-/* Form input styles */
 input, textarea, select {
   @apply rounded-md;
 }
 
-/* Card styles */
 .card {
   @apply rounded-lg;
 }
 
-/* Navigation tabs with underline */
 .tab-active {
   @apply border-b-2 border-primary;
 }
 
-/* Table styling */
 table {
   @apply w-full border-collapse;
 }
@@ -144,12 +106,10 @@ td {
   @apply p-2 border-b border-zinc-800;
 }
 
-/* Glassmorphism effect for certain UI elements */
 .glass-card {
   @apply bg-black/40 backdrop-blur-md border border-white/10;
 }
 
-/* Navigation styles */
 nav {
   @apply bg-black/80 backdrop-blur-sm border-b border-zinc-800;
 }

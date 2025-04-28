@@ -1,0 +1,19 @@
+
+{
+  "tournaments": {
+    "title": "Tournaments",
+    "description": "Create or join competitions"
+  },
+  "findPlayers": {
+    "title": "Find Players",
+    "description": "Connect with nearby athletes"
+  },
+  "scheduling": {
+    "title": "Scheduling",
+    "description": "Organize matches easily"
+  },
+  "tracking": {
+    "title": "Tracking",
+    "description": "Monitor your performance"
+  }
+}

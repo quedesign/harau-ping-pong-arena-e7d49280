@@ -85,10 +85,10 @@ export const prepareUpdateData = (profileData: Partial<AthleteProfile>) => {
   }
 
   // New fields
-  if (profileData.playingStyle) updateData.playing_style = profileData.playingStyle;
-  if (profileData.gripStyle) updateData.grip_style = profileData.gripStyle;
-  if (profileData.playFrequency) updateData.play_frequency = profileData.playFrequency;
-  if (profileData.tournamentParticipation) updateData.tournament_participation = profileData.tournamentParticipation;
+  if (profileData.playingStyle !== undefined) updateData.playing_style = profileData.playingStyle;
+  if (profileData.gripStyle !== undefined) updateData.grip_style = profileData.gripStyle;
+  if (profileData.playFrequency !== undefined) updateData.play_frequency = profileData.playFrequency;
+  if (profileData.tournamentParticipation !== undefined) updateData.tournament_participation = profileData.tournamentParticipation;
   if (profileData.club !== undefined) updateData.club = profileData.club;
   if (profileData.availableTimes !== undefined) updateData.available_times = profileData.availableTimes;
   if (profileData.preferredLocations !== undefined) updateData.preferred_locations = profileData.preferredLocations;

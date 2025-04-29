@@ -168,7 +168,7 @@ const AthleteProfile = () => {
                 
                 {profile.gripStyle && (
                   <div className="flex items-center gap-2">
-                    <Grip size={16} className="text-zinc-400" />
+                    <Award size={16} className="text-zinc-400" />
                     <span className="text-zinc-400">Empunhadura:</span>
                     <span className="ml-auto">
                       {profile.gripStyle === 'classic' ? 'Clássica' :

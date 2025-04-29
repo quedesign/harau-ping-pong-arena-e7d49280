@@ -1,7 +1,7 @@
 
 import { AthleteProfile } from '@/types';
 
-// Define the interface for our Supabase data
+// Define a interface para nossos dados do Supabase
 export interface SupabaseAthleteData {
   user_id: string;
   handedness: string;
@@ -17,7 +17,7 @@ export interface SupabaseAthleteData {
   losses: number;
   updated_at: string;
   created_at: string;
-  // Make sure all fields are included
+  // Certifique-se de que todos os campos estão incluídos
   playing_style?: string;
   grip_style?: string;
   play_frequency?: string;

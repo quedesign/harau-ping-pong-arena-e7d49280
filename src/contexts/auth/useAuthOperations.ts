@@ -1,7 +1,6 @@
 
 import { useState } from 'react';
 import { User } from '@/types';
-import { Session } from '@supabase/supabase-js';
 import { useLogin } from './operations/useLogin';
 import { useLogout } from './operations/useLogout';
 import { useRegister } from './operations/useRegister';
@@ -10,7 +9,7 @@ import { useTestUser } from './operations/useTestUser';
 
 export const useAuthOperations = () => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
+  const [session, setSession] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState(false); // Add explicit isLoading state
   
   const { login, isLoading: isLoginLoading, error: loginError } = useLogin();

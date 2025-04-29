@@ -1,7 +1,7 @@
 
 import { z } from 'zod';
 
-// Schema for the sports data form
+// Schema para o formulário de dados esportivos
 export const sportsDataSchema = z.object({
   handedness: z.enum(['left', 'right', 'ambidextrous']),
   level: z.enum(['beginner', 'intermediate', 'advanced', 'professional']),
@@ -14,7 +14,14 @@ export const sportsDataSchema = z.object({
   preferredLocationsString: z.string().optional(),
   yearsPlaying: z.string()
     .optional()
-    .transform(val => val && val.trim() !== '' ? parseInt(val, 10) : undefined)
+    // Transforma string para número se não estiver vazio
+    .transform(val => {
+      if (val && val.trim() !== '') {
+        const num = parseInt(val, 10);
+        return isNaN(num) ? undefined : num;
+      }
+      return undefined;
+    })
 });
 
 export type SportsDataFormValues = z.infer<typeof sportsDataSchema>;

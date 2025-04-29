@@ -12,7 +12,8 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { 
   User, MapPin, Calendar, Award, Clock, Trophy, 
-  Mail, MessageSquare, BarChart 
+  Mail, MessageSquare, BarChart, TableTennis, BadgeCheck, Timer, 
+  CircleUser, Swords, Grip
 } from 'lucide-react';
 import { AthleteProfile as AthleteProfileType, Match } from '@/types';
 
@@ -66,26 +67,26 @@ const AthleteProfile = () => {
       <div className="mb-6 flex flex-col md:flex-row justify-between md:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold mb-2">{athleteName}</h1>
-          <p className="text-zinc-400">{profile.bio || 'Table tennis athlete'}</p>
+          <p className="text-zinc-400">{profile.bio || 'Atleta de tênis de mesa'}</p>
         </div>
         
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={() => window.history.back()}>
-            Back
+            Voltar
           </Button>
           
           {!isOwnProfile && (
             <>
               <Button variant="outline" size="sm">
                 <Mail className="h-4 w-4 mr-2" />
-                Message
+                Mensagem
               </Button>
               <Button 
                 size="sm"
                 disabled={isConnecting}
                 onClick={() => setIsConnecting(true)}
               >
-                Connect
+                Conectar
               </Button>
             </>
           )}
@@ -93,9 +94,9 @@ const AthleteProfile = () => {
           {isOwnProfile && (
             <Button 
               size="sm"
-              onClick={() => navigate('/profile/edit')}
+              onClick={() => navigate('/profile')}
             >
-              Edit Profile
+              Editar Perfil
             </Button>
           )}
         </div>
@@ -116,15 +117,18 @@ const AthleteProfile = () => {
               </p>
               
               <div className="flex flex-wrap gap-2 justify-center mb-6">
-                <Badge variant="outline" className="bg-zinc-800 border-zinc-700 capitalize">
-                  {profile.level}
+                <Badge variant="outline" className="bg-zinc-800 border-zinc-700">
+                  {profile.level === 'beginner' ? 'Iniciante' : 
+                   profile.level === 'intermediate' ? 'Intermediário' : 
+                   profile.level === 'advanced' ? 'Avançado' : 'Competidor federado'}
                 </Badge>
                 <Badge variant="outline" className="bg-zinc-800 border-zinc-700">
-                  {profile.handedness}-handed
+                  {profile.handedness === 'right' ? 'Destro' : 
+                   profile.handedness === 'left' ? 'Canhoto' : 'Ambidestro'}
                 </Badge>
                 {profile.yearsPlaying && (
                   <Badge variant="outline" className="bg-zinc-800 border-zinc-700">
-                    {profile.yearsPlaying} years experience
+                    {profile.yearsPlaying} {profile.yearsPlaying === 1 ? 'ano' : 'anos'} de experiência
                   </Badge>
                 )}
               </div>
@@ -132,11 +136,11 @@ const AthleteProfile = () => {
               <div className="w-full grid grid-cols-3 gap-2 text-center mb-6">
                 <div className="bg-black p-3 rounded-md">
                   <p className="text-primary text-xl font-bold">{profile.wins}</p>
-                  <p className="text-xs text-zinc-400">Wins</p>
+                  <p className="text-xs text-zinc-400">Vitórias</p>
                 </div>
                 <div className="bg-black p-3 rounded-md">
                   <p className="text-zinc-400 text-xl font-bold">{profile.losses}</p>
-                  <p className="text-xs text-zinc-400">Losses</p>
+                  <p className="text-xs text-zinc-400">Derrotas</p>
                 </div>
                 <div className="bg-black p-3 rounded-md">
                   <p className="text-lg font-bold">
@@ -152,30 +156,150 @@ const AthleteProfile = () => {
               <Separator className="mb-6" />
               
               <div className="w-full space-y-4">
+                {profile.playingStyle && (
+                  <div className="flex items-center gap-2">
+                    <Swords size={16} className="text-zinc-400" />
+                    <span className="text-zinc-400">Estilo de jogo:</span>
+                    <span className="ml-auto">
+                      {profile.playingStyle === 'offensive' ? 'Ofensivo' :
+                       profile.playingStyle === 'defensive' ? 'Defensivo' : 'All-around'}
+                    </span>
+                  </div>
+                )}
+                
+                {profile.gripStyle && (
+                  <div className="flex items-center gap-2">
+                    <Grip size={16} className="text-zinc-400" />
+                    <span className="text-zinc-400">Empunhadura:</span>
+                    <span className="ml-auto">
+                      {profile.gripStyle === 'classic' ? 'Clássica' :
+                       profile.gripStyle === 'penhold' ? 'Caneta' : 'Outras'}
+                    </span>
+                  </div>
+                )}
+                
+                {profile.playFrequency && (
+                  <div className="flex items-center gap-2">
+                    <Timer size={16} className="text-zinc-400" />
+                    <span className="text-zinc-400">Frequência:</span>
+                    <span className="ml-auto">
+                      {profile.playFrequency === 'once-a-week' ? '1x por semana' :
+                       profile.playFrequency === 'twice-or-more' ? '2x ou mais' :
+                       profile.playFrequency === 'weekends-only' ? 'Fins de semana' :
+                       profile.playFrequency === 'monthly' ? 'Mensalmente' : 'Raramente'}
+                    </span>
+                  </div>
+                )}
+                
+                {profile.tournamentParticipation && (
+                  <div className="flex items-center gap-2">
+                    <Trophy size={16} className="text-zinc-400" />
+                    <span className="text-zinc-400">Torneios:</span>
+                    <span className="ml-auto">
+                      {profile.tournamentParticipation === 'yes' ? 'Participa' :
+                       profile.tournamentParticipation === 'no' ? 'Não participa' : 'Ocasionalmente'}
+                    </span>
+                  </div>
+                )}
+
+                {profile.club && (
+                  <div className="flex items-center gap-2">
+                    <BadgeCheck size={16} className="text-zinc-400" />
+                    <span className="text-zinc-400">Clube:</span>
+                    <span className="ml-auto">{profile.club}</span>
+                  </div>
+                )}
+                
                 {profile.height && (
-                  <div className="flex justify-between text-sm">
-                    <span className="text-zinc-400">Height:</span>
-                    <span>{profile.height} cm</span>
+                  <div className="flex items-center gap-2">
+                    <User size={16} className="text-zinc-400" />
+                    <span className="text-zinc-400">Altura:</span>
+                    <span className="ml-auto">{profile.height} cm</span>
                   </div>
                 )}
                 
                 {profile.weight && (
-                  <div className="flex justify-between text-sm">
-                    <span className="text-zinc-400">Weight:</span>
-                    <span>{profile.weight} kg</span>
+                  <div className="flex items-center gap-2">
+                    <CircleUser size={16} className="text-zinc-400" />
+                    <span className="text-zinc-400">Peso:</span>
+                    <span className="ml-auto">{profile.weight} kg</span>
                   </div>
                 )}
-                
-                <div className="flex justify-between text-sm">
-                  <span className="text-zinc-400">Playing style:</span>
-                  <span>Offensive</span>
-                </div>
-                
-                <div className="flex justify-between text-sm">
-                  <span className="text-zinc-400">Member since:</span>
-                  <span>Jan 2024</span>
-                </div>
               </div>
+
+              {/* Equipment section */}
+              {(profile.equipment?.racket || profile.equipment?.rubbers) && (
+                <>
+                  <Separator className="my-6" />
+                  
+                  <div className="w-full">
+                    <h3 className="text-sm font-medium mb-3 flex items-center gap-2">
+                      <TableTennis size={16} />
+                      Equipamentos
+                    </h3>
+                    
+                    <div className="space-y-3">
+                      {profile.equipment.racket && (
+                        <div className="bg-zinc-800 p-3 rounded-md text-sm">
+                          <p className="text-zinc-400 mb-1">Raquete:</p>
+                          <p>{profile.equipment.racket}</p>
+                        </div>
+                      )}
+                      
+                      {profile.equipment.rubbers && (
+                        <div className="bg-zinc-800 p-3 rounded-md text-sm">
+                          <p className="text-zinc-400 mb-1">Borrachas:</p>
+                          <p>{profile.equipment.rubbers}</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {/* Available times */}
+              {profile.availableTimes && profile.availableTimes.length > 0 && (
+                <>
+                  <Separator className="my-6" />
+                  
+                  <div className="w-full">
+                    <h3 className="text-sm font-medium mb-3 flex items-center gap-2">
+                      <Calendar size={16} />
+                      Horários disponíveis
+                    </h3>
+                    
+                    <div className="bg-zinc-800 p-3 rounded-md text-sm">
+                      <ul className="list-disc list-inside space-y-1">
+                        {profile.availableTimes.map((time, index) => (
+                          <li key={index} className="text-zinc-300">{time}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {/* Preferred locations */}
+              {profile.preferredLocations && profile.preferredLocations.length > 0 && (
+                <>
+                  <Separator className="my-6" />
+                  
+                  <div className="w-full">
+                    <h3 className="text-sm font-medium mb-3 flex items-center gap-2">
+                      <MapPin size={16} />
+                      Locais preferidos
+                    </h3>
+                    
+                    <div className="bg-zinc-800 p-3 rounded-md text-sm">
+                      <ul className="list-disc list-inside space-y-1">
+                        {profile.preferredLocations.map((loc, index) => (
+                          <li key={index} className="text-zinc-300">{loc}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -183,9 +307,9 @@ const AthleteProfile = () => {
         <div className="md:col-span-2">
           <Tabs defaultValue="stats" className="mb-8">
             <TabsList className="bg-zinc-900 border-zinc-800">
-              <TabsTrigger value="stats">Statistics</TabsTrigger>
-              <TabsTrigger value="matches">Match History</TabsTrigger>
-              <TabsTrigger value="tournaments">Tournaments</TabsTrigger>
+              <TabsTrigger value="stats">Estatísticas</TabsTrigger>
+              <TabsTrigger value="matches">Histórico de Partidas</TabsTrigger>
+              <TabsTrigger value="tournaments">Torneios</TabsTrigger>
             </TabsList>
             
             <TabsContent value="stats">
@@ -193,32 +317,32 @@ const AthleteProfile = () => {
                 <CardHeader>
                   <CardTitle className="flex items-center">
                     <BarChart className="h-5 w-5 mr-2" />
-                    Performance Statistics
+                    Estatísticas de Desempenho
                   </CardTitle>
                   <CardDescription>
-                    Detailed stats for this athlete
+                    Estatísticas detalhadas deste atleta
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
-                        <span className="text-zinc-400">Total Matches:</span>
+                        <span className="text-zinc-400">Total de Partidas:</span>
                         <span className="font-medium">{profile.wins + profile.losses}</span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-zinc-400">Tournaments Joined:</span>
+                        <span className="text-zinc-400">Torneios Participados:</span>
                         <span className="font-medium">3</span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-zinc-400">Highest Streak:</span>
-                        <span className="font-medium">4 wins</span>
+                        <span className="text-zinc-400">Maior Sequência:</span>
+                        <span className="font-medium">4 vitórias</span>
                       </div>
                     </div>
                     
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
-                        <span className="text-zinc-400">Win Rate:</span>
+                        <span className="text-zinc-400">Taxa de Vitória:</span>
                         <span className="font-medium">
                           {profile.wins + profile.losses > 0 
                             ? Math.round((profile.wins / (profile.wins + profile.losses)) * 100) 
@@ -226,19 +350,19 @@ const AthleteProfile = () => {
                         </span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-zinc-400">Avg. Points per Game:</span>
+                        <span className="text-zinc-400">Média de Pontos por Jogo:</span>
                         <span className="font-medium">9.3</span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-zinc-400">Best Tournament:</span>
-                        <span className="font-medium">Semi-finalist</span>
+                        <span className="text-zinc-400">Melhor Torneio:</span>
+                        <span className="font-medium">Semi-finalista</span>
                       </div>
                     </div>
                   </div>
                   
                   <div className="mt-8 text-center py-8">
                     <p className="text-zinc-400">
-                      Detailed performance charts will appear here
+                      Gráficos detalhados de desempenho aparecerão aqui
                     </p>
                   </div>
                 </CardContent>
@@ -250,10 +374,10 @@ const AthleteProfile = () => {
                 <CardHeader>
                   <CardTitle className="flex items-center">
                     <Calendar className="h-5 w-5 mr-2" />
-                    Match History
+                    Histórico de Partidas
                   </CardTitle>
                   <CardDescription>
-                    Recent matches and outcomes
+                    Partidas recentes e resultados
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -263,8 +387,8 @@ const AthleteProfile = () => {
                         <div key={match.id} className="flex justify-between items-center p-3 bg-black rounded-md border border-zinc-800">
                           <div>
                             <p className="font-medium">
-                              {match.playerOneId === id ? 'You' : 'Opponent'} vs. 
-                              {match.playerTwoId === id ? ' You' : ' Opponent'}
+                              {match.playerOneId === id ? 'Você' : 'Oponente'} vs. 
+                              {match.playerTwoId === id ? ' Você' : ' Oponente'}
                             </p>
                             <p className="text-sm text-zinc-400">
                               {match.scheduledTime.toLocaleDateString()}
@@ -275,11 +399,11 @@ const AthleteProfile = () => {
                               <Badge className={`
                                 ${match.winner === id ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}
                               `}>
-                                {match.winner === id ? 'Win' : 'Loss'}
+                                {match.winner === id ? 'Vitória' : 'Derrota'}
                               </Badge>
                             ) : (
                               <Badge className="bg-blue-500/20 text-blue-400">
-                                {match.status === 'scheduled' ? 'Upcoming' : 'Cancelled'}
+                                {match.status === 'scheduled' ? 'Agendada' : 'Cancelada'}
                               </Badge>
                             )}
                           </div>
@@ -289,7 +413,7 @@ const AthleteProfile = () => {
                   ) : (
                     <div className="text-center py-8">
                       <p className="text-zinc-400">
-                        No match history available
+                        Nenhum histórico de partidas disponível
                       </p>
                     </div>
                   )}
@@ -302,16 +426,16 @@ const AthleteProfile = () => {
                 <CardHeader>
                   <CardTitle className="flex items-center">
                     <Trophy className="h-5 w-5 mr-2" />
-                    Tournament Participation
+                    Participação em Torneios
                   </CardTitle>
                   <CardDescription>
-                    Tournaments and achievements
+                    Torneios e conquistas
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="text-center py-8">
                     <p className="text-zinc-400">
-                      Tournament history will appear here
+                      O histórico de torneios aparecerá aqui
                     </p>
                   </div>
                 </CardContent>
@@ -323,29 +447,29 @@ const AthleteProfile = () => {
             <CardHeader>
               <CardTitle className="flex items-center">
                 <MessageSquare className="h-5 w-5 mr-2" />
-                Schedule a Match
+                Agendar uma Partida
               </CardTitle>
               <CardDescription>
                 {isOwnProfile 
-                  ? 'View and manage match requests' 
-                  : 'Send a match request to this player'}
+                  ? 'Visualize e gerencie solicitações de partidas' 
+                  : 'Envie uma solicitação de partida para este jogador'}
               </CardDescription>
             </CardHeader>
             <CardContent>
               {isOwnProfile ? (
                 <div className="text-center py-8">
                   <p className="text-zinc-400 mb-4">
-                    You have no pending match requests
+                    Você não tem solicitações de partidas pendentes
                   </p>
-                  <Button>View Match History</Button>
+                  <Button>Ver Histórico de Partidas</Button>
                 </div>
               ) : (
                 <div className="space-y-6">
                   <p className="text-zinc-400">
-                    You can schedule a friendly match with this player.
+                    Você pode agendar uma partida amistosa com este jogador.
                   </p>
                   <Button className="w-full">
-                    Request a Match
+                    Solicitar uma Partida
                   </Button>
                 </div>
               )}

@@ -1,3 +1,4 @@
+
 // Type definitions for Harau Ping Pong App
 
 // User types
@@ -11,6 +12,18 @@ export interface User {
   profileImage?: string;
   createdAt: Date;
 }
+
+// Grip styles
+export type GripStyle = 'classic' | 'penhold' | 'other';
+
+// Playing styles
+export type PlayingStyle = 'offensive' | 'defensive' | 'all-around';
+
+// Play frequency options
+export type PlayFrequency = 'once-a-week' | 'twice-or-more' | 'weekends-only' | 'monthly' | 'rarely';
+
+// Tournament participation
+export type TournamentParticipation = 'yes' | 'no' | 'occasionally';
 
 // Athlete specific profile
 export interface AthleteProfile {
@@ -32,6 +45,21 @@ export interface AthleteProfile {
   yearsPlaying?: number;
   wins: number;
   losses: number;
+  
+  // New fields for sports data
+  playingStyle?: PlayingStyle;
+  gripStyle?: GripStyle;
+  playFrequency?: PlayFrequency;
+  tournamentParticipation?: TournamentParticipation;
+  club?: string;
+  availableTimes?: string[];
+  preferredLocations?: string[];
+  
+  // Equipment information
+  equipment?: {
+    racket?: string;
+    rubbers?: string;
+  };
 }
 
 // Tournament types

@@ -1,5 +1,6 @@
+
 import React, { createContext, useContext } from 'react';
-import { AthleteProfile, User } from '@/types';
+import { AthleteProfile, User, PlayingStyle, GripStyle, PlayFrequency, TournamentParticipation } from '@/types';
 import { supabase } from '@/integrations/supabase/client';
 import { useTranslation } from 'react-i18next';
 import { toast } from '@/hooks/use-toast';
@@ -73,7 +74,19 @@ export const AthleteProvider: React.FC<{ children: React.ReactNode }> = ({ child
               bio: athlete.bio || undefined,
               yearsPlaying: athlete.years_playing || undefined,
               wins: athlete.wins,
-              losses: athlete.losses
+              losses: athlete.losses,
+              // New fields
+              playingStyle: athlete.playing_style as PlayingStyle | undefined,
+              gripStyle: athlete.grip_style as GripStyle | undefined,
+              playFrequency: athlete.play_frequency as PlayFrequency | undefined,
+              tournamentParticipation: athlete.tournament_participation as TournamentParticipation | undefined,
+              club: athlete.club || undefined,
+              availableTimes: athlete.available_times || undefined,
+              preferredLocations: athlete.preferred_locations || undefined,
+              equipment: {
+                racket: athlete.racket || undefined,
+                rubbers: athlete.rubbers || undefined
+              }
             };
           });
 
@@ -128,7 +141,19 @@ export const AthleteProvider: React.FC<{ children: React.ReactNode }> = ({ child
           bio: data.bio || undefined,
           yearsPlaying: data.years_playing || undefined,
           wins: data.wins,
-          losses: data.losses
+          losses: data.losses,
+          // New fields
+          playingStyle: data.playing_style as PlayingStyle | undefined,
+          gripStyle: data.grip_style as GripStyle | undefined,
+          playFrequency: data.play_frequency as PlayFrequency | undefined,
+          tournamentParticipation: data.tournament_participation as TournamentParticipation | undefined,
+          club: data.club || undefined,
+          availableTimes: data.available_times || undefined,
+          preferredLocations: data.preferred_locations || undefined,
+          equipment: {
+            racket: data.racket || undefined,
+            rubbers: data.rubbers || undefined
+          }
         };
 
         // Adicionar ao estado local
@@ -142,7 +167,7 @@ export const AthleteProvider: React.FC<{ children: React.ReactNode }> = ({ child
   };
 
   const createAthleteProfile = async (profile: AthleteProfile): Promise<AthleteProfile> => {
-    const { location, ...rest } = profile;
+    const { location, equipment, ...rest } = profile;
     
     // Preparar os dados para o Supabase
     const athleteData = {
@@ -157,7 +182,17 @@ export const AthleteProvider: React.FC<{ children: React.ReactNode }> = ({ child
       bio: rest.bio,
       years_playing: rest.yearsPlaying,
       wins: rest.wins,
-      losses: rest.losses
+      losses: rest.losses,
+      // New fields
+      playing_style: rest.playingStyle,
+      grip_style: rest.gripStyle,
+      play_frequency: rest.playFrequency,
+      tournament_participation: rest.tournamentParticipation,
+      club: rest.club,
+      available_times: rest.availableTimes,
+      preferred_locations: rest.preferredLocations,
+      racket: equipment?.racket,
+      rubbers: equipment?.rubbers
     };
     
     const { data, error } = await supabase
@@ -190,7 +225,19 @@ export const AthleteProvider: React.FC<{ children: React.ReactNode }> = ({ child
       bio: data.bio || undefined,
       yearsPlaying: data.years_playing || undefined,
       wins: data.wins,
-      losses: data.losses
+      losses: data.losses,
+      // New fields
+      playingStyle: data.playing_style as PlayingStyle | undefined,
+      gripStyle: data.grip_style as GripStyle | undefined,
+      playFrequency: data.play_frequency as PlayFrequency | undefined,
+      tournamentParticipation: data.tournament_participation as TournamentParticipation | undefined,
+      club: data.club || undefined,
+      availableTimes: data.available_times || undefined,
+      preferredLocations: data.preferred_locations || undefined,
+      equipment: {
+        racket: data.racket || undefined,
+        rubbers: data.rubbers || undefined
+      }
     };
     
     // Atualizar o estado local
@@ -216,6 +263,20 @@ export const AthleteProvider: React.FC<{ children: React.ReactNode }> = ({ child
       if (profileData.location.city) updateData.city = profileData.location.city;
       if (profileData.location.state) updateData.state = profileData.location.state;
       if (profileData.location.country) updateData.country = profileData.location.country;
+    }
+
+    // New fields
+    if (profileData.playingStyle) updateData.playing_style = profileData.playingStyle;
+    if (profileData.gripStyle) updateData.grip_style = profileData.gripStyle;
+    if (profileData.playFrequency) updateData.play_frequency = profileData.playFrequency;
+    if (profileData.tournamentParticipation) updateData.tournament_participation = profileData.tournamentParticipation;
+    if (profileData.club !== undefined) updateData.club = profileData.club;
+    if (profileData.availableTimes !== undefined) updateData.available_times = profileData.availableTimes;
+    if (profileData.preferredLocations !== undefined) updateData.preferred_locations = profileData.preferredLocations;
+    
+    if (profileData.equipment) {
+      if (profileData.equipment.racket !== undefined) updateData.racket = profileData.equipment.racket;
+      if (profileData.equipment.rubbers !== undefined) updateData.rubbers = profileData.equipment.rubbers;
     }
     
     const { data: updatedData, error } = await supabase
@@ -249,7 +310,19 @@ export const AthleteProvider: React.FC<{ children: React.ReactNode }> = ({ child
       bio: updatedData.bio || undefined,
       yearsPlaying: updatedData.years_playing || undefined,
       wins: updatedData.wins,
-      losses: updatedData.losses
+      losses: updatedData.losses,
+      // New fields
+      playingStyle: updatedData.playing_style as PlayingStyle | undefined,
+      gripStyle: updatedData.grip_style as GripStyle | undefined,
+      playFrequency: updatedData.play_frequency as PlayFrequency | undefined,
+      tournamentParticipation: updatedData.tournament_participation as TournamentParticipation | undefined,
+      club: updatedData.club || undefined,
+      availableTimes: updatedData.available_times || undefined,
+      preferredLocations: updatedData.preferred_locations || undefined,
+      equipment: {
+        racket: updatedData.racket || undefined,
+        rubbers: updatedData.rubbers || undefined
+      }
     };
     
     // Atualizar o estado local

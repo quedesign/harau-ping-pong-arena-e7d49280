@@ -1,30 +1,53 @@
-import { useState } from 'react';
+
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/auth';
 import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/components/ui/use-toast';
 import { useTranslation } from 'react-i18next';
-import { Shield, UserCog, Key } from 'lucide-react';
+import { Shield, UserCog, Key, Award, TennisBall } from 'lucide-react';
 import ProfileTab from '@/components/profile/ProfileTab';
 import SecurityTab from '@/components/profile/SecurityTab';
-import SkillsTab from '@/components/profile/SkillsTab';
+import SportsDataTab from '@/components/profile/SportsDataTab';
+import EquipmentTab from '@/components/profile/EquipmentTab';
+import { useAthlete } from '@/contexts/data/AthleteContext';
+import { AthleteProfile } from '@/types';
 
 const MyProfile = () => {
   const { currentUser } = useAuth();
+  const { getAthleteProfile, updateAthleteProfile } = useAthlete();
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t } = useTranslation();
   
-  const [skills, setSkills] = useState({
-    handedness: 'right',
-    level: 'beginner',
-    yearsPlaying: '0',
-    playingStyle: '',
-  });
+  const [athleteProfile, setAthleteProfile] = useState<AthleteProfile | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!currentUser) {
+      navigate('/login');
+      return;
+    }
+
+    const fetchProfile = async () => {
+      setLoading(true);
+      try {
+        if (currentUser.role === 'athlete') {
+          const profile = await getAthleteProfile(currentUser.id);
+          setAthleteProfile(profile || null);
+        }
+      } catch (error) {
+        console.error("Error fetching athlete profile:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, [currentUser, getAthleteProfile, navigate]);
 
   if (!currentUser) {
-    navigate('/login');
     return null;
   }
 
@@ -70,25 +93,57 @@ const MyProfile = () => {
     }
   };
 
-  const handleUpdateSkills = (newSkills: typeof skills) => {
-    setSkills(newSkills);
-    const users = JSON.parse(localStorage.getItem('users') || '[]');
-    const userIndex = users.findIndex((u: any) => u.id === currentUser.id);
-
-    if (userIndex >= 0) {
-      users[userIndex] = {
-        ...users[userIndex],
-        skills: newSkills,
-      };
-
-      localStorage.setItem('users', JSON.stringify(users));
+  const handleUpdateSportsData = async (data: Partial<AthleteProfile>) => {
+    if (!currentUser || !athleteProfile) return;
+    
+    try {
+      const updatedProfile = await updateAthleteProfile(currentUser.id, data);
+      setAthleteProfile(updatedProfile);
       
       toast({
         title: t('common.success'),
-        description: t('profile.skillsUpdateSuccess'),
+        description: 'Dados esportivos atualizados com sucesso',
+      });
+    } catch (error) {
+      console.error("Error updating sports data:", error);
+      toast({
+        title: t('common.error'),
+        description: 'Erro ao atualizar dados esportivos',
+        variant: 'destructive',
       });
     }
   };
+
+  const handleUpdateEquipment = async (equipment: { racket?: string; rubbers?: string }) => {
+    if (!currentUser || !athleteProfile) return;
+    
+    try {
+      const updatedProfile = await updateAthleteProfile(currentUser.id, { equipment });
+      setAthleteProfile(updatedProfile);
+      
+      toast({
+        title: t('common.success'),
+        description: 'Dados de equipamento atualizados com sucesso',
+      });
+    } catch (error) {
+      console.error("Error updating equipment:", error);
+      toast({
+        title: t('common.error'),
+        description: 'Erro ao atualizar dados de equipamento',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  if (loading) {
+    return (
+      <Layout>
+        <div className="flex justify-center items-center min-h-[50vh]">
+          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+        </div>
+      </Layout>
+    );
+  }
 
   return (
     <Layout>
@@ -103,10 +158,18 @@ const MyProfile = () => {
               <Key className="h-4 w-4 mr-2" />
               {t('profile.security')}
             </TabsTrigger>
-            <TabsTrigger value="skills">
-              <Shield className="h-4 w-4 mr-2" />
-              {t('profile.skills')}
-            </TabsTrigger>
+            {currentUser.role === 'athlete' && (
+              <>
+                <TabsTrigger value="sportsData">
+                  <Award className="h-4 w-4 mr-2" />
+                  Dados Esportivos
+                </TabsTrigger>
+                <TabsTrigger value="equipment">
+                  <TennisBall className="h-4 w-4 mr-2" />
+                  Equipamentos
+                </TabsTrigger>
+              </>
+            )}
           </TabsList>
 
           <TabsContent value="profile">
@@ -117,9 +180,23 @@ const MyProfile = () => {
             <SecurityTab onPasswordChange={handlePasswordChange} />
           </TabsContent>
 
-          <TabsContent value="skills">
-            <SkillsTab initialSkills={skills} onUpdate={handleUpdateSkills} />
-          </TabsContent>
+          {currentUser.role === 'athlete' && (
+            <>
+              <TabsContent value="sportsData">
+                <SportsDataTab 
+                  profile={athleteProfile} 
+                  onUpdate={handleUpdateSportsData} 
+                />
+              </TabsContent>
+              
+              <TabsContent value="equipment">
+                <EquipmentTab 
+                  equipment={athleteProfile?.equipment} 
+                  onUpdate={handleUpdateEquipment} 
+                />
+              </TabsContent>
+            </>
+          )}
         </Tabs>
       </div>
     </Layout>

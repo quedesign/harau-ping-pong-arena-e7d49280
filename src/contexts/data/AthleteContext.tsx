@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext } from 'react';
 import { AthleteProfile, User, PlayingStyle, GripStyle, PlayFrequency, TournamentParticipation } from '@/types';
 import { supabase } from '@/integrations/supabase/client';
@@ -137,11 +138,11 @@ export const AthleteProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   const getAthleteProfile = async (userId: string): Promise<AthleteProfile | undefined> => {
     try {
-      // Primeiro verificar se já temos no estado
+      // First check if we already have it in state
       const cachedProfile = athleteProfiles.find(p => p.userId === userId);
       if (cachedProfile) return cachedProfile;
       
-      // Buscar no Supabase
+      // Fetch from Supabase
       const { data, error } = await supabase
         .from('athlete_profiles')
         .select('*')
@@ -150,7 +151,7 @@ export const AthleteProvider: React.FC<{ children: React.ReactNode }> = ({ child
       
       if (error) {
         if (error.code === 'PGRST116') {
-          // Não encontrado
+          // Not found
           return undefined;
         }
         throw error;
@@ -189,7 +190,7 @@ export const AthleteProvider: React.FC<{ children: React.ReactNode }> = ({ child
           }
         };
 
-        // Adicionar ao estado local
+        // Add to local state
         setAthleteProfiles(prev => [...prev, profile]);
         return profile;
       }
@@ -202,7 +203,7 @@ export const AthleteProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const createAthleteProfile = async (profile: AthleteProfile): Promise<AthleteProfile> => {
     const { location, equipment, ...rest } = profile;
     
-    // Preparar os dados para o Supabase
+    // Prepare data for Supabase
     const athleteData = {
       user_id: rest.userId,
       handedness: rest.handedness,
@@ -243,7 +244,7 @@ export const AthleteProvider: React.FC<{ children: React.ReactNode }> = ({ child
       throw new Error('No data returned from create');
     }
 
-    // Converter de volta ao formato do app
+    // Convert back to app format
     const newProfile: AthleteProfile = {
       userId: data.user_id,
       handedness: data.handedness as 'left' | 'right' | 'ambidextrous',
@@ -259,11 +260,11 @@ export const AthleteProvider: React.FC<{ children: React.ReactNode }> = ({ child
       yearsPlaying: data.years_playing || undefined,
       wins: data.wins,
       losses: data.losses,
-      // New fields
-      playingStyle: data.playing_style as PlayingStyle | undefined,
-      gripStyle: data.grip_style as GripStyle | undefined,
-      playFrequency: data.play_frequency as PlayFrequency | undefined,
-      tournamentParticipation: data.tournament_participation as TournamentParticipation | undefined,
+      // New fields - safely access properties that might not exist
+      playingStyle: (data.playing_style as PlayingStyle) || undefined,
+      gripStyle: (data.grip_style as GripStyle) || undefined,
+      playFrequency: (data.play_frequency as PlayFrequency) || undefined,
+      tournamentParticipation: (data.tournament_participation as TournamentParticipation) || undefined,
       club: data.club || undefined,
       availableTimes: data.available_times || undefined,
       preferredLocations: data.preferred_locations || undefined,
@@ -273,14 +274,14 @@ export const AthleteProvider: React.FC<{ children: React.ReactNode }> = ({ child
       }
     };
     
-    // Atualizar o estado local
+    // Update local state
     setAthleteProfiles(prev => [...prev, newProfile]);
     
     return newProfile;
   };
 
   const updateAthleteProfile = async (userId: string, profileData: Partial<AthleteProfile>): Promise<AthleteProfile> => {
-    // Preparar os dados para o Supabase
+    // Prepare data for Supabase
     const updateData: any = { updated_at: new Date().toISOString() };
     
     if (profileData.handedness) updateData.handedness = profileData.handedness;
@@ -328,7 +329,7 @@ export const AthleteProvider: React.FC<{ children: React.ReactNode }> = ({ child
       throw new Error('No data returned from update');
     }
 
-    // Converter de volta ao formato do app
+    // Convert back to app format
     const profile: AthleteProfile = {
       userId: updatedData.user_id,
       handedness: updatedData.handedness as 'left' | 'right' | 'ambidextrous',
@@ -344,11 +345,11 @@ export const AthleteProvider: React.FC<{ children: React.ReactNode }> = ({ child
       yearsPlaying: updatedData.years_playing || undefined,
       wins: updatedData.wins,
       losses: updatedData.losses,
-      // New fields
-      playingStyle: updatedData.playing_style as PlayingStyle | undefined,
-      gripStyle: updatedData.grip_style as GripStyle | undefined,
-      playFrequency: updatedData.play_frequency as PlayFrequency | undefined,
-      tournamentParticipation: updatedData.tournament_participation as TournamentParticipation | undefined,
+      // New fields - safely access properties that might not exist
+      playingStyle: (updatedData.playing_style as PlayingStyle) || undefined,
+      gripStyle: (updatedData.grip_style as GripStyle) || undefined,
+      playFrequency: (updatedData.play_frequency as PlayFrequency) || undefined,
+      tournamentParticipation: (updatedData.tournament_participation as TournamentParticipation) || undefined,
       club: updatedData.club || undefined,
       availableTimes: updatedData.available_times || undefined,
       preferredLocations: updatedData.preferred_locations || undefined,
@@ -358,7 +359,7 @@ export const AthleteProvider: React.FC<{ children: React.ReactNode }> = ({ child
       }
     };
     
-    // Atualizar o estado local
+    // Update local state
     setAthleteProfiles(prev => prev.map(p => p.userId === userId ? profile : p));
     
     return profile;

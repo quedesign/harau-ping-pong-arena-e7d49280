@@ -6,7 +6,7 @@ import Layout from '@/components/layout/Layout';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/components/ui/use-toast';
 import { useTranslation } from 'react-i18next';
-import { Shield, UserCog, Key, Award, TennisBall } from 'lucide-react';
+import { Shield, UserCog, Key, Award, Racket } from 'lucide-react';
 import ProfileTab from '@/components/profile/ProfileTab';
 import SecurityTab from '@/components/profile/SecurityTab';
 import SportsDataTab from '@/components/profile/SportsDataTab';
@@ -165,7 +165,7 @@ const MyProfile = () => {
                   Dados Esportivos
                 </TabsTrigger>
                 <TabsTrigger value="equipment">
-                  <TennisBall className="h-4 w-4 mr-2" />
+                  <Racket className="h-4 w-4 mr-2" />
                   Equipamentos
                 </TabsTrigger>
               </>

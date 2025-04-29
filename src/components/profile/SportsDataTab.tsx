@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -61,9 +62,9 @@ const SportsDataTab = ({ profile, onUpdate }: SportsDataTabProps) => {
       playFrequency: profile?.playFrequency,
       tournamentParticipation: profile?.tournamentParticipation,
       club: profile?.club || '',
-      availableTimesString: profile?.availableTimes?.join(', ') || '',
-      preferredLocationsString: profile?.preferredLocations?.join(', ') || '',
-      yearsPlaying: profile?.yearsPlaying?.toString() || '',
+      availableTimesString: profile?.availableTimes ? profile.availableTimes.join(', ') : '',
+      preferredLocationsString: profile?.preferredLocations ? profile.preferredLocations.join(', ') : '',
+      yearsPlaying: profile?.yearsPlaying !== undefined ? profile.yearsPlaying.toString() : '',
     },
   });
 
@@ -77,9 +78,9 @@ const SportsDataTab = ({ profile, onUpdate }: SportsDataTabProps) => {
         playFrequency: profile.playFrequency,
         tournamentParticipation: profile.tournamentParticipation,
         club: profile.club || '',
-        availableTimesString: profile.availableTimes?.join(', ') || '',
-        preferredLocationsString: profile.preferredLocations?.join(', ') || '',
-        yearsPlaying: profile.yearsPlaying?.toString() || '',
+        availableTimesString: profile.availableTimes ? profile.availableTimes.join(', ') : '',
+        preferredLocationsString: profile.preferredLocations ? profile.preferredLocations.join(', ') : '',
+        yearsPlaying: profile.yearsPlaying !== undefined ? profile.yearsPlaying.toString() : '',
       });
     }
   }, [profile, form]);

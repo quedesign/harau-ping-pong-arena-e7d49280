@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -88,11 +87,12 @@ const SportsDataTab = ({ profile, onUpdate }: SportsDataTabProps) => {
   const onSubmit = (values: SportsDataFormValues) => {
     const { availableTimesString, preferredLocationsString, ...rest } = values;
     
-    // Convert the strings back to arrays
+    // Convert the strings back to arrays and handle yearsPlaying
     const formData: Partial<AthleteProfile> = {
       ...rest,
       availableTimes: availableTimesString ? availableTimesString.split(',').map(s => s.trim()) : undefined,
-      preferredLocations: preferredLocationsString ? preferredLocationsString.split(',').map(s => s.trim()) : undefined
+      preferredLocations: preferredLocationsString ? preferredLocationsString.split(',').map(s => s.trim()) : undefined,
+      yearsPlaying: values.yearsPlaying !== undefined ? Number(values.yearsPlaying) : undefined
     };
     
     onUpdate(formData);

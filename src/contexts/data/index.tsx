@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { TournamentProvider, useTournament } from './TournamentContext';
-import { AthleteProvider, useAthlete } from './AthleteContext';
+import { AthleteProvider } from './athlete';
 import { MatchProvider, useMatch } from './MatchContext';
 
 export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -18,7 +18,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
 // Re-export all hooks for easy access
 export { useTournament } from './TournamentContext';
-export { useAthlete } from './AthleteContext';
+export { useAthlete } from './athlete';
 export { useMatch } from './MatchContext';
 
 // Export a unified hook that provides access to all data contexts

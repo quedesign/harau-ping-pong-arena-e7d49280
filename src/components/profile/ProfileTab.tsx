@@ -7,7 +7,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Label } from '@/components/ui/label';
 import { User } from '@/types';
-import { updateLocalUserProfile } from '@/services/localAuth';
 import { useAuth } from '@/contexts/auth';
 import { toast } from 'sonner';
 
@@ -37,10 +36,10 @@ const ProfileTab = ({ currentUser }: ProfileTabProps) => {
     setIsLoading(true);
     
     try {
-      const updatedUser = updateLocalUserProfile(currentUser.id, { name, email });
-      setCurrentUser(updatedUser);
+      // TODO: Update user profile on supabase
+      setCurrentUser({...currentUser, name, email});
       toast.success('Perfil atualizado com sucesso!');
-    } catch (error) {
+   } catch (error) {
       const message = error instanceof Error ? error.message : 'Erro ao atualizar perfil';
       toast.error('Erro', {
         description: message

@@ -1,8 +1,8 @@
 
-import { useState } from 'react';
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import { logoutLocalUser } from '@/services/localAuth';
+import { supabase } from '@/integrations/supabase/client';
 
 export const useLogout = () => {
   const { t } = useTranslation();
@@ -11,10 +11,11 @@ export const useLogout = () => {
   const logout = async () => {
     setIsLoading(true);
     try {
-      logoutLocalUser();
+      await supabase.auth.signOut();
       toast.success(t('auth.logoutSuccess'));
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : t('auth.logoutFailed');
+      const errorMessage =
+        err instanceof Error ? err.message : t('auth.logoutFailed');
       toast.error(t('common.error'), {
         description: errorMessage,
       });

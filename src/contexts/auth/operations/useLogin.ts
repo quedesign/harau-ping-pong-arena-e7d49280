@@ -1,12 +1,13 @@
 
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { UserRole } from '@/types';
-import { loginLocalUser } from '@/services/localAuth';
 
 export const useLogin = () => {
   const { t } = useTranslation();
+  
+  
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -15,11 +16,15 @@ export const useLogin = () => {
     setError(null);
 
     try {
-      // Usar nossa implementação local
-      loginLocalUser(email, password, role);
-      return true;
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : t('auth.loginFailed');
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      if(error) throw error
+      return true
+    } catch (err:any) {
+      const errorMessage = err?.message || t('auth.loginFailed');
+
       setError(errorMessage);
       toast.error(t('common.error'), {
         description: errorMessage,

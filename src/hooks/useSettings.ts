@@ -18,16 +18,15 @@ export const useSettings = () => {
   const [settings, setSettings] = useState<UserSettings>({
     darkMode: false,
     emailNotifications: true,
-    language: 'pt',
+    language: i18n.language || 'pt',
     timezone: 'America/Sao_Paulo',
   });
 
-  // Remove localStorage persistence
   const handleUpdateSettings = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
-      // Update i18n language without persisting
+      // Update i18n language
       if (settings.language) {
         i18n.changeLanguage(settings.language);
       }

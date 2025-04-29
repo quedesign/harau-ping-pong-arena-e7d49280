@@ -33,4 +33,8 @@ export const sportsDataSchema = z.object({
   playFrequency: z.enum(["daily", "weekly", "monthly", "rarely"]).optional(),
   tournamentParticipation: z.enum(["never", "local", "regional", "national", "international"]).optional(),
   club: z.string().optional(),
+  availableTimesString: z.string().optional(),
+  preferredLocationsString: z.string().optional(),
 });
+
+export type SportsDataFormValues = z.infer<typeof sportsDataSchema>;

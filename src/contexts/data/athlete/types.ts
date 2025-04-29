@@ -37,4 +37,8 @@ export interface SupabaseAthleteData {
   preferred_locations?: string[];
   racket?: string;
   rubbers?: string;
+  equipment?: {
+    racket?: string;
+    rubbers?: string;
+  };
 }

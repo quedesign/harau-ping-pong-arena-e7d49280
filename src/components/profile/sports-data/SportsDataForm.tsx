@@ -21,14 +21,20 @@ const SportsDataForm: React.FC<SportsDataFormProps> = ({ profile, onSubmit }) =>
     defaultValues: {
       handedness: (profile?.handedness || 'right') as 'left' | 'right' | 'ambidextrous',
       level: (profile?.level || 'beginner') as 'beginner' | 'intermediate' | 'advanced' | 'professional',
-      playingStyle: profile?.playingStyle,
-      gripStyle: profile?.gripStyle,
-      playFrequency: profile?.playFrequency,
+      height: profile?.height,
+      weight: profile?.weight,
+      yearsPlaying: profile?.yearsPlaying,
+      bio: profile?.bio || '',
+      city: profile?.location?.city || '',
+      state: profile?.location?.state || '',
+      country: profile?.location?.country || '',
+      playingStyle: profile?.playingStyle ? mapPlayingStyle(profile.playingStyle) : undefined,
+      gripStyle: profile?.gripStyle ? mapGripStyle(profile.gripStyle) : undefined,
+      playFrequency: profile?.playFrequency ? mapPlayFrequency(profile.playFrequency) : undefined,
       tournamentParticipation: profile?.tournamentParticipation,
       club: profile?.club || '',
       availableTimesString: profile?.availableTimes ? profile.availableTimes.join(', ') : '',
       preferredLocationsString: profile?.preferredLocations ? profile.preferredLocations.join(', ') : '',
-      yearsPlaying: profile?.yearsPlaying !== undefined ? String(profile.yearsPlaying) : '',
     },
   });
 
@@ -37,14 +43,20 @@ const SportsDataForm: React.FC<SportsDataFormProps> = ({ profile, onSubmit }) =>
       form.reset({
         handedness: profile.handedness as 'left' | 'right' | 'ambidextrous',
         level: profile.level as 'beginner' | 'intermediate' | 'advanced' | 'professional',
-        playingStyle: profile.playingStyle,
-        gripStyle: profile.gripStyle,
-        playFrequency: profile.playFrequency,
+        height: profile.height,
+        weight: profile.weight,
+        yearsPlaying: profile.yearsPlaying,
+        bio: profile.bio || '',
+        city: profile.location?.city || '',
+        state: profile.location?.state || '',
+        country: profile.location?.country || '',
+        playingStyle: profile.playingStyle ? mapPlayingStyle(profile.playingStyle) : undefined,
+        gripStyle: profile.gripStyle ? mapGripStyle(profile.gripStyle) : undefined,
+        playFrequency: profile.playFrequency ? mapPlayFrequency(profile.playFrequency) : undefined,
         tournamentParticipation: profile.tournamentParticipation,
         club: profile.club || '',
         availableTimesString: profile.availableTimes ? profile.availableTimes.join(', ') : '',
         preferredLocationsString: profile.preferredLocations ? profile.preferredLocations.join(', ') : '',
-        yearsPlaying: profile.yearsPlaying !== undefined ? String(profile.yearsPlaying) : '',
       });
     }
   }, [profile, form]);
@@ -52,6 +64,26 @@ const SportsDataForm: React.FC<SportsDataFormProps> = ({ profile, onSubmit }) =>
   const handleSubmit = (values: SportsDataFormValues) => {
     onSubmit(values);
   };
+
+  // Helper functions to map between types
+  function mapPlayingStyle(style: string): "offensive" | "defensive" | "all-round" | "other" {
+    if (style === "all-around") return "all-round";
+    if (style === "offensive" || style === "defensive") return style as any;
+    return "other";
+  }
+
+  function mapGripStyle(style: string): "shakehand" | "penhold" | "seemiller" | "other" {
+    if (style === "classic") return "shakehand";
+    if (style === "penhold" || style === "seemiller") return style as any;
+    return "other";
+  }
+
+  function mapPlayFrequency(freq: string): "daily" | "weekly" | "monthly" | "rarely" {
+    if (freq === "once-a-week") return "weekly";
+    if (freq === "twice-or-more") return "daily";
+    if (freq === "monthly") return "monthly";
+    return "rarely";
+  }
 
   return (
     <Form {...form}>

@@ -27,7 +27,7 @@ export interface SupabaseAthleteData {
   created_at: string;
   updated_at: string;
   
-  // Additional fields that were causing errors
+  // Additional fields that align with our types
   playing_style?: string;
   grip_style?: string;
   play_frequency?: string;

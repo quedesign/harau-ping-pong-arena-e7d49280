@@ -14,16 +14,16 @@ export interface User {
 }
 
 // Grip styles
-export type GripStyle = 'classic' | 'penhold' | 'other';
+export type GripStyle = 'shakehand' | 'penhold' | 'seemiller' | 'other';
 
 // Playing styles
-export type PlayingStyle = 'offensive' | 'defensive' | 'all-around';
+export type PlayingStyle = 'offensive' | 'defensive' | 'all-round';
 
 // Play frequency options
-export type PlayFrequency = 'once-a-week' | 'twice-or-more' | 'weekends-only' | 'monthly' | 'rarely';
+export type PlayFrequency = 'daily' | 'weekly' | 'monthly' | 'rarely';
 
 // Tournament participation
-export type TournamentParticipation = 'yes' | 'no' | 'occasionally';
+export type TournamentParticipation = 'never' | 'local' | 'regional' | 'national' | 'international';
 
 // Athlete specific profile
 export interface AthleteProfile {

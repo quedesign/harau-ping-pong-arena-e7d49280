@@ -14,10 +14,12 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 const loginSchema = z.object({
   email: z.string().email({ message: 'Email inválido' }),
   password: z.string().min(6, { message: 'A senha deve ter pelo menos 6 caracteres' }),
+  role: z.enum(['athlete', 'admin'], { required_error: 'Selecione um perfil' }),
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
@@ -34,12 +36,14 @@ const Login = () => {
     defaultValues: {
       email: '',
       password: '',
+      role: 'athlete', // Default to athlete role
     },
   });
   
   const onSubmit = async (values: LoginFormValues) => {
     try {
-      const success = await login(values.email, values.password);
+      // Pass the role along with email and password
+      const success = await login(values.email, values.password, values.role);
       if (success) {
         navigate('/dashboard');
       }
@@ -118,6 +122,33 @@ const Login = () => {
                             {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                           </Button>
                         </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={form.control}
+                  name="role"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Tipo de perfil</FormLabel>
+                      <FormControl>
+                        <RadioGroup 
+                          value={field.value} 
+                          onValueChange={field.onChange}
+                          className="flex gap-4"
+                        >
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="athlete" id="athlete" />
+                            <Label htmlFor="athlete">Atleta</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="admin" id="admin" />
+                            <Label htmlFor="admin">Administrador</Label>
+                          </div>
+                        </RadioGroup>
                       </FormControl>
                       <FormMessage />
                     </FormItem>

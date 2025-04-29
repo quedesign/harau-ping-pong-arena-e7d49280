@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/auth';
 import { useNavigate } from 'react-router-dom';
@@ -5,7 +6,7 @@ import Layout from '@/components/layout/Layout';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/components/ui/use-toast';
 import { useTranslation } from 'react-i18next';
-import { Shield, UserCog, Key, Award, Badge } from 'lucide-react';
+import { UserCog, Key, Award, Badge } from 'lucide-react';
 import ProfileTab from '@/components/profile/ProfileTab';
 import SecurityTab from '@/components/profile/SecurityTab';
 import SportsDataTab from '@/components/profile/SportsDataTab';

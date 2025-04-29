@@ -1,193 +1,127 @@
 
-import { useState } from 'react';
+import React, { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { useTranslation } from 'react-i18next';
+import { Shield } from 'lucide-react';
+import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Eye, EyeOff, Loader2 } from 'lucide-react';
-import { changeLocalUserPassword } from '@/services/localAuth';
-import { useAuth } from '@/contexts/auth';
-import { toast } from 'sonner';
 
 interface SecurityTabProps {
-  onPasswordChange?: (currentPassword: string, newPassword: string) => void;
+  onPasswordChange: (currentPassword: string, newPassword: string) => void;
 }
 
-const securitySchema = z.object({
-  currentPassword: z.string().min(6, 'A senha atual deve ter pelo menos 6 caracteres'),
-  newPassword: z.string().min(6, 'A nova senha deve ter pelo menos 6 caracteres'),
-  confirmPassword: z.string().min(6, 'A confirmação de senha deve ter pelo menos 6 caracteres'),
-}).refine((data) => data.newPassword === data.confirmPassword, {
-  message: "As senhas não coincidem",
-  path: ["confirmPassword"],
-});
-
-type SecurityFormValues = z.infer<typeof securitySchema>;
-
-const SecurityTab = () => {
+const SecurityTab: React.FC<SecurityTabProps> = ({ onPasswordChange }) => {
   const { t } = useTranslation();
-  const { currentUser } = useAuth();
-  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
-  const [showNewPassword, setShowNewPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const form = useForm<SecurityFormValues>({
-    resolver: zodResolver(securitySchema),
+  // Schema for form validation
+  const passwordSchema = z.object({
+    currentPassword: z.string().min(1, t('common.required')),
+    newPassword: z.string().min(6, t('auth.passwordLengthError')),
+    confirmPassword: z.string().min(6, t('auth.passwordLengthError'))
+  }).refine((data) => data.newPassword === data.confirmPassword, {
+    message: t('auth.passwordsDoNotMatch'),
+    path: ['confirmPassword'],
+  });
+
+  // Form setup
+  const form = useForm<z.infer<typeof passwordSchema>>({
+    resolver: zodResolver(passwordSchema),
     defaultValues: {
       currentPassword: '',
       newPassword: '',
-      confirmPassword: '',
+      confirmPassword: ''
     },
   });
 
-  const onSubmit = async (values: SecurityFormValues) => {
-    if (!currentUser) return;
-    
+  // Submit handler
+  const onSubmit = async (values: z.infer<typeof passwordSchema>) => {
     setIsLoading(true);
-    
     try {
-      await changeLocalUserPassword(
-        currentUser.id, 
-        values.currentPassword, 
-        values.newPassword
-      );
-      
-      toast.success('Senha atualizada com sucesso!');
-      form.reset();
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'Erro ao atualizar senha';
-      toast.error('Erro', {
-        description: message
-      });
+      await onPasswordChange(values.currentPassword, values.newPassword);
+      form.reset(); // Reset form on success
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <Card>
+    <Card className="border-zinc-800">
       <CardHeader>
-        <CardTitle>{t('profile.security')}</CardTitle>
-        <CardDescription>
-          {t('profile.changePassword')}
-        </CardDescription>
+        <CardTitle className="flex items-center text-xl">
+          <Shield className="mr-2 h-5 w-5" />
+          {t('profile.security')}
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
               control={form.control}
               name="currentPassword"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>{t('profile.currentPassword')}</FormLabel>
-                  <div className="relative">
-                    <FormControl>
-                      <Input
-                        {...field}
-                        type={showCurrentPassword ? "text" : "password"}
-                        className="pr-10"
-                      />
-                    </FormControl>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      className="absolute right-0 top-0 h-full px-3"
-                      onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                    >
-                      {showCurrentPassword ? (
-                        <EyeOff className="h-4 w-4" />
-                      ) : (
-                        <Eye className="h-4 w-4" />
-                      )}
-                    </Button>
-                  </div>
+                  <FormControl>
+                    <Input 
+                      type="password" 
+                      {...field} 
+                      className="border-zinc-700"
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
+            
             <FormField
               control={form.control}
               name="newPassword"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>{t('profile.newPassword')}</FormLabel>
-                  <div className="relative">
-                    <FormControl>
-                      <Input
-                        {...field}
-                        type={showNewPassword ? "text" : "password"}
-                        className="pr-10"
-                      />
-                    </FormControl>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      className="absolute right-0 top-0 h-full px-3"
-                      onClick={() => setShowNewPassword(!showNewPassword)}
-                    >
-                      {showNewPassword ? (
-                        <EyeOff className="h-4 w-4" />
-                      ) : (
-                        <Eye className="h-4 w-4" />
-                      )}
-                    </Button>
-                  </div>
+                  <FormControl>
+                    <Input 
+                      type="password" 
+                      {...field} 
+                      className="border-zinc-700"
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
+            
             <FormField
               control={form.control}
               name="confirmPassword"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>{t('profile.confirmPassword')}</FormLabel>
-                  <div className="relative">
-                    <FormControl>
-                      <Input
-                        {...field}
-                        type={showConfirmPassword ? "text" : "password"}
-                        className="pr-10"
-                      />
-                    </FormControl>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      className="absolute right-0 top-0 h-full px-3"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    >
-                      {showConfirmPassword ? (
-                        <EyeOff className="h-4 w-4" />
-                      ) : (
-                        <Eye className="h-4 w-4" />
-                      )}
-                    </Button>
-                  </div>
+                  <FormControl>
+                    <Input 
+                      type="password" 
+                      {...field} 
+                      className="border-zinc-700"
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <div className="flex justify-end">
-              <Button type="submit" disabled={isLoading}>
-                {isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    {t('common.saving')}
-                  </>
-                ) : (
-                  t('common.saveChanges')
-                )}
-              </Button>
-            </div>
+            
+            <Button 
+              type="submit" 
+              className="w-full"
+              disabled={isLoading}
+            >
+              {isLoading ? t('common.saving') : t('common.save')}
+            </Button>
           </form>
         </Form>
       </CardContent>

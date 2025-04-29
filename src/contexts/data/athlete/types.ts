@@ -1,23 +1,33 @@
 
+// Add any missing imports and exports from the original file
+
 import { AthleteProfile } from '@/types';
 
-// Define a interface para nossos dados do Supabase
+export interface AthleteContextType {
+  athleteProfiles: AthleteProfile[];
+  loading: boolean;
+  getAthleteProfile: (userId: string) => Promise<AthleteProfile | undefined>;
+  createAthleteProfile: (profile: AthleteProfile) => Promise<AthleteProfile>;
+  updateAthleteProfile: (userId: string, profileData: Partial<AthleteProfile>) => Promise<AthleteProfile>;
+}
+
 export interface SupabaseAthleteData {
   user_id: string;
   handedness: string;
-  height: number | null;
-  weight: number | null;
+  height?: number;
+  weight?: number;
   level: string;
   city: string;
   state: string;
   country: string;
-  bio: string | null;
-  years_playing: number | null;
+  bio?: string;
+  years_playing?: number;
   wins: number;
   losses: number;
-  updated_at: string;
   created_at: string;
-  // Certifique-se de que todos os campos estão incluídos
+  updated_at: string;
+  
+  // Additional fields that were causing errors
   playing_style?: string;
   grip_style?: string;
   play_frequency?: string;
@@ -27,12 +37,4 @@ export interface SupabaseAthleteData {
   preferred_locations?: string[];
   racket?: string;
   rubbers?: string;
-}
-
-export interface AthleteContextType {
-  athleteProfiles: AthleteProfile[];
-  loading: boolean;
-  getAthleteProfile: (userId: string) => Promise<AthleteProfile | undefined>;
-  createAthleteProfile: (profile: AthleteProfile) => Promise<AthleteProfile>;
-  updateAthleteProfile: (userId: string, data: Partial<AthleteProfile>) => Promise<AthleteProfile>;
 }

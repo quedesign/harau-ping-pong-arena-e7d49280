@@ -4,7 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/contexts/auth";
 import { DataProvider } from "@/contexts/DataContext";
 
@@ -44,45 +44,43 @@ const App = () => {
             <TooltipProvider>
               <Toaster />
               <Sonner />
-              <BrowserRouter>
-                <Routes>
-                  {/* Public routes */}
-                  <Route path="/" element={<Index />} />
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/register" element={<Register />} />
-                  <Route path="/forgot-password" element={<ForgotPassword />} />
-                  
-                  {/* Shared routes */}
-                  <Route path="/dashboard" element={<Dashboard />} />
-                  <Route path="/tournaments" element={<TournamentList />} />
-                  <Route path="/tournaments/:id" element={<TournamentDetail />} />
-                  <Route path="/athletes" element={<AthleteList />} />
-                  <Route path="/athletes/:id" element={<AthleteProfile />} />
-                  
-                  {/* User profile and settings - accessible to all logged in users */}
-                  <Route path="/my-profile" element={<MyProfile />} />
-                  <Route path="/settings" element={<Settings />} />
-                  
-                  {/* Message routes */}
-                  <Route path="/messages" element={<MessageList />} />
-                  <Route path="/messages/:id" element={<MessageDetail />} />
-                  
-                  {/* Admin routes */}
-                  <Route path="/admin/dashboard" element={<Navigate to="/dashboard" />} />
-                  <Route path="/admin/tournaments" element={<Navigate to="/tournaments" />} />
-                  <Route path="/admin/create-tournament" element={<CreateTournament />} />
-                  <Route path="/admin/tournaments/:id/manage" element={<ManageTournament />} />
-                  <Route path="/admin/athletes" element={<Navigate to="/athletes" />} />
-                  
-                  {/* Redirects for old profile paths */}
-                  <Route path="/profile" element={<Navigate to="/my-profile" />} />
-                  <Route path="/admin/profile" element={<Navigate to="/my-profile" />} />
-                  <Route path="/admin/settings" element={<Navigate to="/settings" />} />
-                  
-                  {/* Catch-all route */}
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </BrowserRouter>
+              <Routes>
+                {/* Public routes */}
+                <Route path="/" element={<Index />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+                
+                {/* Shared routes */}
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/tournaments" element={<TournamentList />} />
+                <Route path="/tournaments/:id" element={<TournamentDetail />} />
+                <Route path="/athletes" element={<AthleteList />} />
+                <Route path="/athletes/:id" element={<AthleteProfile />} />
+                
+                {/* User profile and settings - accessible to all logged in users */}
+                <Route path="/my-profile" element={<MyProfile />} />
+                <Route path="/settings" element={<Settings />} />
+                
+                {/* Message routes */}
+                <Route path="/messages" element={<MessageList />} />
+                <Route path="/messages/:id" element={<MessageDetail />} />
+                
+                {/* Admin routes */}
+                <Route path="/admin/dashboard" element={<Navigate to="/dashboard" />} />
+                <Route path="/admin/tournaments" element={<Navigate to="/tournaments" />} />
+                <Route path="/admin/create-tournament" element={<CreateTournament />} />
+                <Route path="/admin/tournaments/:id/manage" element={<ManageTournament />} />
+                <Route path="/admin/athletes" element={<Navigate to="/athletes" />} />
+                
+                {/* Redirects for old profile paths */}
+                <Route path="/profile" element={<Navigate to="/my-profile" />} />
+                <Route path="/admin/profile" element={<Navigate to="/my-profile" />} />
+                <Route path="/admin/settings" element={<Navigate to="/settings" />} />
+                
+                {/* Catch-all route */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
             </TooltipProvider>
           </DataProvider>
         </AuthProvider>

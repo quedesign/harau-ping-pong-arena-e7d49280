@@ -13,7 +13,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="w-full p-6 flex justify-between items-center z-10 border-b-[1px] border-b-[#4A4A48]">
+    <nav className="w-full p-6 flex justify-between items-center z-10 relative">
       <div className="text-2xl font-bold flex items-center">
         <span className="text-white font-light tracking-wide">Harau</span>
         <span className="text-primary text-2xl">.</span>
@@ -27,9 +27,9 @@ const Navbar = () => {
         ) : (
           <>
             <Link to="/login">
-              <Button variant="ghost">Entrar</Button>
+              <Button variant="ghost" className="text-white hover:bg-white/10">Entrar</Button>
             </Link>
-            <Button onClick={handleRegister}>Cadastrar</Button>
+            <Button onClick={handleRegister} className="rounded-full bg-primary hover:bg-primary/90">Cadastrar</Button>
           </>
         )}
       </div>
@@ -38,4 +38,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-

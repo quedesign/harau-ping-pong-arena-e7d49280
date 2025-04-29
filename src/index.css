@@ -51,7 +51,7 @@
   }
 
   html {
-    background-color: #141412;
+    background-color: #000000;
   }
 
   body {
@@ -63,7 +63,7 @@
     width: 100%;
     position: relative;
     z-index: 0;
-    background-color: #141412;
+    background-color: #000000;
   }
 
   #root {
@@ -71,8 +71,7 @@
     width: 100%;
     position: relative;
     z-index: 0;
-    background-color: #141412;
-    background-image: url('/lovable-uploads/76c4e3a1-450f-415c-8c0e-ac52a97832c9.png');
+    background-color: #000000;
     background-position: center;
     background-size: cover;
     background-repeat: no-repeat;

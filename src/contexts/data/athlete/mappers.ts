@@ -1,5 +1,5 @@
 
-import { AthleteProfile, User, PlayingStyle, GripStyle, PlayFrequency, TournamentParticipation } from '@/types';
+import { AthleteProfile, PlayingStyle, GripStyle, PlayFrequency, TournamentParticipation } from '@/types';
 import { SupabaseAthleteData } from './types';
 
 // Convert Supabase data to app format

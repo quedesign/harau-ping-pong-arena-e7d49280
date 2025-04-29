@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useData } from '@/contexts/DataContext';
@@ -12,8 +11,8 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { 
   User, MapPin, Calendar, Award, Clock, Trophy, 
-  Mail, MessageSquare, BarChart, TableTennis, BadgeCheck, Timer, 
-  CircleUser, Swords, Grip
+  Mail, MessageCircle, BarChart, Badge as BadgeIcon, BadgeCheck, Timer, 
+  CircleUser, Swords, Users
 } from 'lucide-react';
 import { AthleteProfile as AthleteProfileType, Match } from '@/types';
 
@@ -234,7 +233,7 @@ const AthleteProfile = () => {
                   
                   <div className="w-full">
                     <h3 className="text-sm font-medium mb-3 flex items-center gap-2">
-                      <TableTennis size={16} />
+                      <BadgeIcon size={16} />
                       Equipamentos
                     </h3>
                     
@@ -446,7 +445,7 @@ const AthleteProfile = () => {
           <Card className="bg-zinc-900 border-zinc-800">
             <CardHeader>
               <CardTitle className="flex items-center">
-                <MessageSquare className="h-5 w-5 mr-2" />
+                <MessageCircle className="h-5 w-5 mr-2" />
                 Agendar uma Partida
               </CardTitle>
               <CardDescription>

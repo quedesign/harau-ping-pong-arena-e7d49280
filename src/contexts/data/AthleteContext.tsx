@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext } from 'react';
 import { AthleteProfile, User, PlayingStyle, GripStyle, PlayFrequency, TournamentParticipation } from '@/types';
 import { supabase } from '@/integrations/supabase/client';
@@ -14,6 +13,34 @@ interface AthleteContextType {
 }
 
 const AthleteContext = createContext<AthleteContextType | undefined>(undefined);
+
+// Define the interface for our Supabase data
+interface SupabaseAthleteData {
+  user_id: string;
+  handedness: string;
+  height: number | null;
+  weight: number | null;
+  level: string;
+  city: string;
+  state: string;
+  country: string;
+  bio: string | null;
+  years_playing: number | null;
+  wins: number;
+  losses: number;
+  updated_at: string;
+  created_at: string;
+  // New fields that might not exist in the DB yet
+  playing_style?: string;
+  grip_style?: string;
+  play_frequency?: string;
+  tournament_participation?: string;
+  club?: string;
+  available_times?: string[];
+  preferred_locations?: string[];
+  racket?: string;
+  rubbers?: string;
+}
 
 export const AthleteProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { t } = useTranslation();
@@ -60,32 +87,35 @@ export const AthleteProvider: React.FC<{ children: React.ReactNode }> = ({ child
           const formattedProfiles: AthleteProfile[] = athleteData.map(athlete => {
             const profile = profiles.find(p => p.id === athlete.user_id);
             
+            // Handle data from Supabase with potential missing fields
+            const data = athlete as unknown as SupabaseAthleteData;
+            
             return {
-              userId: athlete.user_id,
-              handedness: athlete.handedness as 'left' | 'right' | 'ambidextrous',
-              height: Number(athlete.height) || undefined,
-              weight: Number(athlete.weight) || undefined,
-              level: athlete.level as 'beginner' | 'intermediate' | 'advanced' | 'professional',
+              userId: data.user_id,
+              handedness: data.handedness as 'left' | 'right' | 'ambidextrous',
+              height: Number(data.height) || undefined,
+              weight: Number(data.weight) || undefined,
+              level: data.level as 'beginner' | 'intermediate' | 'advanced' | 'professional',
               location: {
-                city: athlete.city,
-                state: athlete.state,
-                country: athlete.country,
+                city: data.city,
+                state: data.state,
+                country: data.country,
               },
-              bio: athlete.bio || undefined,
-              yearsPlaying: athlete.years_playing || undefined,
-              wins: athlete.wins,
-              losses: athlete.losses,
-              // New fields
-              playingStyle: athlete.playing_style as PlayingStyle | undefined,
-              gripStyle: athlete.grip_style as GripStyle | undefined,
-              playFrequency: athlete.play_frequency as PlayFrequency | undefined,
-              tournamentParticipation: athlete.tournament_participation as TournamentParticipation | undefined,
-              club: athlete.club || undefined,
-              availableTimes: athlete.available_times || undefined,
-              preferredLocations: athlete.preferred_locations || undefined,
+              bio: data.bio || undefined,
+              yearsPlaying: data.years_playing || undefined,
+              wins: data.wins,
+              losses: data.losses,
+              // New fields - handle potential missing data
+              playingStyle: (data.playing_style as PlayingStyle) || undefined,
+              gripStyle: (data.grip_style as GripStyle) || undefined,
+              playFrequency: (data.play_frequency as PlayFrequency) || undefined,
+              tournamentParticipation: (data.tournament_participation as TournamentParticipation) || undefined,
+              club: data.club || undefined,
+              availableTimes: data.available_times || [],
+              preferredLocations: data.preferred_locations || [],
               equipment: {
-                racket: athlete.racket || undefined,
-                rubbers: athlete.rubbers || undefined
+                racket: data.racket || undefined,
+                rubbers: data.rubbers || undefined
               }
             };
           });
@@ -127,32 +157,35 @@ export const AthleteProvider: React.FC<{ children: React.ReactNode }> = ({ child
       }
 
       if (data) {
+        // Handle data from Supabase with potential missing fields
+        const athlete = data as unknown as SupabaseAthleteData;
+        
         const profile: AthleteProfile = {
-          userId: data.user_id,
-          handedness: data.handedness as 'left' | 'right' | 'ambidextrous',
-          height: Number(data.height) || undefined,
-          weight: Number(data.weight) || undefined,
-          level: data.level as 'beginner' | 'intermediate' | 'advanced' | 'professional',
+          userId: athlete.user_id,
+          handedness: athlete.handedness as 'left' | 'right' | 'ambidextrous',
+          height: Number(athlete.height) || undefined,
+          weight: Number(athlete.weight) || undefined,
+          level: athlete.level as 'beginner' | 'intermediate' | 'advanced' | 'professional',
           location: {
-            city: data.city,
-            state: data.state,
-            country: data.country,
+            city: athlete.city,
+            state: athlete.state,
+            country: athlete.country,
           },
-          bio: data.bio || undefined,
-          yearsPlaying: data.years_playing || undefined,
-          wins: data.wins,
-          losses: data.losses,
-          // New fields
-          playingStyle: data.playing_style as PlayingStyle | undefined,
-          gripStyle: data.grip_style as GripStyle | undefined,
-          playFrequency: data.play_frequency as PlayFrequency | undefined,
-          tournamentParticipation: data.tournament_participation as TournamentParticipation | undefined,
-          club: data.club || undefined,
-          availableTimes: data.available_times || undefined,
-          preferredLocations: data.preferred_locations || undefined,
+          bio: athlete.bio || undefined,
+          yearsPlaying: athlete.years_playing || undefined,
+          wins: athlete.wins,
+          losses: athlete.losses,
+          // New fields - handle potential missing data
+          playingStyle: (athlete.playing_style as PlayingStyle) || undefined,
+          gripStyle: (athlete.grip_style as GripStyle) || undefined,
+          playFrequency: (athlete.play_frequency as PlayFrequency) || undefined,
+          tournamentParticipation: (athlete.tournament_participation as TournamentParticipation) || undefined,
+          club: athlete.club || undefined,
+          availableTimes: athlete.available_times || [],
+          preferredLocations: athlete.preferred_locations || [],
           equipment: {
-            racket: data.racket || undefined,
-            rubbers: data.rubbers || undefined
+            racket: athlete.racket || undefined,
+            rubbers: athlete.rubbers || undefined
           }
         };
 

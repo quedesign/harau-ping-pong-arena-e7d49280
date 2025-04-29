@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useData } from '@/contexts/DataContext';
 import Layout from '@/components/layout/Layout';
@@ -9,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { AthleteProfile } from '@/types';
-import { Search, MapPin, Filter, Trophy, UserRound, MessageCircle, Users, TableTennis, BadgeCheck, Timer, Calendar } from 'lucide-react';
+import { Search, MapPin, Filter, Trophy, UserRound, MessageCircle, Users, Badge as BadgeIcon, Calendar } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import {
   Accordion,
@@ -398,7 +397,7 @@ const AthleteCard = ({ profile, isFollowed, handleFollowToggle }: AthleteCardPro
                     <div className="space-y-2 text-sm">
                       {profile.gripStyle && (
                         <div className="flex items-center gap-2">
-                          <TableTennis size={14} className="text-zinc-400" />
+                          <BadgeIcon size={14} className="text-zinc-400" />
                           <span className="text-zinc-300">Empunhadura: </span>
                           <span>
                             {profile.gripStyle === 'classic' ? 'Clássica' :
@@ -441,7 +440,7 @@ const AthleteCard = ({ profile, isFollowed, handleFollowToggle }: AthleteCardPro
                       
                       {profile.equipment?.racket && (
                         <div className="flex items-center gap-2">
-                          <TableTennis size={14} className="text-zinc-400" />
+                          <BadgeIcon size={14} className="text-zinc-400" />
                           <span className="text-zinc-300">Raquete: </span>
                           <span>{profile.equipment.racket}</span>
                         </div>

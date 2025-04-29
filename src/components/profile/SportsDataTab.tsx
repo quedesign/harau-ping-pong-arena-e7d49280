@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -44,9 +43,9 @@ const sportsDataSchema = z.object({
   playFrequency: z.enum(['once-a-week', 'twice-or-more', 'weekends-only', 'monthly', 'rarely']).optional(),
   tournamentParticipation: z.enum(['yes', 'no', 'occasionally']).optional(),
   club: z.string().optional(),
-  availableTimes: z.string().optional().transform(val => val ? val.split(',').map(s => s.trim()) : undefined),
-  preferredLocations: z.string().optional().transform(val => val ? val.split(',').map(s => s.trim()) : undefined),
-  yearsPlaying: z.string().optional().transform(val => val ? Number(val) : undefined)
+  availableTimesString: z.string().optional(),
+  preferredLocationsString: z.string().optional(),
+  yearsPlaying: z.string().optional().transform(val => val ? parseInt(val) : undefined)
 });
 
 type SportsDataFormValues = z.infer<typeof sportsDataSchema>;
@@ -62,8 +61,8 @@ const SportsDataTab = ({ profile, onUpdate }: SportsDataTabProps) => {
       playFrequency: profile?.playFrequency,
       tournamentParticipation: profile?.tournamentParticipation,
       club: profile?.club || '',
-      availableTimes: profile?.availableTimes?.join(', ') || '',
-      preferredLocations: profile?.preferredLocations?.join(', ') || '',
+      availableTimesString: profile?.availableTimes?.join(', ') || '',
+      preferredLocationsString: profile?.preferredLocations?.join(', ') || '',
       yearsPlaying: profile?.yearsPlaying?.toString() || '',
     },
   });
@@ -78,15 +77,24 @@ const SportsDataTab = ({ profile, onUpdate }: SportsDataTabProps) => {
         playFrequency: profile.playFrequency,
         tournamentParticipation: profile.tournamentParticipation,
         club: profile.club || '',
-        availableTimes: profile.availableTimes?.join(', ') || '',
-        preferredLocations: profile.preferredLocations?.join(', ') || '',
+        availableTimesString: profile.availableTimes?.join(', ') || '',
+        preferredLocationsString: profile.preferredLocations?.join(', ') || '',
         yearsPlaying: profile.yearsPlaying?.toString() || '',
       });
     }
   }, [profile, form]);
 
   const onSubmit = (values: SportsDataFormValues) => {
-    onUpdate(values);
+    const { availableTimesString, preferredLocationsString, ...rest } = values;
+    
+    // Convert the strings back to arrays
+    const formData: Partial<AthleteProfile> = {
+      ...rest,
+      availableTimes: availableTimesString ? availableTimesString.split(',').map(s => s.trim()) : undefined,
+      preferredLocations: preferredLocationsString ? preferredLocationsString.split(',').map(s => s.trim()) : undefined
+    };
+    
+    onUpdate(formData);
   };
 
   return (
@@ -298,7 +306,7 @@ const SportsDataTab = ({ profile, onUpdate }: SportsDataTabProps) => {
 
             <FormField
               control={form.control}
-              name="availableTimes"
+              name="availableTimesString"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Horários disponíveis para jogar</FormLabel>
@@ -315,7 +323,7 @@ const SportsDataTab = ({ profile, onUpdate }: SportsDataTabProps) => {
 
             <FormField
               control={form.control}
-              name="preferredLocations"
+              name="preferredLocationsString"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Locais onde costuma jogar</FormLabel>

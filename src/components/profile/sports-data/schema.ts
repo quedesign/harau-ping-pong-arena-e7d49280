@@ -12,7 +12,7 @@ export const sportsDataSchema = z.object({
   club: z.string().optional(),
   availableTimesString: z.string().optional(),
   preferredLocationsString: z.string().optional(),
-  yearsPlaying: z.string().optional().transform(val => val ? parseInt(val) : undefined)
+  yearsPlaying: z.string().optional().transform(val => val && val.trim() !== '' ? parseInt(val, 10) : undefined)
 });
 
 export type SportsDataFormValues = z.infer<typeof sportsDataSchema>;

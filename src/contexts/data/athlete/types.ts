@@ -17,7 +17,7 @@ export interface SupabaseAthleteData {
   losses: number;
   updated_at: string;
   created_at: string;
-  // New fields that might not exist in the DB yet
+  // New fields that might not exist in the DB yet - make them all optional
   playing_style?: string;
   grip_style?: string;
   play_frequency?: string;

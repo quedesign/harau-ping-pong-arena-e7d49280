@@ -28,7 +28,7 @@ const SportsDataForm: React.FC<SportsDataFormProps> = ({ profile, onSubmit }) =>
       club: profile?.club || '',
       availableTimesString: profile?.availableTimes ? profile.availableTimes.join(', ') : '',
       preferredLocationsString: profile?.preferredLocations ? profile.preferredLocations.join(', ') : '',
-      yearsPlaying: profile?.yearsPlaying !== undefined ? profile.yearsPlaying.toString() : '',
+      yearsPlaying: profile?.yearsPlaying !== undefined ? String(profile.yearsPlaying) : '',
     },
   });
 
@@ -44,7 +44,7 @@ const SportsDataForm: React.FC<SportsDataFormProps> = ({ profile, onSubmit }) =>
         club: profile.club || '',
         availableTimesString: profile.availableTimes ? profile.availableTimes.join(', ') : '',
         preferredLocationsString: profile.preferredLocations ? profile.preferredLocations.join(', ') : '',
-        yearsPlaying: profile.yearsPlaying !== undefined ? profile.yearsPlaying.toString() : '',
+        yearsPlaying: profile.yearsPlaying !== undefined ? String(profile.yearsPlaying) : '',
       });
     }
   }, [profile, form]);

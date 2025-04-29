@@ -19,17 +19,17 @@ export const mapSupabaseToAthleteProfile = (data: SupabaseAthleteData): AthleteP
     yearsPlaying: data.years_playing || undefined,
     wins: data.wins,
     losses: data.losses,
-    // New fields - safely access properties that might not exist
-    playingStyle: (data.playing_style as PlayingStyle) || undefined,
-    gripStyle: (data.grip_style as GripStyle) || undefined,
-    playFrequency: (data.play_frequency as PlayFrequency) || undefined,
-    tournamentParticipation: (data.tournament_participation as TournamentParticipation) || undefined,
-    club: data.club || undefined,
+    // New fields - safely access optional properties
+    playingStyle: data.playing_style as PlayingStyle | undefined,
+    gripStyle: data.grip_style as GripStyle | undefined,
+    playFrequency: data.play_frequency as PlayFrequency | undefined,
+    tournamentParticipation: data.tournament_participation as TournamentParticipation | undefined,
+    club: data.club,
     availableTimes: data.available_times || [],
     preferredLocations: data.preferred_locations || [],
     equipment: {
-      racket: data.racket || undefined,
-      rubbers: data.rubbers || undefined
+      racket: data.racket,
+      rubbers: data.rubbers
     }
   };
 };

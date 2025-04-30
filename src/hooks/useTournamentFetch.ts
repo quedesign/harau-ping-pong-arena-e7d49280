@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Tournament, TournamentFormat } from '@/types';
 import { supabase } from '@/integrations/supabase/client';
 import { useTranslation } from 'react-i18next';
@@ -14,15 +14,28 @@ export const useTournamentFetch = (tournamentId?: string) => {
   const [error, setError] = useState<Error | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      if (tournamentId) {
-        await fetchSingleTournament(tournamentId);
-      } else {
-        await fetchTournaments();
+  const fetchData = useCallback(async () => {
+    if (tournamentId) {
+      await fetchSingleTournament(tournamentId);
+    } else {
+      await fetchTournaments();
+    }
+  }, [tournamentId]);
+
+  const reload = useCallback(() => {
+    fetchData();
+  },[fetchData])
+
+  useEffect(() => {    
+    fetchData();
+    return () => {
+      if (tournamentId){
+        setTournament(null)
+      }else{
+        setTournaments([])
       }
     }
-    fetchData();  }, [tournamentId]);
+  }, [fetchData, tournamentId]);
   const fetchSingleTournament = async (id: string) => {
     setIsLoading(true);
     try {
@@ -144,16 +157,16 @@ export const useTournamentFetch = (tournamentId?: string) => {
       }
       toast({
         title: t('common.error'),
-        description: t('tournaments.fetchError'),
+        description: t(tournamentId ? 'tournaments.fetchError' : 'tournaments.fetchAllError'),
         variant: 'destructive',
       });
     } finally {
-      setLoading(false);
+      setLoading(false);      
     }
   };
 
   // Return proper values based on whether we're fetching a single tournament or multiple
   return tournamentId 
     ? { tournament, isLoading, error }
-    : { tournaments, setTournaments, loading };
+    : { tournaments, setTournaments, loading, error, reload };
 };

@@ -1,7 +1,6 @@
-
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useMatch } from '@/contexts/data';
+import { useMatch, useTournament } from '@/contexts/data';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/contexts/auth';
 import Layout from '@/components/layout/Layout';
@@ -10,48 +9,53 @@ import { Button } from '@/components/ui/button';
 import { CalendarDays, MapPin, Users, Flag, Timer } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { Tournament, Match } from '@/types';
-import { useTournamentFetch } from '@/hooks/useTournamentFetch';
+import { Match } from '@/types';
+import { supabase } from '@/integrations/supabase/client';
 
 const TournamentDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { currentUser } = useAuth();
-  const { tournaments, loading: tournamentsLoading } = useTournament();
-  const { tournament: fetchedTournament, isLoading, error: fetchError} = useTournamentFetch(id);
-  const { matches, loading: matchesLoading } = useMatch();
-  
+  const { tournament, isLoading, error, fetchSingleTournament, reload } = useTournament();
+  const { matches, loading: matchesLoading, error: matchesError } = useMatch();
+
   const [tournamentMatches, setTournamentMatches] = useState<Match[]>([]);
   const [isRegistered, setIsRegistered] = useState(false);
-  
 
   useEffect(() => {
-    if (fetchedTournament && matches) {
-        const filteredMatches = matches.filter(m => m.tournamentId === fetchedTournament.id);
-        setTournamentMatches(filteredMatches);
-    }
-  }, [fetchedTournament, matches, id]);
+    if (id) fetchSingleTournament(id);
+  }, [fetchSingleTournament, id]);
 
   useEffect(() => {
-    if (fetchedTournament && currentUser) {
-      setIsRegistered(fetchedTournament.registeredParticipants.includes(currentUser.id));
+    if (tournament && matches) {
+      const filtered = matches.filter((m) => m.tournamentId === tournament.id);
+      setTournamentMatches(filtered);
     }
-  }, [fetchedTournament, currentUser]);
+  }, [tournament, matches]);
 
-  const tournament = fetchedTournament;
-  const error = fetchError;
+  useEffect(() => {
+    if (tournament && currentUser) {
+      const registered = tournament.registeredParticipants?.includes(currentUser.id) ?? false;
+      setIsRegistered(registered);
+    }
+  }, [tournament, currentUser]);
 
+  const handleRegister = useCallback(async () => {
+    if (!currentUser || !tournament || isRegistered) return;
 
-  if (tournamentsLoading) {
-    return (
-      <Layout>
-        <div className="text-center py-12">
-          <h2 className="text-2xl font-bold">{t('common.loading')}</h2>
-        </div>
-      </Layout>
-    );
-  }
+    try {
+      const { error } = await supabase
+        .from('tournament_participants')
+        .insert([{ tournament_id: tournament.id, athlete_id: currentUser.id }]);
+
+      if (error) throw error;
+      setIsRegistered(true);
+      reload();
+    } catch (err) {
+      console.error('Error registering for tournament:', err);
+    }
+  }, [currentUser, tournament, isRegistered, reload]);
 
   if (isLoading) {
     return (
@@ -79,16 +83,13 @@ const TournamentDetail = () => {
       <Layout>
         <div className="text-center py-12">
           <h2 className="text-2xl font-bold">{t('tournament.notFound')}</h2>
-          <Button onClick={() => navigate('/tournaments')}>{t('tournament.backToTournaments')}</Button>         
+          <Button onClick={() => navigate('/tournaments')}>
+            {t('tournament.backToTournaments')}
+          </Button>
         </div>
       </Layout>
     );
   }
-
-  const handleRegister = () => {
-    // Implement registration logic here
-    console.log('Registering for tournament:', tournament.id);
-  };
 
   const startDateFormatted = format(new Date(tournament.startDate), 'PPPP', { locale: ptBR });
   const endDateFormatted = format(new Date(tournament.endDate), 'PPPP', { locale: ptBR });
@@ -103,50 +104,14 @@ const TournamentDetail = () => {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <div className="flex items-center gap-2 text-zinc-400">
-                  <CalendarDays className="h-4 w-4" />
-                  <span>{t('tournament.startDate')}:</span>
-                </div>
-                <p>{startDateFormatted}</p>
-              </div>
-              <div>
-                <div className="flex items-center gap-2 text-zinc-400">
-                  <CalendarDays className="h-4 w-4" />
-                  <span>{t('tournament.endDate')}:</span>
-                </div>
-                <p>{endDateFormatted}</p>
-              </div>
-              <div>
-                <div className="flex items-center gap-2 text-zinc-400">
-                  <MapPin className="h-4 w-4" />
-                  <span>{t('tournament.location')}:</span>
-                </div>
-                <p>{tournament.location}</p>
-              </div>
-              <div>
-                <div className="flex items-center gap-2 text-zinc-400">
-                  <Users className="h-4 w-4" />
-                  <span>{t('tournament.maxParticipants')}:</span>
-                </div>
-                <p>{tournament.maxParticipants}</p>
-              </div>
-              <div>
-                <div className="flex items-center gap-2 text-zinc-400">
-                  <Flag className="h-4 w-4" />
-                  <span>{t('tournament.format')}:</span>
-                </div>
-                <p>{tournament.format}</p>
-              </div>
-              <div>
-                <div className="flex items-center gap-2 text-zinc-400">
-                  <Timer className="h-4 w-4" />
-                  <span>{t('tournament.status')}:</span>
-                </div>
-                <p>{tournament.status}</p>
-              </div>
+              <DetailItem icon={<CalendarDays />} label={t('tournament.startDate')} value={startDateFormatted} />
+              <DetailItem icon={<CalendarDays />} label={t('tournament.endDate')} value={endDateFormatted} />
+              <DetailItem icon={<MapPin />} label={t('tournament.location')} value={tournament.location} />
+              <DetailItem icon={<Users />} label={t('tournament.maxParticipants')} value={tournament.maxParticipants} />
+              <DetailItem icon={<Flag />} label={t('tournament.format')} value={tournament.format} />
+              <DetailItem icon={<Timer />} label={t('tournament.status')} value={tournament.status} />
             </div>
-            
+
             {currentUser && (
               <Button onClick={handleRegister} disabled={isRegistered}>
                 {isRegistered ? t('tournament.registered') : t('tournament.register')}
@@ -163,13 +128,12 @@ const TournamentDetail = () => {
           <CardContent>
             {matchesLoading ? (
               <div className="text-center py-4">{t('common.loading')}</div>
-            ) : error ? (
+            ) : matchesError ? (
               <div className="text-center py-4">{t('common.error')}</div>
-            ) : tournamentMatches && tournamentMatches.length > 0 ? (
+            ) : tournamentMatches.length > 0 ? (
               <ul>
                 {tournamentMatches.map((match) => (
                   <li key={match.id} className="py-2 border-b border-zinc-700">
-                    {/* Display match details here */}
                     {match.playerOneId} vs {match.playerTwoId}
                   </li>
                 ))}
@@ -183,5 +147,15 @@ const TournamentDetail = () => {
     </Layout>
   );
 };
+
+const DetailItem = ({ icon, label, value }: { icon: JSX.Element; label: string; value: string | number }) => (
+  <div>
+    <div className="flex items-center gap-2 text-zinc-400">
+      {icon}
+      <span>{label}:</span>
+    </div>
+    <p>{value}</p>
+  </div>
+);
 
 export default TournamentDetail;

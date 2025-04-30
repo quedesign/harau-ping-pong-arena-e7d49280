@@ -21,6 +21,7 @@ import TournamentList from "./pages/tournaments/TournamentList";
 import TournamentDetail from "./pages/tournaments/TournamentDetail";
 import AthleteList from "./pages/athletes/AthleteList";
 import AthleteProfile from "./pages/athletes/AthleteProfile";
+import AthleteSearch from "./pages/athletes/AthleteSearch";
 
 // Message pages
 import MessageList from "./pages/messages/MessageList";
@@ -57,6 +58,7 @@ const App = () => {
                 <Route path="/tournaments/:id" element={<TournamentDetail />} />
                 <Route path="/athletes" element={<AthleteList />} />
                 <Route path="/athletes/:id" element={<AthleteProfile />} />
+                <Route path="/atletas" element={<AthleteSearch />} />
                 
                 {/* User profile and settings - accessible to all logged in users */}
                 <Route path="/my-profile" element={<MyProfile />} />

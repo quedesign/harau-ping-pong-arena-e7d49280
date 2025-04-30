@@ -1,11 +1,20 @@
-import { MapPin, Award, Swords, Timer, Trophy, BadgeCheck, User, CircleUser } from "lucide-react";
+import {
+  MapPin,
+  Award,
+  Swords,
+  Timer,
+  Trophy,
+  BadgeCheck,
+  User,
+  CircleUser,
+} from "lucide-react";
 import AthletePreferredLocations from "./AthletePreferredLocations";
 import AthletePreferredTimes from "./AthletePreferredTimes";
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
-import AthleteEquipments from './AthleteEquipments';
-import { Separator } from '@/components/ui/separator';
-import { AthleteProfile } from '@/types';
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import AthleteEquipments from "./AthleteEquipments";
+import { Separator } from "@/components/ui/separator";
+import { AthleteProfile } from "@/types";
 
 interface AthleteProfileCardProps {
   profile: AthleteProfile;
@@ -46,13 +55,15 @@ const formatPlayingStyle = (playingStyle: string): string => {
     default:
       return playingStyle;
   }
-}
+};
 
 const AthleteProfileCard: React.FC<AthleteProfileCardProps> = ({ profile }) => {
-    const athleteName = `Player ${profile.userId}`;
-    return (<>
-          <Card className="bg-zinc-900 border-zinc-800 h-fit">
-          <CardContent className="p-6">
+  const athleteName = `Player ${profile.userId}`;
+
+  return (
+    <>
+      <Card className="bg-zinc-900 border-zinc-800 h-fit">
+        <CardContent className="p-6">
           <div className="flex flex-col items-center">
             <div className="w-24 h-24 rounded-full bg-black flex items-center justify-center text-white mb-4">
               <span className="text-3xl font-semibold">
@@ -67,23 +78,16 @@ const AthleteProfileCard: React.FC<AthleteProfileCardProps> = ({ profile }) => {
             </p>
 
             <div className="flex flex-wrap gap-2 justify-center mb-6">
-              <Badge
-                variant="outline"
-                className="bg-zinc-800 border-zinc-700"
-              >
+              <Badge variant="outline" className="bg-zinc-800 border-zinc-700">
                 {formatLevel(profile.level)}
               </Badge>
 
-              <Badge
-                variant="outline"
-                className="bg-zinc-800 border-zinc-700"
-                >{formatHandedness(profile.handedness)}
+              <Badge variant="outline" className="bg-zinc-800 border-zinc-700">
+                {formatHandedness(profile.handedness)}
               </Badge>
+
               {profile.yearsPlaying && (
-                <Badge
-                  variant="outline"
-                  className="bg-zinc-800 border-zinc-700"
-                >
+                <Badge variant="outline" className="bg-zinc-800 border-zinc-700">
                   {profile.yearsPlaying}{" "}
                   {profile.yearsPlaying === 1 ? "ano" : "anos"} de experiência
                 </Badge>
@@ -118,24 +122,30 @@ const AthleteProfileCard: React.FC<AthleteProfileCardProps> = ({ profile }) => {
 
             <div className="w-full space-y-4">
               {profile.playingStyle && (
-                <div className="flex items-center gap-2" >
-                  <Swords size={16} className="text-zinc-400"/>
-                  <span className="text-zinc-400">
-                    Estilo de jogo:
-                  </span>
+                <div className="flex items-center gap-2">
+                  <Swords size={16} className="text-zinc-400" />
+                  <span className="text-zinc-400">Estilo de jogo:</span>
                   <span className="ml-auto">
                     {formatPlayingStyle(profile.playingStyle)}
                   </span>
-                  <div className="flex items-center gap-2">
-                    <Award size={16} className="text-zinc-400" />
-                    <span className="text-zinc-400">Empunhadura:</span>
-                    <span className="ml-auto">
-                    {profile.gripStyle === "classic" ? "Clássica" : profile.gripStyle === "penhold" ? "Caneta" : "Outras"}
-                    </span>
-                </div>}
                 </div>
-                )}
-                {profile.gripStyle && (
+              )}
+
+              {profile.gripStyle && (
+                <div className="flex items-center gap-2">
+                  <Award size={16} className="text-zinc-400" />
+                  <span className="text-zinc-400">Empunhadura:</span>
+                  <span className="ml-auto">
+                    {profile.gripStyle === "classic"
+                      ? "Clássica"
+                      : profile.gripStyle === "penhold"
+                      ? "Caneta"
+                      : "Outras"}
+                  </span>
+                </div>
+              )}
+
+              {profile.playFrequency && (
                 <div className="flex items-center gap-2">
                   <Timer size={16} className="text-zinc-400" />
                   <span className="text-zinc-400">Frequência:</span>
@@ -151,7 +161,6 @@ const AthleteProfileCard: React.FC<AthleteProfileCardProps> = ({ profile }) => {
                       : "Raramente"}
                   </span>
                 </div>
-                )}
               )}
 
               {profile.tournamentParticipation && (
@@ -160,9 +169,7 @@ const AthleteProfileCard: React.FC<AthleteProfileCardProps> = ({ profile }) => {
                   <span className="text-zinc-400">Torneios:</span>
                   <span className="ml-auto">
                     {profile.tournamentParticipation === "yes"
-                     ? "Participa"
-                     : profile.tournamentParticipation === "no"
-                     ? "Não participa"
+                      ? "Participa"
                       : profile.tournamentParticipation === "no"
                       ? "Não participa"
                       : "Ocasionalmente"}
@@ -196,12 +203,20 @@ const AthleteProfileCard: React.FC<AthleteProfileCardProps> = ({ profile }) => {
             </div>
           </div>
         </CardContent>
-          </Card>
-      {profile.equipment && <AthleteEquipments equipment={profile.equipment} />}
-      {profile.availableTimes && <AthletePreferredTimes availableTimes={profile.availableTimes} />}
-      {profile.preferredLocations && (<AthletePreferredLocations preferredLocations={profile.preferredLocations} />)}
-      </>
-    );
+      </Card>
+
+      {profile.equipment && (
+        <AthleteEquipments equipment={profile.equipment} />
+      )}
+
+      {profile.availableTimes && (
+        <AthletePreferredTimes availableTimes={profile.availableTimes} />
+      )}
+      {profile.preferredLocations && (
+        <AthletePreferredLocations preferredLocations={profile.preferredLocations} />
+      )}
+    </>
+  );
 };
 
 export default AthleteProfileCard;

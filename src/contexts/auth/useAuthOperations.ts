@@ -4,35 +4,35 @@ import { User } from '@/types';
 import { useLogin } from './operations/useLogin';
 import { useLogout } from './operations/useLogout';
 import { useRegister } from './operations/useRegister';
-import { useResetPassword } from './operations/useResetPassword';
 import { useTestUser } from './operations/useTestUser';
+import { useResetPassword } from './operations/useResetPassword';
+import { Session } from '@supabase/supabase-js';
 
 export const useAuthOperations = () => {
-  const [currentUser, setCurrentUser] = useState<User | null | undefined>(null);
-  const [session, setSession] = useState<string | null | undefined>(null);
-  const [isLoading, setIsLoading] = useState(false); // Add explicit isLoading state
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
 
-  const { login, isLoading: isLoginLoading, error: loginError } = useLogin();
-  const { logout, isLoading: isLogoutLoading } = useLogout();
-  const { register, isLoading: isRegisterLoading, error: registerError } = useRegister();
-  const { resetPassword, isLoading: isResetLoading } = useResetPassword();
-  const { createTestUser, isLoading: isTestUserLoading } = useTestUser(register, login);
-
-  const combinedIsLoading = isLoginLoading || isLogoutLoading || isRegisterLoading || isResetLoading || isTestUserLoading;
-  const error = loginError || registerError;
+  const { login, isLoading: loginLoading, error: loginError } = useLogin();
+  const { logout, isLoading: logoutLoading } = useLogout();
+  const { register, isLoading: registerLoading, error: registerError } = useRegister();
+  const { resetPassword, isLoading: resetLoading, error: resetError } = useResetPassword();
+  const { createTestUser, isLoading: createTestUserLoading } = useTestUser();
 
   return {
     currentUser,
     setCurrentUser,
-    isLoading: combinedIsLoading || isLoading, // Combine all loading states
-    setIsLoading, // Export the setter
-    error,
+    isLoading: isLoading || loginLoading || logoutLoading || registerLoading || resetLoading || createTestUserLoading,
+    setIsLoading,
+    error: error || loginError || registerError || resetError,
+    setError,
     session,
     setSession,
     login,
     logout,
     register,
-    createTestUser,
     resetPassword,
+    createTestUser,
   };
 };

@@ -4,7 +4,19 @@ import { supabase } from '@/integrations/supabase/client';
 
 export const useMatchUpdate = (setMatches: React.Dispatch<React.SetStateAction<Match[]>>) => {
   const updateMatch = async (id: string, matchData: Partial<Match>): Promise<Match> => {
-    const updateData: any = { updated_at: new Date().toISOString() };
+    const updateData: {
+      updated_at: string;
+      tournament_id?: string;
+      player_one_id?: string;
+      player_two_id?: string;
+      scheduled_time?: string;
+      status?: 'scheduled' | 'completed' | 'cancelled';
+      location?: string;
+    } = { 
+      updated_at: new Date().toISOString() 
+    };
+
+    
     
     if (matchData.tournamentId) updateData.tournament_id = matchData.tournamentId;
     if (matchData.playerOneId) updateData.player_one_id = matchData.playerOneId;

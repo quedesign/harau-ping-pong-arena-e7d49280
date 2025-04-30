@@ -8,10 +8,10 @@ import { useResetPassword } from './operations/useResetPassword';
 import { useTestUser } from './operations/useTestUser';
 
 export const useAuthOperations = () => {
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [session, setSession] = useState<any | null>(null);
+  const [currentUser, setCurrentUser] = useState<User | null | undefined>(null);
+  const [session, setSession] = useState<string | null | undefined>(null);
   const [isLoading, setIsLoading] = useState(false); // Add explicit isLoading state
-  
+
   const { login, isLoading: isLoginLoading, error: loginError } = useLogin();
   const { logout, isLoading: isLogoutLoading } = useLogout();
   const { register, isLoading: isRegisterLoading, error: registerError } = useRegister();

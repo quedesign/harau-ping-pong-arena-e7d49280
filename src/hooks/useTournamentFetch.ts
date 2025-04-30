@@ -15,13 +15,14 @@ export const useTournamentFetch = (tournamentId?: string) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (tournamentId) {
-      fetchSingleTournament(tournamentId);
-    } else {
-      fetchTournaments();
+    const fetchData = async () => {
+      if (tournamentId) {
+        await fetchSingleTournament(tournamentId);
+      } else {
+        await fetchTournaments();
+      }
     }
-  }, [tournamentId]);
-
+    fetchData();  }, [tournamentId]);
   const fetchSingleTournament = async (id: string) => {
     setIsLoading(true);
     try {
@@ -67,8 +68,16 @@ export const useTournamentFetch = (tournamentId?: string) => {
         setTournament(formattedTournament);
       }
     } catch (err) {
-      console.error('Error fetching tournament:', err);
-      setError(err instanceof Error ? err : new Error('Unknown error'));
+      if (err && (err as any).error) {
+        console.error('Error fetching tournament:', (err as any).error.message, (err as any).error.details);
+        setError((err as any).error);
+      } else if (err instanceof Error) {
+        console.error('Error fetching tournament:', err.message);
+        setError(err);
+      } else {
+        console.error('Error fetching tournament:', JSON.stringify(err, null, 2));
+        setError(new Error(JSON.stringify(err)));
+      }
       toast({
         title: t('common.error'),
         description: t('tournaments.fetchError'),
@@ -123,7 +132,16 @@ export const useTournamentFetch = (tournamentId?: string) => {
         setTournaments(formattedTournaments);
       }
     } catch (err) {
-      console.error('Error fetching tournaments:', err);
+      if (err && (err as any).error) {
+        console.error('Error fetching tournaments:', (err as any).error.message, (err as any).error.details);
+        setError((err as any).error);
+      } else if (err instanceof Error) {
+        console.error('Error fetching tournaments:', err.message);
+        setError(err);
+      } else {
+        console.error('Error fetching tournaments:', JSON.stringify(err, null, 2));
+        setError(new Error(JSON.stringify(err)));
+      }
       toast({
         title: t('common.error'),
         description: t('tournaments.fetchError'),

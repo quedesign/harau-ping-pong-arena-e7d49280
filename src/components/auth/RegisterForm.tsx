@@ -46,7 +46,7 @@ export const RegisterForm = ({ onSuccess }: RegisterFormProps) => {
       
       if (success) {
         console.log("Registro bem-sucedido!");
-        onSuccess();
+         onSuccess();
       }
     } catch (err) {
       console.error('Erro no registro:', err);       
@@ -54,7 +54,7 @@ export const RegisterForm = ({ onSuccess }: RegisterFormProps) => {
         setError(errorMessage)
         form.setError('email', { type: 'manual', message: errorMessage });
       
-    }
+     }
   };
 
   return (

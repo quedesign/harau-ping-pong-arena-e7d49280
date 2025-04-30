@@ -1,7 +1,8 @@
 
-import React from 'react';
+import React, { useContext } from 'react';
 import { TournamentProvider, useTournament } from './TournamentContext';
 import { AthleteProvider, useAthlete } from './athlete';
+import { DataContext } from './utils';
 import { MatchProvider, useMatch } from './MatchContext';
 
 export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -21,30 +22,21 @@ export { useTournament } from './TournamentContext';
 export { useAthlete } from './athlete';
 export { useMatch } from './MatchContext';
 
-// Export a unified hook that provides access to all data contexts
+// Custom hook to provide all data contexts
 export const useData = () => {
-  const tournamentContext = useTournament();
-  const athleteContext = useAthlete();
-  const matchContext = useMatch();
-  
-  return {
-    // Tournament related
-    tournaments: tournamentContext.tournaments,
-    loading: tournamentContext.loading || athleteContext.loading || matchContext.loading,
-    createTournament: tournamentContext.createTournament,
-    updateTournament: tournamentContext.updateTournament,
-    deleteTournament: tournamentContext.deleteTournament,
-    
-    // Athlete related
-    athleteProfiles: athleteContext.athleteProfiles,
-    getAthleteProfile: athleteContext.getAthleteProfile,
-    createAthleteProfile: athleteContext.createAthleteProfile,
-    updateAthleteProfile: athleteContext.updateAthleteProfile,
-    
-    // Match related
-    matches: matchContext.matches,
-    createMatch: matchContext.createMatch,
-    updateMatch: matchContext.updateMatch,
-    generateBracket: matchContext.generateBracket,
-  };
+    const tournamentContext = useTournament();
+    const athleteContext = useAthlete();
+    const matchContext = useMatch();
+
+    return {
+        // Tournament related
+        ...tournamentContext,
+        // Athlete related
+        ...athleteContext,
+        // Match related
+        ...matchContext,
+        loading: tournamentContext.loading || athleteContext.loading || matchContext.loading,
+    };
 };
+
+

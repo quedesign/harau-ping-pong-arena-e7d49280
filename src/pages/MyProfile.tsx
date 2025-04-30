@@ -53,7 +53,7 @@ const MyProfile = () => {
 
   const handleUpdateProfile = (name: string, email: string) => {
     const users = JSON.parse(localStorage.getItem('users') || '[]');
-    const userIndex = users.findIndex((u: any) => u.id === currentUser.id);
+    const userIndex = users.findIndex((u: { id: string }) => u.id === currentUser.id);
 
     if (userIndex >= 0) {
       users[userIndex] = {
@@ -74,7 +74,7 @@ const MyProfile = () => {
 
   const handlePasswordChange = (currentPassword: string, newPassword: string) => {
     const users = JSON.parse(localStorage.getItem('users') || '[]');
-    const userIndex = users.findIndex((u: any) => u.id === currentUser.id);
+    const userIndex = users.findIndex((u: { id: string; password?: string }) => u.id === currentUser.id);
 
     if (userIndex >= 0 && users[userIndex].password === currentPassword) {
       users[userIndex].password = newPassword;

@@ -1,12 +1,12 @@
-import React, { createContext, useContext } from 'react';
-import { AthleteProfile, User, PlayingStyle, GripStyle, PlayFrequency, TournamentParticipation } from '@/types';
+import React, { createContext, useContext, useCallback } from 'react';
+import { AthleteProfile, User } from '@/types';
 import { supabase } from '@/integrations/supabase/client';
 import { useTranslation } from 'react-i18next';
-import { toast } from '@/hooks/use-toast';
+import { useToast } from '@/hooks/use-toast';
+import { SupabaseAthleteData, formatSupabaseAthleteProfile } from './athlete/mappers';
 
 interface AthleteContextType {
   athleteProfiles: AthleteProfile[];
-  loading: boolean;
   getAthleteProfile: (userId: string) => Promise<AthleteProfile | undefined>;
   createAthleteProfile: (profile: AthleteProfile) => Promise<AthleteProfile>;
   updateAthleteProfile: (userId: string, data: Partial<AthleteProfile>) => Promise<AthleteProfile>;
@@ -14,44 +14,20 @@ interface AthleteContextType {
 
 const AthleteContext = createContext<AthleteContextType | undefined>(undefined);
 
-// Define the interface for our Supabase data
-interface SupabaseAthleteData {
-  user_id: string;
-  handedness: string;
-  height: number | null;
-  weight: number | null;
-  level: string;
-  city: string;
-  state: string;
-  country: string;
-  bio: string | null;
-  years_playing: number | null;
-  wins: number;
-  losses: number;
-  updated_at: string;
-  created_at: string;
-  // New fields that might not exist in the DB yet
-  playing_style?: string;
-  grip_style?: string;
-  play_frequency?: string;
-  tournament_participation?: string;
-  club?: string;
-  available_times?: string[];
-  preferred_locations?: string[];
-  racket?: string;
-  rubbers?: string;
-}
+
+
+
 
 export const AthleteProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { t } = useTranslation();
+  const { toast } = useToast();
   const [athleteProfiles, setAthleteProfiles] = React.useState<AthleteProfile[]>([]);
   const [loading, setLoading] = React.useState(true);
 
-  React.useEffect(() => {
-    fetchAthleteProfiles();
-  }, []);
-
-  const fetchAthleteProfiles = async () => {
+  
+  const fetchAthleteProfiles = useCallback(async () => {
+    
+    
     setLoading(true);
     try {
       // Primeira, buscar perfis básicos
@@ -84,40 +60,10 @@ export const AthleteProvider: React.FC<{ children: React.ReactNode }> = ({ child
         }
 
         if (athleteData) {
-          const formattedProfiles: AthleteProfile[] = athleteData.map(athlete => {
+          const formattedProfiles = athleteData.map(athlete => {
             const profile = profiles.find(p => p.id === athlete.user_id);
-            
-            // Handle data from Supabase with potential missing fields
-            const data = athlete as unknown as SupabaseAthleteData;
-            
-            return {
-              userId: data.user_id,
-              handedness: data.handedness as 'left' | 'right' | 'ambidextrous',
-              height: Number(data.height) || undefined,
-              weight: Number(data.weight) || undefined,
-              level: data.level as 'beginner' | 'intermediate' | 'advanced' | 'professional',
-              location: {
-                city: data.city,
-                state: data.state,
-                country: data.country,
-              },
-              bio: data.bio || undefined,
-              yearsPlaying: data.years_playing || undefined,
-              wins: data.wins,
-              losses: data.losses,
-              // New fields - handle potential missing data
-              playingStyle: (data.playing_style as PlayingStyle) || undefined,
-              gripStyle: (data.grip_style as GripStyle) || undefined,
-              playFrequency: (data.play_frequency as PlayFrequency) || undefined,
-              tournamentParticipation: (data.tournament_participation as TournamentParticipation) || undefined,
-              club: data.club || undefined,
-              availableTimes: data.available_times || [],
-              preferredLocations: data.preferred_locations || [],
-              equipment: {
-                racket: data.racket || undefined,
-                rubbers: data.rubbers || undefined
-              }
-            };
+            const data = athlete as SupabaseAthleteData;
+            return formatSupabaseAthleteProfile(data);
           });
 
           setAthleteProfiles(formattedProfiles);
@@ -133,7 +79,12 @@ export const AthleteProvider: React.FC<{ children: React.ReactNode }> = ({ child
     } finally {
       setLoading(false);
     }
-  };
+  }, [setAthleteProfiles, t]);
+
+    React.useEffect(() => {
+      fetchAthleteProfiles();
+    }, [fetchAthleteProfiles]);
+
 
   const getAthleteProfile = async (userId: string): Promise<AthleteProfile | undefined> => {
     try {
@@ -158,36 +109,8 @@ export const AthleteProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
       if (data) {
         // Handle data from Supabase with potential missing fields
-        const athlete = data as unknown as SupabaseAthleteData;
-        
-        const profile: AthleteProfile = {
-          userId: athlete.user_id,
-          handedness: athlete.handedness as 'left' | 'right' | 'ambidextrous',
-          height: Number(athlete.height) || undefined,
-          weight: Number(athlete.weight) || undefined,
-          level: athlete.level as 'beginner' | 'intermediate' | 'advanced' | 'professional',
-          location: {
-            city: athlete.city,
-            state: athlete.state,
-            country: athlete.country,
-          },
-          bio: athlete.bio || undefined,
-          yearsPlaying: athlete.years_playing || undefined,
-          wins: athlete.wins,
-          losses: athlete.losses,
-          // New fields - handle potential missing data
-          playingStyle: (athlete.playing_style as PlayingStyle) || undefined,
-          gripStyle: (athlete.grip_style as GripStyle) || undefined,
-          playFrequency: (athlete.play_frequency as PlayFrequency) || undefined,
-          tournamentParticipation: (athlete.tournament_participation as TournamentParticipation) || undefined,
-          club: athlete.club || undefined,
-          availableTimes: athlete.available_times || [],
-          preferredLocations: athlete.preferred_locations || [],
-          equipment: {
-            racket: athlete.racket || undefined,
-            rubbers: athlete.rubbers || undefined
-          }
-        };
+        const athlete = data as SupabaseAthleteData;
+        const profile = formatSupabaseAthleteProfile(athlete);
 
         // Add to local state
         setAthleteProfiles(prev => [...prev, profile]);
@@ -204,11 +127,11 @@ export const AthleteProvider: React.FC<{ children: React.ReactNode }> = ({ child
     
     // Prepare data for Supabase
     const athleteData = {
-      user_id: rest.userId,
-      handedness: rest.handedness,
-      height: rest.height,
-      weight: rest.weight,
-      level: rest.level,
+     user_id: rest.userId,
+      handedness: rest.handedness || null,
+      height: rest.height || null,
+      weight: rest.weight || null,
+      level: rest.level || null,
       city: location.city,
       state: location.state,
       country: location.country,
@@ -244,35 +167,7 @@ export const AthleteProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }
 
     // Convert back to app format
-    const newProfile: AthleteProfile = {
-      userId: data.user_id,
-      handedness: data.handedness as 'left' | 'right' | 'ambidextrous',
-      height: Number(data.height) || undefined,
-      weight: Number(data.weight) || undefined,
-      level: data.level as 'beginner' | 'intermediate' | 'advanced' | 'professional',
-      location: {
-        city: data.city,
-        state: data.state,
-        country: data.country,
-      },
-      bio: data.bio || undefined,
-      yearsPlaying: data.years_playing || undefined,
-      wins: data.wins,
-      losses: data.losses,
-      // New fields - safely access properties that might not exist
-      playingStyle: (data.playing_style as PlayingStyle) || undefined,
-      gripStyle: (data.grip_style as GripStyle) || undefined,
-      playFrequency: (data.play_frequency as PlayFrequency) || undefined,
-      tournamentParticipation: (data.tournament_participation as TournamentParticipation) || undefined,
-      club: data.club || undefined,
-      availableTimes: data.available_times || undefined,
-      preferredLocations: data.preferred_locations || undefined,
-      equipment: {
-        racket: data.racket || undefined,
-        rubbers: data.rubbers || undefined
-      }
-    };
-    
+    const newProfile = formatSupabaseAthleteProfile(data)
     // Update local state
     setAthleteProfiles(prev => [...prev, newProfile]);
     
@@ -281,7 +176,7 @@ export const AthleteProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   const updateAthleteProfile = async (userId: string, profileData: Partial<AthleteProfile>): Promise<AthleteProfile> => {
     // Prepare data for Supabase
-    const updateData: any = { updated_at: new Date().toISOString() };
+    const updateData: Partial<SupabaseAthleteData> = { updated_at: new Date().toISOString() };
     
     if (profileData.handedness) updateData.handedness = profileData.handedness;
     if (profileData.height !== undefined) updateData.height = profileData.height;
@@ -329,36 +224,8 @@ export const AthleteProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }
 
     // Convert back to app format
-    const athlete = updatedData as unknown as SupabaseAthleteData;
-    
-    const profile: AthleteProfile = {
-      userId: athlete.user_id,
-      handedness: athlete.handedness as 'left' | 'right' | 'ambidextrous',
-      height: Number(athlete.height) || undefined,
-      weight: Number(athlete.weight) || undefined,
-      level: athlete.level as 'beginner' | 'intermediate' | 'advanced' | 'professional',
-      location: {
-        city: athlete.city,
-        state: athlete.state,
-        country: athlete.country,
-      },
-      bio: athlete.bio || undefined,
-      yearsPlaying: athlete.years_playing || undefined,
-      wins: athlete.wins,
-      losses: athlete.losses,
-      // New fields - safely access properties that might not exist
-      playingStyle: (athlete.playing_style as PlayingStyle) || undefined,
-      gripStyle: (athlete.grip_style as GripStyle) || undefined,
-      playFrequency: (athlete.play_frequency as PlayFrequency) || undefined,
-      tournamentParticipation: (athlete.tournament_participation as TournamentParticipation) || undefined,
-      club: athlete.club || undefined,
-      availableTimes: athlete.available_times || [],
-      preferredLocations: athlete.preferred_locations || [],
-      equipment: {
-        racket: athlete.racket || undefined,
-        rubbers: athlete.rubbers || undefined
-      }
-    };
+    const athlete = updatedData as SupabaseAthleteData;
+    const profile = formatSupabaseAthleteProfile(athlete);
     
     // Update local state
     setAthleteProfiles(prev => prev.map(p => p.userId === userId ? profile : p));
@@ -368,7 +235,6 @@ export const AthleteProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   const value = {
     athleteProfiles,
-    loading,
     getAthleteProfile,
     createAthleteProfile,
     updateAthleteProfile

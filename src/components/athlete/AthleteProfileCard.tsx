@@ -124,40 +124,37 @@ const AthleteProfileCard: React.FC<AthleteProfileCardProps> = ({ profile }) => {
                 <div className="flex items-center gap-2" >
                   <Swords size={16} className="text-zinc-400"/>
                   <span className="text-zinc-400">
-                    Estilo de jogo:
-                  </span>
+                    Estilo de jogo:</span>
                   <span className="ml-auto">
                     {formatPlayingStyle(profile.playingStyle)}
                   </span>
-                  <div className="flex items-center gap-2">
-                    <Award size={16} className="text-zinc-400" />
-                    <span className="text-zinc-400">Empunhadura:</span>
-                    <span className="ml-auto">
-                    {profile.gripStyle === "classic" ? "Clássica" : profile.gripStyle === "penhold" ? "Caneta" : "Outras"}
-                    </span>
-                </div>}
                 </div>
                 )}
-                {profile.gripStyle && (
+              
+              {profile.gripStyle && (
                 <div className="flex items-center gap-2">
-                  <Timer size={16} className="text-zinc-400" />
-                  <span className="text-zinc-400">Frequência:</span>
-                  <span className="ml-auto">
-                    {profile.playFrequency === "once-a-week"
-                      ? "1x por semana"
-                      : profile.playFrequency === "twice-or-more"
-                      ? "2x ou mais"
-                      : profile.playFrequency === "weekends-only"
-                      ? "Fins de semana"
-                      : profile.playFrequency === "monthly"
-                      ? "Mensalmente"
-                      : "Raramente"}
-                  </span>
+                <Award size={16} className="text-zinc-400" />
+                <span className="text-zinc-400">Empunhadura:</span>
+                <span className="ml-auto">
+                  {profile.gripStyle === "classic" ? "Clássica" : profile.gripStyle === "penhold" ? "Caneta" : "Outras"}
+                </span>
                 </div>
-                )}
               )}
 
-              {profile.tournamentParticipation && (
+              {profile.playFrequency &&(
+                <div className="flex items-center gap-2">
+                <Timer size={16} className="text-zinc-400" />
+                <span className="text-zinc-400">Frequência:</span>
+                <span className="ml-auto">
+                  {profile.playFrequency === "once-a-week" ? "1x por semana" :
+                  profile.playFrequency === "twice-or-more" ? "2x ou mais" : 
+                  profile.playFrequency === "weekends-only" ? "Fins de semana" : 
+                  profile.playFrequency === "monthly" ? "Mensalmente" : "Raramente"}
+                </span>
+              </div>
+              )}
+
+              {profile.tournamentParticipation &&(
                 <div className="flex items-center gap-2">
                   <Trophy size={16} className="text-zinc-400" />
                   <span className="text-zinc-400">Torneios:</span>
@@ -165,11 +162,9 @@ const AthleteProfileCard: React.FC<AthleteProfileCardProps> = ({ profile }) => {
                     {profile.tournamentParticipation === "yes"
                      ? "Participa"
                      : profile.tournamentParticipation === "no"
-                     ? "Não participa"
-                      : profile.tournamentParticipation === "no"
-                      ? "Não participa"
+                     ? "Não participa"                  
                       : "Ocasionalmente"}
-                  </span>
+                  </span>                 
                 </div>
               )}
 
@@ -186,16 +181,15 @@ const AthleteProfileCard: React.FC<AthleteProfileCardProps> = ({ profile }) => {
                     <User size={16} className="text-zinc-400" />
                     <span className="text-zinc-400">Altura:</span>
                     <span className="ml-auto">{profile.height} cm</span>
-                  </div>
+                  </div> 
                 )}
-
               {profile.weight && (
                 <div className="flex items-center gap-2">
                   <CircleUser size={16} className="text-zinc-400" />
                   <span className="text-zinc-400">Peso:</span>
                   <span className="ml-auto">{profile.weight} kg</span>
                 </div>
-              )}
+              )}           
             </div>
           </div>
         </CardContent>

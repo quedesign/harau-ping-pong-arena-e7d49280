@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { AuthError } from '@supabase/supabase-js';
 
 export const useLogin = () => {
   const { t } = useTranslation();
@@ -22,8 +23,8 @@ export const useLogin = () => {
       });
       if(error) throw error
       return true
-    } catch (err:any) {
-      const errorMessage = err?.message || t('auth.loginFailed');
+    } catch (err) {
+      const errorMessage = (err instanceof AuthError ? err.message : '') || t('auth.loginFailed');
 
       setError(errorMessage);
       toast.error(t('common.error'), {

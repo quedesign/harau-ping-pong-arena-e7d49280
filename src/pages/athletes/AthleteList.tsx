@@ -6,6 +6,7 @@ import Layout from '@/components/layout/Layout';
 import { useData } from '@/contexts/data';
 import { AthleteProfile } from '@/types';
 import { useTranslation } from 'react-i18next';
+import { Input } from '@/components/ui/input';
 
 const AthleteList = () => {
   const { athleteProfiles, loading } = useData();
@@ -100,10 +101,11 @@ const AthleteList = () => {
 export default AthleteList;
 
 // Dummy Input and Button components (replace with your actual components)
-const Input = ({ type, placeholder, className, onChange }: { type: string; placeholder: string; className: string; onChange: (e: any) => void }) => (
-  <input type={type} placeholder={placeholder} className={`border rounded-md py-2 px-3 w-full ${className}`} onChange={onChange} />
-);
 
 const Button = ({ variant, children }: { variant: string; children: React.ReactNode }) => (
   <button className={`rounded-md py-2 px-4 ${variant === 'outline' ? 'border border-gray-300 text-gray-700' : 'bg-primary text-white'}`}>{children}</button>
 );
+interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}
+const MyInput = ({ type, placeholder, className, onChange, ...props }: InputProps) => <Input type={type} placeholder={placeholder} className={`border rounded-md py-2 px-3 w-full ${className}`} onChange={onChange} {...props} />;

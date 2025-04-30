@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import SearchBar from "@/components/athletes/SearchBar";
 import FilterSection from "@/components/athletes/FilterSection";
@@ -16,51 +16,52 @@ const recentAthletes: Athlete[] = [
 
 
 const AthleteSearch = () => {
-  const allAthletes: Athlete[] = [
-    { id: '1', name: 'Athlete 1', level: 'beginner', location: 'City A', playingStyle: 'offensive' },
-    { id: '2', name: 'Athlete 2', level: 'intermediate', location: 'City B', playingStyle: 'defensive' },
-    { id: '3', name: 'Athlete 3', level: 'advanced', location: 'City C', playingStyle: 'all-around' },
-    { id: '4', name: 'Athlete 4', level: 'beginner', location: 'City D', playingStyle: 'offensive' },
-    { id: '5', name: 'Athlete 5', level: 'intermediate', location: 'City E', playingStyle: 'defensive' },
-    { id: '6', name: 'Athlete 6', level: 'advanced', location: 'City A', playingStyle: 'all-around' },
-  ];
+    const allAthletes: Athlete[] = [
+        { id: '1', name: 'Athlete 1', level: 'beginner', location: 'City A', playingStyle: 'offensive' },
+        { id: '2', name: 'Athlete 2', level: 'intermediate', location: 'City B', playingStyle: 'defensive' },
+        { id: '3', name: 'Athlete 3', level: 'advanced', location: 'City C', playingStyle: 'all-around' },
+        { id: '4', name: 'Athlete 4', level: 'beginner', location: 'City D', playingStyle: 'offensive' },
+        { id: '5', name: 'Athlete 5', level: 'intermediate', location: 'City E', playingStyle: 'defensive' },
+        { id: '6', name: 'Athlete 6', level: 'advanced', location: 'City A', playingStyle: 'all-around' },
+    ];
 
-  const [athletes, setAthletes] = useState<Athlete[]>(allAthletes);
-  const [noResults, setNoResults] = useState<boolean>(false);
-  const [filters, setFilters] = useState<Record<string, string[]>>({});
-  const [searchTerm, setSearchTerm] = useState<string>('');
+    const [noResults, setNoResults] = useState<boolean>(false);
+    const [filters, setFilters] = useState<Record<string, string[]>>({});
+    const [searchTerm, setSearchTerm] = useState<string>('');
 
-  useEffect(() => {
-    let filteredAthletes = allAthletes;
+    const filteredAthletes = useMemo(() => {
+        let athletesToFilter = allAthletes;
 
-    // Apply filters
-    if (Object.keys(filters).length > 0) {
-      filteredAthletes = allAthletes.filter((athlete) => {
-        return Object.keys(filters).every((filterKey) => {
-          if (!filters[filterKey].length) {
-            return true; // No filter selected for this key
-          }
-          return filters[filterKey].includes(athlete[filterKey as keyof Athlete]);
-        });
-      });
-    }
+        // Apply filters
+        if (Object.keys(filters).length > 0) {
+            athletesToFilter = allAthletes.filter((athlete) => {
+                return Object.keys(filters).every((filterKey) => {
+                    if (!filters[filterKey].length) {
+                        return true; // No filter selected for this key
+                    }
+                    return filters[filterKey].includes(athlete[filterKey as keyof Athlete]);
+                });
+            });
+        }
 
-    // Apply search term
-    if (searchTerm) {
-      filteredAthletes = filteredAthletes.filter((athlete) =>
-        athlete.name.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
+        // Apply search term
+        if (searchTerm) {
+            athletesToFilter = athletesToFilter.filter((athlete) =>
+                athlete.name.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+        }
 
-    setAthletes(filteredAthletes);
-    setNoResults(filteredAthletes.length === 0);
-  }, [filters, searchTerm]);
+        return athletesToFilter;
+    }, [filters, searchTerm]);
 
-  const handleSearchChange = (term: string) => {
-    setSearchTerm(term);
-  };
+    useEffect(() => {
+        setNoResults(filteredAthletes.length === 0);
+    }, [filteredAthletes]);
 
-  return (
+    const handleSearchChange = (term: string) => {
+        setSearchTerm(term);
+    };
+    return (
     <div className="p-6">
       <RecentAthletes athletes={recentAthletes}/>
       <h1 className="text-3xl font-bold mb-6">Localizar Atletas</h1>
@@ -82,7 +83,7 @@ const AthleteSearch = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {athletes.map((athlete) => (
               <div key={athlete.id} className="bg-zinc-900 p-4 rounded-lg border border-zinc-800">
-                <h2 className="font-semibold">{athlete.name}</h2>
+                  <h2 className="font-semibold">{athlete.name}</h2>
                 <p className="text-zinc-400 text-sm">{athlete.level}</p>
                 <p className="text-zinc-400 text-sm">{athlete.location}</p>
                 <p className="text-zinc-400 text-sm">{athlete.playingStyle}</p>
@@ -94,5 +95,4 @@ const AthleteSearch = () => {
     </div>
   );
 };
-
 export default AthleteSearch;

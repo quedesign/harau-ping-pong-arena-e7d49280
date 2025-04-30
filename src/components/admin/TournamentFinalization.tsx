@@ -15,6 +15,14 @@ interface TournamentFinalizationProps {
   onFinalize: () => void;
 }
 
+interface PlayerStats {
+  playerId: string;
+  wins: number;
+  matchesPlayed: number;
+  furthestRound: number;
+  winPercentage: number;
+}
+
 const TournamentFinalization = ({ tournament, onFinalize }: TournamentFinalizationProps) => {
   const { t } = useTranslation();
   const { matches } = useData();
@@ -27,7 +35,7 @@ const TournamentFinalization = ({ tournament, onFinalize }: TournamentFinalizati
   const playerStats = tournament.registeredParticipants.reduce((acc, playerId) => {
     const playerMatches = tournamentMatches.filter(
       m => m.playerOneId === playerId || m.playerTwoId === playerId
-    );
+    ) as Match[];
     
     const wins = playerMatches.filter(m => m.winner === playerId).length;
     const matchesPlayed = playerMatches.length;
@@ -53,10 +61,10 @@ const TournamentFinalization = ({ tournament, onFinalize }: TournamentFinalizati
         winPercentage: matchesPlayed > 0 ? Math.round((wins / matchesPlayed) * 100) : 0
       }
     };
-  }, {} as Record<string, any>);
+  }, {} as Record<string, PlayerStats>);
   
   // Sort players by: furthest round > wins > win percentage
-  const standings = Object.values(playerStats).sort((a: any, b: any) => {
+  const standings = Object.values(playerStats).sort((a: PlayerStats, b: PlayerStats) => {
     if (a.furthestRound !== b.furthestRound) return b.furthestRound - a.furthestRound;
     if (a.wins !== b.wins) return b.wins - a.wins;
     return b.winPercentage - a.winPercentage;
@@ -110,7 +118,7 @@ const TournamentFinalization = ({ tournament, onFinalize }: TournamentFinalizati
               </TableRow>
             </TableHeader>
             <TableBody>
-              {standings.map((player: any, index) => (
+              {standings.map((player, index) => (
                 <TableRow key={player.playerId}>
                   <TableCell className="font-medium">
                     {index === 0 && <Trophy className="h-4 w-4 text-yellow-500 inline mr-2" />}

@@ -12,7 +12,7 @@ import { toast } from 'sonner';
 
 interface ProfileTabProps {
   currentUser: User;
-  onUpdate?: (name: string, email: string) => void;
+  onUpdate?: (user: User) => void;
 }
 
 const ProfileTab = ({ currentUser }: ProfileTabProps) => {
@@ -37,7 +37,7 @@ const ProfileTab = ({ currentUser }: ProfileTabProps) => {
     
     try {
       // TODO: Update user profile on supabase
-      setCurrentUser({...currentUser, name, email});
+      setCurrentUser({...currentUser, name, email} as User);
       toast.success('Perfil atualizado com sucesso!');
    } catch (error) {
       const message = error instanceof Error ? error.message : 'Erro ao atualizar perfil';

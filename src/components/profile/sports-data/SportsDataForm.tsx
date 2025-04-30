@@ -66,19 +66,19 @@ const SportsDataForm: React.FC<SportsDataFormProps> = ({ profile, onSubmit }) =>
   };
 
   // Helper functions to map between types
-  function mapPlayingStyle(style: string): "offensive" | "defensive" | "all-round" | "other" {
+  function mapPlayingStyle(style: string): SportsDataFormValues["playingStyle"] {
     if (style === "all-around") return "all-round";
-    if (style === "offensive" || style === "defensive") return style as any;
+    if (style === "offensive" || style === "defensive") return style as SportsDataFormValues["playingStyle"];
     return "other";
   }
 
-  function mapGripStyle(style: string): "shakehand" | "penhold" | "seemiller" | "other" {
+  function mapGripStyle(style: string): SportsDataFormValues["gripStyle"] {
     if (style === "classic") return "shakehand";
-    if (style === "penhold" || style === "seemiller") return style as any;
+    if (style === "penhold" || style === "seemiller") return style as SportsDataFormValues["gripStyle"];
     return "other";
   }
 
-  function mapPlayFrequency(freq: string): "daily" | "weekly" | "monthly" | "rarely" {
+  function mapPlayFrequency(freq: string): SportsDataFormValues["playFrequency"] {
     if (freq === "once-a-week") return "weekly";
     if (freq === "twice-or-more") return "daily";
     if (freq === "monthly") return "monthly";

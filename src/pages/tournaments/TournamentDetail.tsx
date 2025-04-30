@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useTournament, useMatch } from '@/contexts/data';
+import { useMatch } from '@/contexts/data';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/contexts/auth';
 import Layout from '@/components/layout/Layout';
@@ -11,6 +11,7 @@ import { CalendarDays, MapPin, Users, Flag, Timer } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Tournament, Match } from '@/types';
+import { useTournamentFetch } from '@/hooks/useTournamentFetch';
 
 const TournamentDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -18,35 +19,41 @@ const TournamentDetail = () => {
   const { t } = useTranslation();
   const { currentUser } = useAuth();
   const { tournaments, loading: tournamentsLoading } = useTournament();
+  const { tournament: fetchedTournament, isLoading, error: fetchError} = useTournamentFetch(id);
   const { matches, loading: matchesLoading } = useMatch();
-  const [tournament, setTournament] = useState<Tournament | null>(null);
+  
   const [tournamentMatches, setTournamentMatches] = useState<Match[]>([]);
   const [isRegistered, setIsRegistered] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
+  
 
   useEffect(() => {
-    if (tournaments && id) {
-      const foundTournament = tournaments.find(t => t.id === id);
-      if (foundTournament) {
-        setTournament(foundTournament);
-        
-        if (matches) {
-          const filteredMatches = matches.filter(m => m.tournamentId === id);
-          setTournamentMatches(filteredMatches);
-        }
-      } else {
-        setError(new Error('Tournament not found'));
-      }
+    if (fetchedTournament && matches) {
+        const filteredMatches = matches.filter(m => m.tournamentId === fetchedTournament.id);
+        setTournamentMatches(filteredMatches);
     }
-  }, [tournaments, matches, id]);
+  }, [fetchedTournament, matches, id]);
 
   useEffect(() => {
-    if (tournament && currentUser) {
-      setIsRegistered(tournament.registeredParticipants.includes(currentUser.id));
+    if (fetchedTournament && currentUser) {
+      setIsRegistered(fetchedTournament.registeredParticipants.includes(currentUser.id));
     }
-  }, [tournament, currentUser]);
+  }, [fetchedTournament, currentUser]);
+
+  const tournament = fetchedTournament;
+  const error = fetchError;
+
 
   if (tournamentsLoading) {
+    return (
+      <Layout>
+        <div className="text-center py-12">
+          <h2 className="text-2xl font-bold">{t('common.loading')}</h2>
+        </div>
+      </Layout>
+    );
+  }
+
+  if (isLoading) {
     return (
       <Layout>
         <div className="text-center py-12">
@@ -72,7 +79,7 @@ const TournamentDetail = () => {
       <Layout>
         <div className="text-center py-12">
           <h2 className="text-2xl font-bold">{t('tournament.notFound')}</h2>
-          <Button onClick={() => navigate('/tournaments')}>{t('tournament.backToTournaments')}</Button>
+          <Button onClick={() => navigate('/tournaments')}>{t('tournament.backToTournaments')}</Button>         
         </div>
       </Layout>
     );

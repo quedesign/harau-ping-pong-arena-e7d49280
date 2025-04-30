@@ -11,9 +11,9 @@ export const useMatchFetch = (tournamentId?: string) => {
   const [error, setError] = useState<Error | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    fetchMatches();
-  }, [tournamentId]);
+  useEffect(() => {    
+      fetchMatches();    
+  }, [fetchMatches, tournamentId]);
 
   const fetchMatches = async () => {
     setLoading(true);
@@ -60,7 +60,7 @@ export const useMatchFetch = (tournamentId?: string) => {
     }
   };
 
-  // Return proper values based on whether we're fetching for a tournament or all matches
+  // Return proper values based on whether we're fetching for a tournament or all matches  
   return tournamentId 
     ? { matches, isLoading, error }
     : { matches, setMatches, loading };

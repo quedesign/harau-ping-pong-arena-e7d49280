@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { NavigateFunction, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/auth';
 import { useTranslation } from 'react-i18next';
 import Layout from '@/components/layout/Layout';
@@ -17,7 +17,7 @@ const ForgotPassword = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { resetPassword, isLoading } = useAuth();
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
   
   const handleSubmit = async (e: React.FormEvent) => {
@@ -35,7 +35,11 @@ const ForgotPassword = () => {
         description: 'Verifique sua caixa de entrada para redefinir sua senha.'
       });
       navigate('/login');
-    } catch (err: any) {
+    } catch (err) {
+      if (!(err instanceof Error)) {
+        console.error('An unknown error occurred:', err);
+        return;
+      }
       console.error('Erro ao redefinir senha:', err);
       setError(err.message);
     }

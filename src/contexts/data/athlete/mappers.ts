@@ -66,8 +66,13 @@ export const mapProfileToSupabaseData = (profile: AthleteProfile) => {
 };
 
 // Preparar dados para atualização no Supabase
-export const prepareUpdateData = (profileData: Partial<AthleteProfile>) => {
-  const updateData: any = { updated_at: new Date().toISOString() };
+export const prepareUpdateData = (profileData: Partial<AthleteProfile>): {
+  updated_at: string;
+  [key: string]: unknown;
+} => {
+  type UpdateData = { [key: string]: unknown; updated_at: string };
+
+  const updateData: UpdateData = { updated_at: new Date().toISOString() };
   
   if (profileData.handedness) updateData.handedness = profileData.handedness;
   if (profileData.height !== undefined) updateData.height = profileData.height;

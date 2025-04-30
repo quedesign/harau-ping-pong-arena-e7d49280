@@ -1,5 +1,5 @@
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect } from 'react';
 import { AuthContextType } from './types';
 import { useAuthOperations } from './useAuthOperations';
 import { UserRole, User } from '@/types';
@@ -24,7 +24,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     setIsLoading(true);
 
-    // Any logic to get the current user should be here if needed
+    //Logic to get the current user if needed
     setIsLoading(false)
   }, [setIsLoading]);
 

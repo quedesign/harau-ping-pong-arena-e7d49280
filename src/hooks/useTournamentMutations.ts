@@ -52,7 +52,22 @@ export const useTournamentMutations = (setTournaments: React.Dispatch<React.SetS
   };
 
   const updateTournament = async (id: string, data: Partial<Tournament>): Promise<Tournament> => {
-    const updateData: any = {};
+    const updateData: {
+      name?: string;
+      description?: string;
+      format?: TournamentFormat;
+      start_date?: string;
+      end_date?: string;
+      location?: string;
+      entry_fee?: number;
+      max_participants?: number;
+      banner_image?: string;
+      status?: 'upcoming' | 'ongoing' | 'completed';
+      pix_key?: string;
+      updated_at?: string;
+    } = {};
+
+    
     
     if (data.name) updateData.name = data.name;
     if (data.description) updateData.description = data.description;

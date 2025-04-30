@@ -1,5 +1,5 @@
 
-import React, { createContext, useContext } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import { Tournament } from '@/types';
 import { useTournamentFetch } from '@/hooks/useTournamentFetch';
 import { useTournamentMutations } from '@/hooks/useTournamentMutations';
@@ -12,11 +12,27 @@ interface TournamentContextType {
   deleteTournament: (id: string) => Promise<void>;
 }
 
+const useProvideTournament = (): TournamentContextType => {
+  const [tournaments, setTournaments] = useState<Tournament[]>([]);
+  const { loading } = useTournamentFetch(setTournaments);
+  const { createTournament, updateTournament, deleteTournament } = useTournamentMutations(setTournaments);
+  
+  return {
+    tournaments,
+    loading,
+    createTournament,
+    updateTournament,
+    deleteTournament,
+  };
+};
+
+
 const TournamentContext = createContext<TournamentContextType | undefined>(undefined);
 
 export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { tournaments, setTournaments, loading } = useTournamentFetch();
-  const { createTournament, updateTournament, deleteTournament } = useTournamentMutations(setTournaments);
+
+  const { tournaments, loading, createTournament, updateTournament, deleteTournament } = useProvideTournament()
+  
   
   const value = {
     tournaments,

@@ -13,6 +13,16 @@ import { Switch } from '@/components/ui/switch';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { InfoIcon } from 'lucide-react';
 
+interface Athlete {
+  id: string;
+  name: string;
+  level: string;
+  wins: number;
+  losses: number;
+  isSeeded: boolean;
+  position: number;
+}
+
 interface SeedingSectionProps {
   tournament: Tournament;
 }
@@ -21,19 +31,19 @@ const SeedingSection = ({ tournament }: SeedingSectionProps) => {
   const { t } = useTranslation();
   const { athleteProfiles, updateTournament } = useData();
   const [loading, setLoading] = useState(false);
-  const [athletes, setAthletes] = useState(() => 
-    tournament.registeredParticipants.map((id, index) => {
-      const profile = athleteProfiles.find(profile => profile.userId === id);
+  const [athletes, setAthletes] = useState<Athlete[]>(() =>
+    tournament.registeredParticipants.map((id, index): Athlete => {
+      const profile = athleteProfiles.find((profile) => profile.userId === id);
       return {
         id,
         name: `Atleta ${id}`, // Mock name
         level: profile?.level || 'beginner',
         wins: profile?.wins || 0,
         losses: profile?.losses || 0,
-        isSeeded: false,
-        position: index + 1
+        isSeeded: false, 
+        position: index + 1, 
       };
-    })
+    }),
   );
 
   const handleDragEnd = (result: any) => {
@@ -41,21 +51,21 @@ const SeedingSection = ({ tournament }: SeedingSectionProps) => {
 
     const reorderedAthletes = [...athletes];
     const [movedAthlete] = reorderedAthletes.splice(result.source.index, 1);
-    reorderedAthletes.splice(result.destination.index, 0, movedAthlete);
-    
-    // Update positions
+    reorderedAthletes.splice(result.destination.index, 0, movedAthlete);    
+
+   
     const updatedAthletes = reorderedAthletes.map((athlete, index) => ({
       ...athlete,
-      position: index + 1
+      position: index + 1,
     }));
-    
+
     setAthletes(updatedAthletes);
   };
 
   const toggleSeed = (athleteId: string) => {
-    setAthletes(prev => 
-      prev.map(a => 
-        a.id === athleteId ? { ...a, isSeeded: !a.isSeeded } : a
+    setAthletes((prev) =>
+      prev.map((a) =>
+        a.id === athleteId ? { ...a, isSeeded: !a.isSeeded } : a,
       )
     );
   };
@@ -65,26 +75,26 @@ const SeedingSection = ({ tournament }: SeedingSectionProps) => {
     try {
       // In a real app, you would send this data to the server
       // For now, we'll just show a toast
-      await new Promise(resolve => setTimeout(resolve, 500)); // Simulate API call
-      
+      await new Promise((resolve) => setTimeout(resolve, 500)); // Simulate API call
+
       // Create a new order of participants based on seeding
       const seededAthletes = [...athletes].sort((a, b) => {
         // Seeded athletes come first
         if (a.isSeeded && !b.isSeeded) return -1;
         if (!a.isSeeded && b.isSeeded) return 1;
-        
+
         // Then by position
         return a.position - b.position;
       });
-      
+
       // Extract just the IDs in the new order
-      const newOrder = seededAthletes.map(a => a.id);
-      
+      const newOrder = seededAthletes.map((a) => a.id);
+
       // Update tournament
-      await updateTournament(tournament.id, { 
-        registeredParticipants: newOrder 
+      await updateTournament(tournament.id, {
+        registeredParticipants: newOrder,
       });
-      
+
       toast({
         title: t('admin.seedingSaved'),
         description: t('admin.seedingSavedSuccess'),
@@ -117,19 +127,19 @@ const SeedingSection = ({ tournament }: SeedingSectionProps) => {
             {t('admin.seedingInfoDescription')}
           </AlertDescription>
         </Alert>
-      
+
         <div className="mb-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-medium">{t('admin.athleteOrder')}</h3>
             <Button onClick={handleSaveSeeding} disabled={loading}>
               {loading ? t('common.saving') : t('common.save')}
             </Button>
-          </div>
-          
+          </div>          
           <DragDropContext onDragEnd={handleDragEnd}>
             <Droppable droppableId="athletes">
               {(provided) => (
-                <div 
+                <div
+                  
                   {...provided.droppableProps}
                   ref={provided.innerRef}
                   className="space-y-2"
@@ -137,16 +147,15 @@ const SeedingSection = ({ tournament }: SeedingSectionProps) => {
                   {athletes.map((athlete, index) => (
                     <Draggable 
                       key={athlete.id} 
-                      draggableId={athlete.id} 
+                      draggableId={athlete.id}
                       index={index}
                     >
                       {(provided) => (
                         <div
                           ref={provided.innerRef}
                           {...provided.draggableProps}
-                          className={`flex items-center justify-between p-3 rounded-md ${
-                            athlete.isSeeded 
-                              ? 'bg-yellow-500/10 border border-yellow-500/20' 
+                          className={`flex items-center justify-between p-3 rounded-md ${athlete.isSeeded
+                              ? 'bg-yellow-500/10 border border-yellow-500/20'
                               : 'bg-black border border-zinc-800'
                           }`}
                         >
@@ -167,11 +176,11 @@ const SeedingSection = ({ tournament }: SeedingSectionProps) => {
                               </div>
                             </div>
                           </div>
-                          
+
                           <div className="flex items-center gap-2">
                             <span className="text-sm text-zinc-400 mr-2">
                               {t('admin.seedAthlete')}
-                            </span>
+                            </span>                            
                             <Switch 
                               checked={athlete.isSeeded}
                               onCheckedChange={() => toggleSeed(athlete.id)}

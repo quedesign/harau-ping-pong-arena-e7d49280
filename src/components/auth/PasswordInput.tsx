@@ -4,10 +4,15 @@ import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/comp
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Eye, EyeOff } from "lucide-react";
-import { UseFormReturn } from "react-hook-form";
+import { FieldValues, UseFormReturn } from "react-hook-form";
+
+interface FormValues extends FieldValues {
+    password?: string;
+    confirmPassword?: string
+}
 
 interface PasswordInputProps {
-  form: UseFormReturn<any>;
+  form: UseFormReturn<FormValues>;
   name: "password" | "confirmPassword";
   label: string;
   autoComplete?: string;

@@ -20,7 +20,7 @@ interface RegisterFormProps {
 
 export const RegisterForm = ({ onSuccess }: RegisterFormProps) => {
   const { t } = useTranslation();
-  const { register: registerUser, isLoading, error } = useAuth();
+  const { register: registerUser, isLoading, error, setError } = useAuth();
   
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
@@ -49,7 +49,11 @@ export const RegisterForm = ({ onSuccess }: RegisterFormProps) => {
         onSuccess();
       }
     } catch (err) {
-      console.error('Erro no registro:', err);
+      console.error('Erro no registro:', err);       
+      let errorMessage = err instanceof Error ? err.message : t("auth.registerFailed");
+        setError(errorMessage)
+        form.setError('email', { type: 'manual', message: errorMessage });
+      
     }
   };
 

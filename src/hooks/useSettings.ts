@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useToast } from '@/components/ui/use-toast';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/contexts/auth';
@@ -12,15 +12,39 @@ interface UserSettings {
 }
 
 export const useSettings = () => {
+  const localStorageKey = 'user-settings';
   const { toast } = useToast();
   const { t, i18n } = useTranslation();
   const { currentUser } = useAuth();
-  const [settings, setSettings] = useState<UserSettings>({
+
+  const initialSettings: UserSettings = {
     darkMode: false,
     emailNotifications: true,
     language: i18n.language || 'pt',
     timezone: 'America/Sao_Paulo',
+  };
+
+  const [settings, setSettings] = useState<UserSettings>(() => {
+    const storedSettings = localStorage.getItem(localStorageKey);
+    if (storedSettings) {
+      const parsedSettings = JSON.parse(storedSettings) as UserSettings;
+      i18n.changeLanguage(parsedSettings.language);
+      return parsedSettings;
+    }
+    return initialSettings;
   });
+
+  useEffect(() => {
+    const storedSettings = localStorage.getItem(localStorageKey);
+    if (storedSettings) {
+      const parsedSettings = JSON.parse(storedSettings) as UserSettings;
+      setSettings(parsedSettings);
+    }
+    i18n.changeLanguage(settings.language);
+    
+  }, []);
+
+  useEffect(() => {localStorage.setItem(localStorageKey, JSON.stringify(settings))}, [settings]);
 
   const handleUpdateSettings = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,7 +53,7 @@ export const useSettings = () => {
       // Update i18n language
       if (settings.language) {
         i18n.changeLanguage(settings.language);
-      }
+      }      
 
       toast({
         title: t('common.success'),

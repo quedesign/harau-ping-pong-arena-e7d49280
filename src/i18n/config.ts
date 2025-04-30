@@ -21,8 +21,8 @@ i18n
       escapeValue: false
     },
     detection: {
-      order: ['navigator'],
-      caches: [] // Disable caching
+      order: ['localStorage', 'navigator'],
+      caches: ['localStorage']
     }
   });
 

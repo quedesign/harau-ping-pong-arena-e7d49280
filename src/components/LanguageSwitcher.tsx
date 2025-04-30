@@ -1,5 +1,6 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
+import { useSettings } from '@/hooks/useSettings';
 import { useTranslation } from 'react-i18next';
 import {
   Select,
@@ -11,7 +12,7 @@ import {
 
 const LanguageSwitcher = () => {
   const { t, i18n } = useTranslation();
-  const [currentLanguage, setCurrentLanguage] = useState(i18n.language || 'pt');
+  const { settings, setSettings } = useSettings();
 
   const languages = [
     { code: 'pt', name: 'Português' },
@@ -20,27 +21,23 @@ const LanguageSwitcher = () => {
   ];
 
   useEffect(() => {
-    const detectedLanguage = i18n.language;
-    if (detectedLanguage !== 'pt' && 
-        detectedLanguage !== 'en' && 
-        detectedLanguage !== 'es') {
-      i18n.changeLanguage('pt');
-      setCurrentLanguage('pt');
+    if (!settings.language) {
+      setSettings({...settings, language: i18n.language})
     }
-  }, [i18n]);
+  }, [i18n, settings, setSettings]);
 
   const handleLanguageChange = (value: string) => {
+    setSettings({...settings, language: value})
     i18n.changeLanguage(value);
-    setCurrentLanguage(value);
   };
 
   const getCurrentLanguageName = () => {
-    const lang = languages.find(l => l.code === currentLanguage);
+    const lang = languages.find(l => l.code === settings.language);
     return lang ? lang.name : 'Português';
   };
 
   return (
-    <Select value={currentLanguage} onValueChange={handleLanguageChange}>
+    <Select value={settings.language} onValueChange={handleLanguageChange}>
       <SelectTrigger className="w-[180px]">
         <SelectValue placeholder={getCurrentLanguageName()} />
       </SelectTrigger>

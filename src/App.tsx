@@ -11,7 +11,7 @@ import { DataProvider } from "@/contexts/DataContext";
 // Pages
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
-import Login from "./pages/Login";
+import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register"; // Updated import path
 import Dashboard from "./pages/Dashboard";
 import ForgotPassword from "./pages/ForgotPassword";
@@ -36,7 +36,7 @@ import Settings from "./pages/Settings";
 // Cria uma nova instância do QueryClient
 const queryClient = new QueryClient();
 
-const App = () => {
+const App: React.FC = () => {
   return (
     <React.StrictMode>
       <QueryClientProvider client={queryClient}>

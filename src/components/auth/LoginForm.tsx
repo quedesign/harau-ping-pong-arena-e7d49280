@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -10,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { loginSchema, type LoginFormValues } from '@/pages/auth/schema';
 import { PasswordInput } from './PasswordInput';
 import { useAuth } from '@/contexts/auth';
+import { Link } from 'react-router-dom';
 
 export const LoginForm = () => {
   const { t } = useTranslation();
@@ -67,6 +69,12 @@ export const LoginForm = () => {
           label={t('auth.password', 'Senha')}
           autoComplete="current-password"
         />
+
+        <div className="flex items-center justify-between">
+          <Link to="/forgot-password" className="text-sm text-primary hover:underline">
+            {t('auth.forgotPassword', 'Esqueceu a senha?')}
+          </Link>
+        </div>
 
         <Button type="submit" className="w-full" disabled={isLoading}>
           {isLoading ? (

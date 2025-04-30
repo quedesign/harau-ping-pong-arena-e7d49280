@@ -1,6 +1,4 @@
 
-// Add any missing imports and exports from the original file
-
 import { AthleteProfile } from '@/types';
 
 export interface AthleteContextType {
@@ -27,7 +25,7 @@ export interface SupabaseAthleteData {
   created_at: string;
   updated_at: string;
   
-  // Additional fields that align with our types
+  // Campos adicionais que se alinham com nossos tipos
   playing_style?: string;
   grip_style?: string;
   play_frequency?: string;
@@ -37,8 +35,4 @@ export interface SupabaseAthleteData {
   preferred_locations?: string[];
   racket?: string;
   rubbers?: string;
-  equipment?: {
-    racket?: string;
-    rubbers?: string;
-  };
 }

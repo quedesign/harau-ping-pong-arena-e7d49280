@@ -2,24 +2,24 @@
 import { AthleteProfile, PlayingStyle, GripStyle, PlayFrequency, TournamentParticipation } from '@/types';
 import { SupabaseAthleteData } from './types';
 
-// Convert Supabase data to app format
+// Converter dados do Supabase para o formato do app
 export const mapSupabaseToAthleteProfile = (data: SupabaseAthleteData): AthleteProfile => {
   return {
     userId: data.user_id,
     handedness: data.handedness as 'left' | 'right' | 'ambidextrous',
-    height: Number(data.height) || undefined,
-    weight: Number(data.weight) || undefined,
+    height: data.height,
+    weight: data.weight,
     level: data.level as 'beginner' | 'intermediate' | 'advanced' | 'professional',
     location: {
       city: data.city,
       state: data.state,
       country: data.country,
     },
-    bio: data.bio || undefined,
-    yearsPlaying: data.years_playing || undefined,
+    bio: data.bio,
+    yearsPlaying: data.years_playing,
     wins: data.wins,
     losses: data.losses,
-    // New fields - safely access optional properties
+    // Campos novos - acessar propriedades opcionais com segurança
     playingStyle: data.playing_style as PlayingStyle | undefined,
     gripStyle: data.grip_style as GripStyle | undefined,
     playFrequency: data.play_frequency as PlayFrequency | undefined,
@@ -34,11 +34,11 @@ export const mapSupabaseToAthleteProfile = (data: SupabaseAthleteData): AthleteP
   };
 };
 
-// Convert app format to Supabase data
+// Converter formato do app para dados do Supabase
 export const mapProfileToSupabaseData = (profile: AthleteProfile) => {
   const { location, equipment, ...rest } = profile;
   
-  // Prepare data for Supabase
+  // Preparar dados para o Supabase
   return {
     user_id: rest.userId,
     handedness: rest.handedness,
@@ -52,7 +52,7 @@ export const mapProfileToSupabaseData = (profile: AthleteProfile) => {
     years_playing: rest.yearsPlaying,
     wins: rest.wins,
     losses: rest.losses,
-    // New fields
+    // Campos novos
     playing_style: rest.playingStyle,
     grip_style: rest.gripStyle,
     play_frequency: rest.playFrequency,
@@ -65,7 +65,7 @@ export const mapProfileToSupabaseData = (profile: AthleteProfile) => {
   };
 };
 
-// Prepare update data for Supabase
+// Preparar dados para atualização no Supabase
 export const prepareUpdateData = (profileData: Partial<AthleteProfile>) => {
   const updateData: any = { updated_at: new Date().toISOString() };
   
@@ -79,12 +79,12 @@ export const prepareUpdateData = (profileData: Partial<AthleteProfile>) => {
   if (profileData.losses !== undefined) updateData.losses = profileData.losses;
   
   if (profileData.location) {
-    if (profileData.location.city) updateData.city = profileData.location.city;
-    if (profileData.location.state) updateData.state = profileData.location.state;
-    if (profileData.location.country) updateData.country = profileData.location.country;
+    if (profileData.location.city !== undefined) updateData.city = profileData.location.city;
+    if (profileData.location.state !== undefined) updateData.state = profileData.location.state;
+    if (profileData.location.country !== undefined) updateData.country = profileData.location.country;
   }
 
-  // New fields
+  // Campos novos
   if (profileData.playingStyle !== undefined) updateData.playing_style = profileData.playingStyle;
   if (profileData.gripStyle !== undefined) updateData.grip_style = profileData.gripStyle;
   if (profileData.playFrequency !== undefined) updateData.play_frequency = profileData.playFrequency;

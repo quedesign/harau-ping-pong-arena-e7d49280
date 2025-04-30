@@ -1,9 +1,11 @@
 
 import { useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase, SUPABASE_SERVICE_ROLE_KEY, SUPABASE_URL } from "@/integrations/supabase/client";
 import { useTranslation } from "react-i18next";
+import { createClient } from "@supabase/supabase-js";
 import { toast } from "sonner";
 import { UserRole } from "@/types";
+
 
 export const useRegister = () => {
   const { t } = useTranslation();
@@ -16,6 +18,7 @@ export const useRegister = () => {
     password: string,
     role: UserRole
   ): Promise<boolean> => {
+    const supabaseAdmin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
     setIsLoading(true);
     setError(null);
 
@@ -30,7 +33,7 @@ export const useRegister = () => {
         throw authError;
       }
       if (data?.user?.id) {
-        const { error: dbError } = await supabase.from("users").insert({
+        const { error: dbError } = await supabaseAdmin.from("users").insert({
           id: data.user.id,
           name,
           email,

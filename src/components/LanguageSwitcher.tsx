@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { useSettings } from '@/hooks/useSettings';
 import { useTranslation } from 'react-i18next';
@@ -20,26 +19,24 @@ const LanguageSwitcher = () => {
     { code: 'es', name: 'Español' }
   ];
 
+  // Atualiza i18n se settings.language estiver definido mas não aplicado
   useEffect(() => {
-    if (!settings.language) {
-      setSettings({...settings, language: i18n.language})
+    if (settings.language && i18n.language !== settings.language) {
+      i18n.changeLanguage(settings.language);
+    } else if (!settings.language && i18n.language) {
+      setSettings({ ...settings, language: i18n.language });
     }
-  }, [i18n, settings, setSettings]);
+  }, [i18n.language, settings.language, setSettings, i18n]);
 
   const handleLanguageChange = (value: string) => {
-    setSettings({...settings, language: value})
     i18n.changeLanguage(value);
-  };
-
-  const getCurrentLanguageName = () => {
-    const lang = languages.find(l => l.code === settings.language);
-    return lang ? lang.name : 'Português';
+    setSettings({ ...settings, language: value });
   };
 
   return (
     <Select value={settings.language} onValueChange={handleLanguageChange}>
       <SelectTrigger className="w-[180px]">
-        <SelectValue placeholder={getCurrentLanguageName()} />
+        <SelectValue placeholder={t('Select language')} />
       </SelectTrigger>
       <SelectContent>
         {languages.map((lang) => (

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useData } from '@/contexts/DataContext';
-import { useAuth } from '@/contexts/auth';
+import { useTournament } from '@/contexts/data';
+import { useAthlete } from '@/contexts/data/athlete';
 import { Tournament } from '@/types';
 import { toast } from '@/hooks/use-toast';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -15,7 +15,8 @@ interface AthleteApprovalSectionProps {
 
 const AthleteApprovalSection = ({ tournament }: AthleteApprovalSectionProps) => {
   const { t } = useTranslation();
-  const { athleteProfiles, updateTournament } = useData();
+  const { athleteProfiles } = useAthlete();
+  const { updateTournament } = useTournament();
   const [loading, setLoading] = useState<Record<string, boolean>>({});
 
   // Mock data for athletes registered for this tournament

@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useTournament } from '@/contexts/data';
-import { useTournamentMutations } from '@/hooks/useTournamentMutations';
 import { useAuth } from '@/contexts/auth';
 import Layout from '@/components/layout/Layout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -19,8 +18,7 @@ const ManageTournament = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { currentUser } = useAuth();
-  const { tournaments, loading } = useTournament();
-  const { updateTournament, deleteTournament } = useTournamentMutations(undefined);
+  const { tournaments, loading, updateTournament, deleteTournament } = useTournament();
   
   const [tournament, setTournament] = useState<Tournament | null>(null);
   const [error, setError] = useState<Error | null>(null);

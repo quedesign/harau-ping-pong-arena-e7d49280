@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { useTranslation } from 'react-i18next';
-import { useData } from '@/contexts/DataContext';
+import { useTournament, useData } from '@/contexts/data';
 import { Tournament } from '@/types';
 import { toast } from '@/hooks/use-toast';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -29,7 +29,8 @@ interface SeedingSectionProps {
 
 const SeedingSection = ({ tournament }: SeedingSectionProps) => {
   const { t } = useTranslation();
-  const { athleteProfiles, updateTournament } = useData();
+  const { athleteProfiles } = useData();
+  const { updateTournament } = useTournament()
   const [loading, setLoading] = useState(false);
   const [athletes, setAthletes] = useState<Athlete[]>(() =>
     tournament.registeredParticipants.map((id, index): Athlete => {

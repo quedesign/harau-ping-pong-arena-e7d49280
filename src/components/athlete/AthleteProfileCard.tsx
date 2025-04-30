@@ -1,3 +1,4 @@
+
 import { MapPin, Award, Swords, Timer, Trophy, BadgeCheck, User, CircleUser } from "lucide-react";
 import AthletePreferredLocations from "./AthletePreferredLocations";
 import AthletePreferredTimes from "./AthletePreferredTimes";
@@ -121,7 +122,7 @@ const AthleteProfileCard: React.FC<AthleteProfileCardProps> = ({ profile }) => {
 
             <div className="w-full space-y-4">
               {profile.playingStyle && (
-                <div className="flex items-center gap-2" >
+                <div className="flex items-center gap-2">
                   <Swords size={16} className="text-zinc-400"/>
                   <span className="text-zinc-400">
                     Estilo de jogo:
@@ -129,16 +130,20 @@ const AthleteProfileCard: React.FC<AthleteProfileCardProps> = ({ profile }) => {
                   <span className="ml-auto">
                     {formatPlayingStyle(profile.playingStyle)}
                   </span>
-                  <div className="flex items-center gap-2">
-                    <Award size={16} className="text-zinc-400" />
-                    <span className="text-zinc-400">Empunhadura:</span>
-                    <span className="ml-auto">
-                    {profile.gripStyle === "classic" ? "Clássica" : profile.gripStyle === "penhold" ? "Caneta" : "Outras"}
-                    </span>
-                </div>}
                 </div>
-                )}
-                {profile.gripStyle && (
+              )}
+              
+              {profile.gripStyle && (
+                <div className="flex items-center gap-2">
+                  <Award size={16} className="text-zinc-400" />
+                  <span className="text-zinc-400">Empunhadura:</span>
+                  <span className="ml-auto">
+                    {profile.gripStyle === "classic" ? "Clássica" : profile.gripStyle === "penhold" ? "Caneta" : "Outras"}
+                  </span>
+                </div>
+              )}
+              
+              {profile.playFrequency && (
                 <div className="flex items-center gap-2">
                   <Timer size={16} className="text-zinc-400" />
                   <span className="text-zinc-400">Frequência:</span>
@@ -154,7 +159,6 @@ const AthleteProfileCard: React.FC<AthleteProfileCardProps> = ({ profile }) => {
                       : "Raramente"}
                   </span>
                 </div>
-                )}
               )}
 
               {profile.tournamentParticipation && (

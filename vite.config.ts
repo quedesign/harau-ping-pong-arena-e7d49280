@@ -14,6 +14,7 @@ export default defineConfig(({ mode }) => ({
     react({
       jsxRuntime: 'automatic',
       tsDecorators: true,
+      jsxImportSource: 'react',
     }),
     mode === 'development' &&
     componentTagger(),
@@ -25,5 +26,7 @@ export default defineConfig(({ mode }) => ({
   },
   esbuild: {
     jsx: 'automatic',
+    jsxFactory: 'React.createElement',
+    jsxFragment: 'React.Fragment',
   },
 }));

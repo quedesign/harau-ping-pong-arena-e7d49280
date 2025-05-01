@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import { useSettings } from '@/hooks/useSettings';
 import { useTranslation } from 'react-i18next';
@@ -20,8 +21,12 @@ const LanguageSwitcher: React.FC = () => {
   ];
 
   useEffect(() => {
-    i18n.changeLanguage(settings.language);
-  }, [settings.language, i18n]);
+    if (settings.language && i18n.language !== settings.language) {
+      i18n.changeLanguage(settings.language);
+    } else if (!settings.language && i18n.language) {
+      setSettings({ ...settings, language: i18n.language });
+    }
+  }, [i18n.language, settings.language, setSettings, i18n, settings]);
 
   const handleLanguageChange = (languageCode: string) => {    
     i18n.changeLanguage(languageCode);    

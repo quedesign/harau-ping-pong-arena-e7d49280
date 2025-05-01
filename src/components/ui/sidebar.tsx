@@ -1,3 +1,4 @@
+
 import * as React from "react"
 
 import { Slot } from "@radix-ui/react-slot"
@@ -18,15 +19,16 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 
-import { SIDEBAR_COOKIE_MAX_AGE, SIDEBAR_COOKIE_NAME, SIDEBAR_KEYBOARD_SHORTCUT, SIDEBAR_WIDTH, SIDEBAR_WIDTH_ICON, SIDEBAR_WIDTH_MOBILE, type SidebarContext } from "./sidebar.utils";
+import { SIDEBAR_COOKIE_MAX_AGE, SIDEBAR_COOKIE_NAME, SIDEBAR_KEYBOARD_SHORTCUT, SIDEBAR_WIDTH, SIDEBAR_WIDTH_ICON, SIDEBAR_WIDTH_MOBILE } from "./sidebar.utils";
 
-  state: "expanded" | "collapsed"
-  open: boolean
-  setOpen: (open: boolean) => void
-  openMobile: boolean
-  setOpenMobile: (open: boolean) => void
-  isMobile: boolean
-  toggleSidebar: () => void
+interface SidebarContext {
+  state: "expanded" | "collapsed";
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  openMobile: boolean;
+  setOpenMobile: (open: boolean) => void;
+  isMobile: boolean;
+  toggleSidebar: () => void;
 }
 
 export const SidebarContext = React.createContext<SidebarContext | null>(null)
@@ -754,4 +756,3 @@ export {
   SidebarTrigger,
   useSidebar,
 }
-

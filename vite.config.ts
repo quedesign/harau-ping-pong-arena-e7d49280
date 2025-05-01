@@ -11,7 +11,10 @@ export default defineConfig(({ mode }) => ({
     port: 8080,
   },
   plugins: [
-    react(),
+    react({
+      jsxImportSource: 'react',
+      plugins: [{ name: 'typescript-plugin-css-modules' }]
+    }),
     mode === 'development' &&
     componentTagger(),
   ].filter(Boolean),

@@ -1,5 +1,6 @@
+
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { useTranslation } from 'react-i18next';
@@ -7,6 +8,8 @@ import { LoginForm } from '@/components/auth/LoginForm';
 
 const Login = () => {
   const { t } = useTranslation();
+  const location = useLocation();
+  const from = location.state?.from || '/dashboard';
 
   return (
     <Layout>

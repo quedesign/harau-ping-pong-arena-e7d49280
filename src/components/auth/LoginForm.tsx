@@ -11,11 +11,12 @@ import { useTranslation } from 'react-i18next';
 import { loginSchema, type LoginFormValues } from '@/pages/auth/schema';
 import { PasswordInput } from './PasswordInput';
 import { useAuth } from '@/contexts/auth';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 export const LoginForm = () => {
   const { t } = useTranslation();
   const { login, isLoading, error } = useAuth();
+  const navigate = useNavigate();
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -27,7 +28,11 @@ export const LoginForm = () => {
 
   const onSubmit = async (values: LoginFormValues) => {
     try {
-      await login(values.email, values.password);
+      const success = await login(values.email, values.password);
+      if (success) {
+        console.log('Login bem-sucedido, redirecionando para o dashboard');
+        navigate('/dashboard');
+      }
     } catch (err) {
       console.error('Erro no login:', err);
     }

@@ -1,6 +1,5 @@
 
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -13,6 +12,7 @@ import { registerSchema, type RegisterFormValues } from '@/pages/auth/schema';
 import { PasswordInput } from './PasswordInput';
 import { RoleSelector } from './RoleSelector';
 import { useAuth } from '@/contexts/auth';
+import { useNavigate } from 'react-router-dom';
 
 interface RegisterFormProps {
   onSuccess: () => void;
@@ -20,8 +20,10 @@ interface RegisterFormProps {
 
 export const RegisterForm = ({ onSuccess }: RegisterFormProps) => {
   const { t } = useTranslation();
-  const { register: registerUser, isLoading, error, setError } = useAuth();
-  
+  const { register, isLoading, error } = useAuth();
+  const navigate = useNavigate();
+  const [serverError, setServerError] = useState<string | null>(null);
+
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
@@ -32,52 +34,53 @@ export const RegisterForm = ({ onSuccess }: RegisterFormProps) => {
       role: 'athlete',
     },
   });
-  
+
   const onSubmit = async (values: RegisterFormValues) => {
+    setServerError(null);
     try {
-      console.log("Enviando dados de registro:", values);
-      
-      const success = await registerUser(
-        values.name, 
-        values.email, 
-        values.password, 
-        values.role
+      console.log('Registrando usuário:', values);
+      const success = await register(
+        values.name,
+        values.email,
+        values.password,
+        values.role,
       );
-      
+
       if (success) {
-        console.log("Registro bem-sucedido!");
-         onSuccess();
+        console.log('Registro bem-sucedido, redirecionando');
+        onSuccess();
+        // Adicione um pequeno atraso antes de redirecionar para o dashboard
+        setTimeout(() => {
+          navigate('/dashboard');
+        }, 500);
       }
     } catch (err) {
-      console.error('Erro no registro:', err);       
-      let errorMessage = err instanceof Error ? err.message : t("auth.registerFailed");
-        setError(errorMessage)
-        form.setError('email', { type: 'manual', message: errorMessage });
-      
-     }
+      console.error('Erro no registro:', err);
+      setServerError(err instanceof Error ? err.message : 'Erro desconhecido ao registrar');
+    }
   };
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        {error && (
+        {(error || serverError) && (
           <Alert variant="destructive" className="mb-4">
             <AlertCircle className="h-4 w-4" />
-            <AlertDescription>{error}</AlertDescription>
+            <AlertDescription>{error || serverError}</AlertDescription>
           </Alert>
         )}
-        
+
         <FormField
           control={form.control}
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('auth.fullName', 'Nome completo')}</FormLabel>
+              <FormLabel>{t('auth.name', 'Nome')}</FormLabel>
               <FormControl>
                 <Input
                   {...field}
-                  placeholder={t('auth.fullNamePlaceholder', 'Digite seu nome completo')}
                   className="bg-zinc-800 border-zinc-700"
+                  placeholder={t('auth.namePlaceholder', 'Digite seu nome completo')}
                   autoComplete="name"
                 />
               </FormControl>
@@ -85,7 +88,7 @@ export const RegisterForm = ({ onSuccess }: RegisterFormProps) => {
             </FormItem>
           )}
         />
-        
+
         <FormField
           control={form.control}
           name="email"
@@ -96,8 +99,8 @@ export const RegisterForm = ({ onSuccess }: RegisterFormProps) => {
                 <Input
                   {...field}
                   type="email"
-                  placeholder="exemplo@email.com"
                   className="bg-zinc-800 border-zinc-700"
+                  placeholder="exemplo@email.com"
                   autoComplete="email"
                 />
               </FormControl>
@@ -105,35 +108,31 @@ export const RegisterForm = ({ onSuccess }: RegisterFormProps) => {
             </FormItem>
           )}
         />
-        
+
         <PasswordInput
           form={form}
           name="password"
           label={t('auth.password', 'Senha')}
           autoComplete="new-password"
         />
-        
+
         <PasswordInput
           form={form}
           name="confirmPassword"
-          label={t('auth.confirmPassword', 'Confirme sua senha')}
+          label={t('auth.confirmPassword', 'Confirmar senha')}
           autoComplete="new-password"
         />
-        
+
         <RoleSelector form={form} />
-        
-        <Button
-          type="submit"
-          className="w-full"
-          disabled={isLoading}
-        >
+
+        <Button type="submit" className="w-full" disabled={isLoading}>
           {isLoading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              {t('auth.creatingAccount', 'Criando conta...')}
+              {t('auth.registering', 'Registrando...')}
             </>
           ) : (
-            t('auth.createAccount', 'Criar conta')
+            t('auth.register', 'Criar conta')
           )}
         </Button>
       </form>

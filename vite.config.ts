@@ -11,12 +11,7 @@ export default defineConfig(({ mode }) => ({
     port: 8080,
   },
   plugins: [
-    react({
-      jsxRuntime: 'automatic',
-      tsDecorators: true,
-      jsxImportSource: 'react',
-      plugins: [],
-    }),
+    react(),
     mode === 'development' &&
     componentTagger(),
   ].filter(Boolean),
@@ -26,13 +21,6 @@ export default defineConfig(({ mode }) => ({
     },
   },
   esbuild: {
-    jsx: 'automatic',
-    jsxFactory: 'React.createElement',
-    jsxFragment: 'React.Fragment',
-    tsconfigRaw: {
-      compilerOptions: {
-        jsx: "react-jsx",
-      }
-    }
+    jsx: 'react-jsx',
   },
 }));

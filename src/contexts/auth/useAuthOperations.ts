@@ -6,13 +6,12 @@ import { useLogout } from './operations/useLogout';
 import { useRegister } from './operations/useRegister';
 import { useTestUser } from './operations/useTestUser';
 import { useResetPassword } from './operations/useResetPassword';
-import { Session } from '@supabase/supabase-js';
 
 export const useAuthOperations = () => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
+  const [session, setSession] = useState<any | null>(null);
 
   const { login, isLoading: loginLoading, error: loginError } = useLogin();
   const { logout, isLoading: logoutLoading } = useLogout();

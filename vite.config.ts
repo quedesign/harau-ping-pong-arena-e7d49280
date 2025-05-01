@@ -15,6 +15,7 @@ export default defineConfig(({ mode }) => ({
       jsxRuntime: 'automatic',
       tsDecorators: true,
       jsxImportSource: 'react',
+      plugins: [],
     }),
     mode === 'development' &&
     componentTagger(),
@@ -28,5 +29,10 @@ export default defineConfig(({ mode }) => ({
     jsx: 'automatic',
     jsxFactory: 'React.createElement',
     jsxFragment: 'React.Fragment',
+    tsconfigRaw: {
+      compilerOptions: {
+        jsx: "react-jsx",
+      }
+    }
   },
 }));

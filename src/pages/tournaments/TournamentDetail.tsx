@@ -10,7 +10,7 @@ import { CalendarDays, MapPin, Users, Flag, Timer } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Match } from '@/types';
-import { supabase } from '@/integrations/supabase/client';
+import { writeData } from '@/integrations/firebase/utils';
 
 const TournamentDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -45,11 +45,13 @@ const TournamentDetail = () => {
     if (!currentUser || !tournament || isRegistered) return;
 
     try {
-      const { error } = await supabase
-        .from('tournament_participants')
-        .insert([{ tournament_id: tournament.id, athlete_id: currentUser.id }]);
+      await writeData(`tournament_participants/${tournament.id}_${currentUser.id}`, {
+        tournamentId: tournament.id,
+        athleteId: currentUser.id,
+      });
 
-      if (error) throw error;
+      // if (error) throw error;
+      
       setIsRegistered(true);
       reload();
     } catch (err) {

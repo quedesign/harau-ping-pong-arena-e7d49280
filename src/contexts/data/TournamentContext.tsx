@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { Tournament, TournamentFormat } from '@/types';
+import { Tournament } from '@/types';
 import { useTournamentMutations } from '@/hooks/useTournamentMutations';
-import { supabase } from '@/integrations/supabase/client';
+import { readData } from '@/integrations/firebase/utils';
 
 interface TournamentContextType {
   tournaments: Tournament[];
@@ -21,39 +21,41 @@ const useProvideTournament = (): TournamentContextType => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<Error | null>(null);
 
+  const fetchAllTournaments = useCallback(async (): Promise<Tournament[]> => {
+    const data = await readData('tournaments');
+    if (!data) {
+      throw new Error('No data returned from fetchAllTournaments');
+    }
+    const tournamentsArray = Object.entries(data).map(([id, tournamentData]) => ({
+      id,
+      ...tournamentData,
+      startDate: new Date(tournamentData.startDate),
+      endDate: new Date(tournamentData.endDate),
+    })) as Tournament[];
+    return tournamentsArray;
+  }, []);
+
+  const fetchTournament = useCallback(async (id: string): Promise<Tournament | undefined> => {
+    const data = await readData(`tournaments/${id}`);
+    if (!data) {
+      throw new Error(`No data returned from fetchTournament with id ${id}`);
+    }
+    return {
+      id,
+      ...data,
+      startDate: new Date(data.startDate),
+      endDate: new Date(data.endDate),
+    } as Tournament;
+  }, []);
+
   const { createTournament, updateTournament, deleteTournament } = useTournamentMutations(setTournaments);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
-    try {
-      const { data, error } = await supabase
-        .from('tournaments')
-        .select('*')
-        .order('start_date', { ascending: true });
-
-      if (error) throw error;
-
-      if (data) {
-        const mapped = data.map(item => ({
-          id: item.id,
-          name: item.name,
-          description: item.description,
-          format: item.format as TournamentFormat,
-          startDate: new Date(item.start_date),
-          endDate: new Date(item.end_date),
-          location: item.location,
-          entryFee: Number(item.entry_fee),
-          maxParticipants: item.max_participants,
-          registeredParticipants: [], // precisa ser carregado separadamente se necessário
-          createdBy: item.created_by,
-          bannerImage: item.banner_image,
-          status: item.status as 'upcoming' | 'ongoing' | 'completed',
-          pixKey: item.pix_key,
-        }));
-
-        setTournaments(mapped);
-        setError(null);
-      }
+    try {      
+      const allTournaments = await fetchAllTournaments()
+      setTournaments(allTournaments);
+      setError(null);
     } catch (err) {
       setError(err as Error);
     } finally {
@@ -63,30 +65,13 @@ const useProvideTournament = (): TournamentContextType => {
 
   const fetchSingleTournament = useCallback(async (id: string) => {
     try {
-      const { data, error } = await supabase
-        .from('tournaments')
-        .select('*')
-        .eq('id', id)
-        .single();
-
-      if (error || !data) throw new Error('Error getting tournament');
-
-      setTournament({
-        id: data.id,
-        name: data.name,
-        description: data.description,
-        format: data.format as TournamentFormat,
-        startDate: new Date(data.start_date),
-        endDate: new Date(data.end_date),
-        location: data.location,
-        entryFee: Number(data.entry_fee),
-        maxParticipants: data.max_participants,
-        registeredParticipants: [], // idem
-        createdBy: data.created_by,
-        bannerImage: data.banner_image,
-        status: data.status as 'upcoming' | 'ongoing' | 'completed',
-        pixKey: data.pix_key,
-      });
+      const tournamentData = await fetchTournament(id)
+      if(tournamentData){
+        setTournament(tournamentData)
+      } else {
+        throw new Error('Error getting tournament');
+      }
+      
       setError(null);
     } catch (err) {
       setError(err as Error);

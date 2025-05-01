@@ -1,12 +1,15 @@
 
 import { Tournament, TournamentFormat } from '@/types';
-import { supabase } from '@/integrations/supabase/client';
+import { writeData, deleteData } from '@/integrations/firebase/utils';
+
 
 export const useTournamentMutations = (setTournaments: React.Dispatch<React.SetStateAction<Tournament[]>>) => {
   const createTournament = async (tournamentData: Omit<Tournament, 'id'>): Promise<Tournament> => {
-    const { startDate, endDate, registeredParticipants, ...rest } = tournamentData;
+    const { startDate, endDate, ...rest } = tournamentData;
+
+    const id = crypto.randomUUID()
     
-    const supabaseTournament = {
+    const firebaseTournament = {
       name: rest.name,
       description: rest.description,
       format: rest.format,
@@ -18,33 +21,28 @@ export const useTournamentMutations = (setTournaments: React.Dispatch<React.SetS
       created_by: rest.createdBy,
       status: rest.status,
       banner_image: rest.bannerImage,
-      pix_key: rest.pixKey
+      pix_key: rest.pixKey,
+      id: id
     };
-    
-    const { data, error } = await supabase
-      .from('tournaments')
-      .insert(supabaseTournament)
-      .select()
-      .single();
-    
-    if (error) throw error;
-    if (!data) throw new Error('No data returned from create');
+
+    await writeData(`tournaments/${id}`, firebaseTournament)
+
     
     const newTournament: Tournament = {
-      id: data.id,
-      name: data.name,
-      description: data.description,
-      format: data.format as TournamentFormat, // Cast to ensure proper typing
-      startDate: new Date(data.start_date),
-      endDate: new Date(data.end_date),
-      location: data.location,
-      entryFee: Number(data.entry_fee),
-      maxParticipants: data.max_participants,
+      id: firebaseTournament.id,
+      name: firebaseTournament.name,
+      description: firebaseTournament.description,
+      format: firebaseTournament.format as TournamentFormat,
+      startDate: new Date(firebaseTournament.start_date),
+      endDate: new Date(firebaseTournament.end_date),
+      location: firebaseTournament.location,
+      entryFee: Number(firebaseTournament.entry_fee),
+      maxParticipants: firebaseTournament.max_participants,
       registeredParticipants: [],
-      createdBy: data.created_by,
-      bannerImage: data.banner_image,
-      status: data.status as 'upcoming' | 'ongoing' | 'completed', // Cast to ensure proper typing
-      pixKey: data.pix_key
+      createdBy: firebaseTournament.created_by,
+      bannerImage: firebaseTournament.banner_image,
+      status: firebaseTournament.status as 'upcoming' | 'ongoing' | 'completed',
+      pixKey: firebaseTournament.pix_key
     };
     
     setTournaments(prev => [...prev, newTournament]);
@@ -52,20 +50,19 @@ export const useTournamentMutations = (setTournaments: React.Dispatch<React.SetS
   };
 
   const updateTournament = async (id: string, data: Partial<Tournament>): Promise<Tournament> => {
-    const updateData: {
-      name?: string;
-      description?: string;
-      format?: TournamentFormat;
-      start_date?: string;
-      end_date?: string;
-      location?: string;
-      entry_fee?: number;
-      max_participants?: number;
-      banner_image?: string;
-      status?: 'upcoming' | 'ongoing' | 'completed';
-      pix_key?: string;
-      updated_at?: string;
-    } = {};
+    const updateData: Partial<Tournament> = {
+      name: data.name,
+      description: data.description,
+      format: data.format,
+      startDate: data.startDate,
+      endDate: data.endDate,
+      location: data.location,
+      entryFee: data.entryFee,
+      maxParticipants: data.maxParticipants,
+      bannerImage: data.bannerImage,
+      status: data.status,
+      pixKey: data.pixKey,
+    };
 
     
     
@@ -81,87 +78,34 @@ export const useTournamentMutations = (setTournaments: React.Dispatch<React.SetS
     if (data.status) updateData.status = data.status;
     if (data.pixKey !== undefined) updateData.pix_key = data.pixKey;
     updateData.updated_at = new Date().toISOString();
+
+    await writeData(`tournaments/${id}`, updateData)
     
-    const { data: updatedData, error } = await supabase
-      .from('tournaments')
-      .update(updateData)
-      .eq('id', id)
-      .select()
-      .single();
-    
-    if (error) throw error;
-    if (!updatedData) throw new Error('No data returned from update');
-
-    // Update participants if necessary
-    if (data.registeredParticipants) {
-      // Get current participants
-      const { data: currentParticipants } = await supabase
-        .from('tournament_participants')
-        .select('athlete_id')
-        .eq('tournament_id', id);
-      
-      const currentParticipantIds = currentParticipants?.map(p => p.athlete_id) || [];
-      const newParticipantIds = data.registeredParticipants;
-      
-      // Add new participants
-      const participantsToAdd = newParticipantIds.filter(
-        id => !currentParticipantIds.includes(id)
-      );
-
-      if (participantsToAdd.length > 0) {
-        const participantsData = participantsToAdd.map(athleteId => ({
-          tournament_id: id,
-          athlete_id: athleteId,
-          approved: true
-        }));
-
-        await supabase
-          .from('tournament_participants')
-          .insert(participantsData);
-      }
-
-      // Remove participants not in the list
-      const participantsToRemove = currentParticipantIds.filter(
-        id => !newParticipantIds.includes(id)
-      );
-
-      if (participantsToRemove.length > 0) {
-        await supabase
-          .from('tournament_participants')
-          .delete()
-          .eq('tournament_id', id)
-          .in('athlete_id', participantsToRemove);
-      }
-    }
-
-    const tournament: Tournament = {
-      id: updatedData.id,
-      name: updatedData.name,
-      description: updatedData.description,
-      format: updatedData.format as TournamentFormat, // Cast to ensure proper typing
-      startDate: new Date(updatedData.start_date),
-      endDate: new Date(updatedData.end_date),
-      location: updatedData.location,
-      entryFee: Number(updatedData.entry_fee),
-      maxParticipants: updatedData.max_participants,
-      registeredParticipants: data.registeredParticipants || [], // Use provided participants or empty array
-      createdBy: updatedData.created_by,
-      bannerImage: updatedData.banner_image,
-      status: updatedData.status as 'upcoming' | 'ongoing' | 'completed', // Cast to ensure proper typing
-      pixKey: updatedData.pix_key
+    const updatedTournament: Tournament = {
+      id: id,
+      name: updateData.name || '',
+      description: updateData.description || '',
+      format: updateData.format || 'single-elimination',
+      startDate: updateData.startDate || new Date(),
+      endDate: updateData.endDate || new Date(),
+      location: updateData.location || '',
+      entryFee: updateData.entryFee || 0,
+      maxParticipants: updateData.maxParticipants || 0,
+      registeredParticipants: [],
+      createdBy: '', //TODO: fix this
+      bannerImage: updateData.bannerImage || undefined,
+      status: updateData.status || 'upcoming',
+      pixKey: updateData.pixKey || undefined
     };
-    
-    setTournaments(prev => prev.map(t => t.id === id ? tournament : t));
-    return tournament;
+
+    setTournaments((prev) =>
+      prev.map((t) => (t.id === id ? updatedTournament : t))
+    );
+    return updatedTournament;
   };
 
   const deleteTournament = async (id: string): Promise<void> => {
-    const { error } = await supabase
-      .from('tournaments')
-      .delete()
-      .eq('id', id);
-    
-    if (error) throw error;
+    await deleteData(`tournaments/${id}`)
     setTournaments(prev => prev.filter(t => t.id !== id));
   };
 

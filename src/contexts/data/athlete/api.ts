@@ -1,58 +1,58 @@
 import { AthleteProfile } from '@/types';
-import { SupabaseAthleteData } from './types';
-import { mapSupabaseToAthleteProfile, mapProfileToSupabaseData, prepareUpdateData } from './mappers';
-import { supabase } from '@/integrations/supabase/client';
+import { readData, writeData } from './../../../integrations/firebase/utils';
+import { mapSupabaseToAthleteProfile, mapProfileToSupabaseData } from './mappers';
 
 export const fetchAllAthleteProfiles = async (): Promise<AthleteProfile[]> => {
-  const { data, error } = await supabase
-    .from('profiles')
-    .select('*');
+  const data = await readData('athletes');
 
-  if (error) throw error;
-  if (!data) throw new Error('No data returned from fetchAllAthleteProfiles');
-
-  return data.map(mapSupabaseToAthleteProfile);
+  if (!data) {
+    throw new Error('No data returned from fetchAllAthleteProfiles');
+  }
+  
+  const athleteArray = Object.entries(data).map(([userId, athleteData]) => ({
+    userId,
+    ...athleteData,
+  })) as AthleteProfile[];
+  return athleteArray;
 };
 
 export const fetchAthleteProfile = async (userId: string): Promise<AthleteProfile | undefined> => {
-  const { data, error } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('user_id', userId)
-    .single();
+  const data = await readData(`athletes/${userId}`);
 
-  if (error) throw error;
-  if (!data) throw new Error('No data returned from fetchAthleteProfile');
+  if (!data) {
+    throw new Error('No data returned from fetchAthleteProfile');
+  }
 
-  return mapSupabaseToAthleteProfile(data);
+  return {
+    userId,
+    ...data,
+  } as AthleteProfile;
 };
 
 export const createNewAthleteProfile = async (profile: AthleteProfile): Promise<AthleteProfile> => {
-  const supabaseData = mapProfileToSupabaseData(profile);
+  await writeData(`athletes/${profile.userId}`, profile);
 
-  const { data, error } = await supabase
-    .from('profiles')
-    .insert(supabaseData)
-    .select()
-    .single();
-
-  if (error) throw error;
-  if (!data) throw new Error('No data returned from createNewAthleteProfile');
-
-  return mapSupabaseToAthleteProfile(data);
+  return profile;
 };
 
-export const updateExistingAthleteProfile = async (userId: string, profileData: Partial<AthleteProfile>): Promise<AthleteProfile> => {
-  const updateData = prepareUpdateData(profileData);
-  const { data, error } = await supabase
-    .from('profiles')
-    .update(updateData)
-    .eq('user_id', userId)
-    .select()
-    .single();
+export const updateExistingAthleteProfile = async (
+  userId: string,
+  profileData: Partial<AthleteProfile>,
+): Promise<AthleteProfile> => {
+  const currentProfile = await fetchAthleteProfile(userId);
 
-  if (error) throw error;
-  if (!data) throw new Error('No data returned from updateExistingAthleteProfile');
+  if (!currentProfile) {
+    throw new Error('Athlete profile not found');
+  }
 
-  return mapSupabaseToAthleteProfile(data);
+  // Merge the existing profile data with the new data
+  const updatedProfile = {
+    ...currentProfile,
+    ...profileData,
+  };
+
+  // Write the merged data back to the database
+  await writeData(`athletes/${userId}`, updatedProfile);
+
+  return updatedProfile;
 };

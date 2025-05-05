@@ -1,14 +1,16 @@
-import { useState, useEffect, useMemo } from "react";
-import { useTranslation } from "react-i18next";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import Layout from "@/components/layout/Layout";
-import { useAthlete} from "@/contexts/data/athlete";
-import { AthleteProfile} from "@/types";
+import { useAthlete } from "@/contexts/data/athlete";
 import { SearchBar, EmptyState, AthleteCard } from "@/components";
-import FilterSection from "@/components/athletes/FilterSection";
+import FilterSection from "@/components/athletes/FilterSection"
 import { FloatingSupportButton } from "@/components/FloatingSupportButton";
+import RecentAthletes from "@/components/athletes/search/RecentAthletes";
+import SearchFilters from "@/components/athletes/search/SearchFilters";
+import AthleteResults from "@/components/athletes/search/AthleteResults";
 
 const AthleteSearch = () => {
-
+  const setActiveTab = useCallback(() => {}, []);
+  
   const { athleteProfiles, loading } = useAthlete();
   const [noResults, setNoResults] = useState<boolean>(false);
   const [filters, setFilters] = useState<Record<string, string[]>>({});
@@ -84,6 +86,8 @@ const AthleteSearch = () => {
     );
   }
 
+  const filtersApplied = Object.values(filters).some(values => values.length > 0);
+
   return (
     <Layout>
       <div className="mb-8">
@@ -92,6 +96,7 @@ const AthleteSearch = () => {
           <p className="text-zinc-400">Encontre atletas pelo nome, nível, localização e estilo de jogo</p>
         </div>
 
+<<<<<<< HEAD
          {/* Recent Athletes Section */}
          <section className="mb-8">
           <h2 className="text-xl font-semibold mb-4">Atletas Recentes</h2>
@@ -127,6 +132,27 @@ const AthleteSearch = () => {
          
         </div>
       </div>      
+=======
+        {/* Recent Athletes Section */}
+        <RecentAthletes athletes={recentAthletes} />
+
+        {/* Search and Filter Section */}
+        <SearchFilters 
+          setSearchTerm={setSearchTerm}
+          filters={filters}
+          setFilters={setFilters}
+        />
+
+        {/* Athletes Results */}
+        <AthleteResults 
+          filteredAthletes={filteredAthletes}
+          noResults={noResults}
+          searchTerm={searchTerm}
+          filtersApplied={filtersApplied}
+          setActiveTab={setActiveTab}
+        />
+      </div>
+>>>>>>> bea1dda79a5a82f7c868202226671f7011b605fb
       <FloatingSupportButton />
     </Layout>
   );

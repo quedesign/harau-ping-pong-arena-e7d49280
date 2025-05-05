@@ -1,3 +1,4 @@
+
 import { StrictMode } from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -59,13 +60,13 @@ const App = () => {
                 <Route path="/athletes/:id" element={<AthleteProfile />} />
                 <Route path="/atletas" element={<AthleteSearch />} />
 
-                {/* User profile and settings */}
-                <Route path="/my-profile" element={<MyProfile />} />
-                <Route path="/settings" element={<Settings />} />
-
                 {/* Message routes */}
                 <Route path="/messages" element={<MessageList />} />
                 <Route path="/messages/:id" element={<MessageDetail />} />
+
+                {/* User profile and settings */}
+                <Route path="/my-profile" element={<MyProfile />} />
+                <Route path="/settings" element={<Settings />} />
 
                 {/* Admin routes */}
                 <Route path="/admin/dashboard" element={<Navigate to="/dashboard" />} />

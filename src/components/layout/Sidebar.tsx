@@ -4,7 +4,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/auth';
 import { 
   Trophy, Calendar, Users, User, Settings, 
-  PlusCircle, Award, BarChart 
+  PlusCircle, Award, BarChart, MessageCircle 
 } from 'lucide-react';
 
 const Sidebar: React.FC = () => {
@@ -27,7 +27,8 @@ const Sidebar: React.FC = () => {
   const athleteMenuItems = [
     { path: '/dashboard', icon: <BarChart size={20} />, label: 'Painel' },
     { path: '/tournaments', icon: <Trophy size={20} />, label: 'Torneios' },
-    { path: '/athletes', icon: <Users size={20} />, label: 'Encontrar Atletas' },
+    { path: '/atletas', icon: <Users size={20} />, label: 'Encontrar Atletas' },
+    { path: '/messages', icon: <MessageCircle size={20} />, label: 'Mensagens' },
     { path: '/my-profile', icon: <User size={20} />, label: 'Meu Perfil' },
     { path: '/settings', icon: <Settings size={20} />, label: 'Configurações' },
   ];
@@ -36,7 +37,8 @@ const Sidebar: React.FC = () => {
     { path: '/dashboard', icon: <BarChart size={20} />, label: 'Painel' },
     { path: '/tournaments', icon: <Trophy size={20} />, label: 'Torneios' },
     { path: '/admin/create-tournament', icon: <PlusCircle size={20} />, label: 'Criar Torneio' },
-    { path: '/athletes', icon: <Users size={20} />, label: 'Atletas' },
+    { path: '/atletas', icon: <Users size={20} />, label: 'Atletas' },
+    { path: '/messages', icon: <MessageCircle size={20} />, label: 'Mensagens' },
     { path: '/my-profile', icon: <User size={20} />, label: 'Meu Perfil' },
     { path: '/settings', icon: <Settings size={20} />, label: 'Configurações' },
   ];

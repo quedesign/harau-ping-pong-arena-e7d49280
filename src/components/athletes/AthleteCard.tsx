@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -74,6 +75,3 @@ const AthleteCard: React.FC<AthleteCardProps> = ({ athlete }) => {
 };
 
 export default AthleteCard;
-```
-```typescript
-export { default as AthleteCard } from './AthleteCard';

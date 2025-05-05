@@ -114,26 +114,6 @@ const AthleteSearch = () => {
           filtersApplied={filtersApplied}
           setActiveTab={setActiveTab}
         />
-        </div>
-  
-        {/* Recent Athletes Section */}
-        <RecentAthletes athletes={recentAthletes} />
-
-        {/* Search and Filter Section */}
-        <SearchFilters 
-          setSearchTerm={setSearchTerm}
-          filters={filters}
-          setFilters={setFilters}
-        />
-
-        {/* Athletes Results */}
-        <AthleteResults 
-          filteredAthletes={filteredAthletes}
-          noResults={noResults}
-          searchTerm={searchTerm}
-          filtersApplied={filtersApplied}
-          setActiveTab={setActiveTab}
-        />
       </div>
     <FloatingSupportButton />
     </Layout>

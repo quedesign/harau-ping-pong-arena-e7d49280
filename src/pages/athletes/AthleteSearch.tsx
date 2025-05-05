@@ -1,13 +1,13 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
-import Layout from "@/components/layout/Layout";
-import { useAthlete } from "@/contexts/data/athlete";
-import { SearchBar, EmptyState, AthleteCard } from "@/components";
-import FilterSection from "@/components/athletes/FilterSection"
-import { FloatingSupportButton } from "@/components/FloatingSupportButton";
-import RecentAthletes from "@/components/athletes/search/RecentAthletes";
-import SearchFilters from "@/components/athletes/search/SearchFilters";
-import AthleteResults from "@/components/athletes/search/AthleteResults";
-
+import { useState, useEffect, useMemo, useCallback } from 'react';
+import Layout from '@/components/layout/Layout';
+import { useAthlete } from '@/contexts/data/athlete';
+import { SearchBar, EmptyState, AthleteCard } from '@/components';
+import FilterSection from '@/components/athletes/FilterSection';
+import { FloatingSupportButton } from '@/components/FloatingSupportButton';
+import RecentAthletes from '@/components/athletes/search/RecentAthletes';
+import SearchFilters from '@/components/athletes/search/SearchFilters';
+import AthleteResults from '@/components/athletes/search/AthleteResults';
+  
 const AthleteSearch = () => {
   const setActiveTab = useCallback(() => {}, []);
   
@@ -16,7 +16,7 @@ const AthleteSearch = () => {
   const [filters, setFilters] = useState<Record<string, string[]>>({});
   const [searchTerm, setSearchTerm] = useState<string>("");
 
-  const filteredAthletes = useMemo(() => {
+    const filteredAthletes = useMemo(() => {
     if (!athleteProfiles) return [];
     
     // Apply filters
@@ -95,44 +95,27 @@ const AthleteSearch = () => {
           <h1 className="text-3xl font-bold mb-2">Encontre um atleta</h1>
           <p className="text-zinc-400">Encontre atletas pelo nome, nível, localização e estilo de jogo</p>
         </div>
-
-<<<<<<< HEAD
-         {/* Recent Athletes Section */}
-         <section className="mb-8">
-          <h2 className="text-xl font-semibold mb-4">Atletas Recentes</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-             {recentAthletes.map((athlete) => (
-                 <AthleteCard key={athlete.userId} athlete={athlete} />
-             ))}
-          </div>
-        </section>
+  
+        {/* Recent Athletes Section */}
+        <RecentAthletes athletes={recentAthletes} />
+  
         {/* Search and Filter Section */}
-        <div className="mb-6">
-          <SearchBar setSearchTerm={setSearchTerm} placeholder="Buscar atletas" />
-          <FilterSection title="Filtros" filters={filters} setFilters={setFilters} />
+        <SearchFilters
+          setSearchTerm={setSearchTerm}
+          filters={filters}
+          setFilters={setFilters}
+        />
+  
+        {/* Athletes Results */}
+        <AthleteResults
+          filteredAthletes={filteredAthletes}
+          noResults={noResults}
+          searchTerm={searchTerm}
+          filtersApplied={filtersApplied}
+          setActiveTab={setActiveTab}
+        />
         </div>
-         <div className="mb-8">
-            {noResults ? (
-              <div className="text-center py-12 bg-zinc-900 rounded-lg border border-zinc-800">
-                <div className="mx-auto h-12 w-12 text-zinc-600 mb-4">🏓</div>
-                <h3 className="text-xl font-medium mb-2">Nenhum atleta encontrado</h3>
-                <p className="text-zinc-400 mb-6">
-                  {searchTerm || Object.keys(filters).length > 0
-                    ? "Nenhum atleta corresponde aos critérios de busca"
-                    : "Não há atletas cadastrados no momento"}
-                </p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredAthletes.map((athlete) => (
-                  <AthleteCard key={athlete.userId} athlete={athlete} />
-                ))}
-              </div>
-            )}
-         
-        </div>
-      </div>      
-=======
+  
         {/* Recent Athletes Section */}
         <RecentAthletes athletes={recentAthletes} />
 
@@ -152,8 +135,7 @@ const AthleteSearch = () => {
           setActiveTab={setActiveTab}
         />
       </div>
->>>>>>> bea1dda79a5a82f7c868202226671f7011b605fb
-      <FloatingSupportButton />
+    <FloatingSupportButton />
     </Layout>
   );
 };

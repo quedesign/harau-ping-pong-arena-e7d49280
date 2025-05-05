@@ -1,33 +1,25 @@
 import { useState } from 'react';
-import { SupportForm } from './SupportForm';
-import { Button } from '@/components/ui/button';
-import { MessageCircle } from 'lucide-react';
+import { SupportForm } from "./SupportForm";
+import { Button } from "@/components/ui/button";
+import { MessageCircle } from "lucide-react";
 
 export const FloatingSupportButton = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
+    
+    const toggleForm = () => {
+        setIsOpen(!isOpen);
+    };
 
-  const handleOpen = () => {
-    setIsOpen(true);
-  };
-
-  const handleClose = () => {
-    setIsOpen(false);
-  };
-
-  return (
-    <div className="fixed bottom-6 right-6 z-50">
-      {isOpen && (
-        <div className="absolute bottom-full right-0 mb-4">
-          <SupportForm onClose={handleClose} />
+    return (
+        <div className="fixed bottom-4 right-4 z-50">
+            <Button variant="outline" size="icon" className="shadow-lg" onClick={toggleForm}>
+                <MessageCircle className="h-6 w-6" />
+            </Button>
+            {isOpen && (
+                <div className="absolute bottom-16 right-0 w-96">
+                    <SupportForm onClose={toggleForm} />
+                </div>
+            )}
         </div>
-      )}
-      <Button
-        onClick={handleOpen}
-        className="rounded-full w-14 h-14 flex items-center justify-center bg-primary"
-        size="icon"
-      >
-        <MessageCircle className="w-6 h-6" />
-      </Button>
-    </div>
-  );
+    );
 };

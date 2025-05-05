@@ -13,7 +13,11 @@ import { Link, useNavigate } from 'react-router-dom';
 
 export const LoginForm = () => {
   const { t } = useTranslation();
+<<<<<<< HEAD
   const { login, isLoading, error, setError } = useAuth();
+=======
+  const { login, isLoading, error } = useAuth();
+>>>>>>> 605609c8f086d6d7d7a78f62cfaefa565697e810
   const navigate = useNavigate();
 
   
@@ -27,10 +31,18 @@ export const LoginForm = () => {
 
   const onSubmit = async (values: LoginFormValues) => {
     try {
+<<<<<<< HEAD
         await login(values.email, values.password, (user) => {
             setError(null);
             navigate("/dashboard");
         });
+=======
+      const success = await login(values.email, values.password);
+      if (success) {
+        console.log('Login bem-sucedido, redirecionando para o dashboard');
+        navigate('/dashboard');
+      }
+>>>>>>> 605609c8f086d6d7d7a78f62cfaefa565697e810
     } catch (err) {
         //Error handled in the useLogin hook
     }

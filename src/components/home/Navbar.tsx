@@ -7,12 +7,12 @@ import { useTranslation } from 'react-i18next';
 const Navbar = () => {
     const { currentUser } = useAuth();
     const { t } = useTranslation();
+<<<<<<< HEAD
+=======
+    const navigate = useNavigate();
+>>>>>>> 605609c8f086d6d7d7a78f62cfaefa565697e810
 
   const handleRegister = () => {
-  };
-
-  const handleLanguageChange = (language: string) => {
-    i18n.changeLanguage(language);
   };
 
   return (
@@ -22,6 +22,7 @@ const Navbar = () => {
         <span className="text-primary text-2xl">.</span>
       </div>
       <div className="flex items-center space-x-4">
+<<<<<<< HEAD
       <div className="space-x-4">
         {currentUser ? (
           <Link to="/dashboard">
@@ -31,12 +32,22 @@ const Navbar = () => {
           <>
             <Link to="/login">
               <Button variant="ghost" className="text-white hover:bg-white/10">{t('common.login')}</Button>
+=======
+        <div className="space-x-4">
+          {currentUser ? (
+            <Link to="/dashboard">
+              <Button>{t('common.dashboard')}</Button>
+>>>>>>> 605609c8f086d6d7d7a78f62cfaefa565697e810
             </Link>
-            <Button onClick={handleRegister} className="rounded-full bg-primary hover:bg-primary/90">{t('common.register')}</Button>
-          </>
-        )}
-      </div>
-
+          ) : (
+            <>
+              <Link to="/login">
+                <Button variant="ghost" className="text-white hover:bg-white/10">{t('common.login')}</Button>
+              </Link>
+              <Button onClick={handleRegister} className="rounded-full bg-primary hover:bg-primary/90">{t('common.register')}</Button>
+            </>
+          )}
+        </div>
       </div>
     </nav>
   );

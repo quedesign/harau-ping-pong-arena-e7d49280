@@ -12,10 +12,7 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [
     react({
-      jsxRuntime: 'automatic',
-      tsDecorators: true,
-      jsxImportSource: 'react',
-      plugins: [],
+      jsxImportSource: "react",
     }),
     mode === 'development' &&
     componentTagger(),
@@ -26,13 +23,7 @@ export default defineConfig(({ mode }) => ({
     },
   },
   esbuild: {
-    jsx: 'automatic',
-    jsxFactory: 'React.createElement',
-    jsxFragment: 'React.Fragment',
-    tsconfigRaw: {
-      compilerOptions: {
-        jsx: "react-jsx",
-      }
-    }
-  },
+    jsxFactory: "React.createElement",
+    jsxFragment: "React.Fragment",
+  }
 }));

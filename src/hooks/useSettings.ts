@@ -7,43 +7,52 @@ import { useAuth } from '@/contexts/auth';
 interface UserSettings {
   darkMode: boolean;
   emailNotifications: boolean;
-  language: string;
-  timezone: string;
 }
 
 export const useSettings = () => {
   const localStorageKey = 'user-settings';
   const { toast } = useToast();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { currentUser } = useAuth();
 
   const [loading, setLoading] = useState<boolean>(true);
   const initialSettings: UserSettings = {
     darkMode: false,
     emailNotifications: true,
-    language: i18n.language || 'pt',
-    timezone: 'America/Sao_Paulo',
   };
 
   const [settings, setSettings] = useState<UserSettings>(() => {
     const storedSettings = localStorage.getItem(localStorageKey);
     if (storedSettings) {
+<<<<<<< HEAD
       const parsedSettings = JSON.parse(storedSettings) as UserSettings;
       i18n.changeLanguage(parsedSettings.language);
       setLoading(false);
       return parsedSettings;
+=======
+      return JSON.parse(storedSettings) as UserSettings;
+>>>>>>> 605609c8f086d6d7d7a78f62cfaefa565697e810
     }
     setLoading(false);
     return initialSettings;
   });
 
   useEffect(() => {
+<<<<<<< HEAD
       if(!loading){
         i18n.changeLanguage(settings.language);
       }
     }, [settings.language]);
 
   
+=======
+    const storedSettings = localStorage.getItem(localStorageKey);
+    if (storedSettings) {
+      const parsedSettings = JSON.parse(storedSettings) as UserSettings;
+      setSettings(parsedSettings);
+    }
+  }, []);
+>>>>>>> 605609c8f086d6d7d7a78f62cfaefa565697e810
 
   useEffect(() => {localStorage.setItem(localStorageKey, JSON.stringify(settings))}, [settings]);
 
@@ -51,11 +60,6 @@ export const useSettings = () => {
     e.preventDefault();
 
     try {
-      // Update i18n language
-      if (settings.language) {
-        i18n.changeLanguage(settings.language);
-      }      
-
       toast({
         title: t('common.success'),
         description: t('settings.updateSuccess'),

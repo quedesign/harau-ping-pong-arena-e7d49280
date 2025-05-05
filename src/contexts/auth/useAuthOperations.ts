@@ -6,15 +6,18 @@ import { useLogout } from './operations/useLogout';
 import { useRegister } from './operations/useRegister';
 import { useTestUser } from './operations/useTestUser';
 import { useResetPassword } from './operations/useResetPassword';
+<<<<<<< HEAD
 import { getAuth } from 'firebase/auth';
 import { database } from '@/integrations/firebase/client';
 import { ref, get } from 'firebase/database';
+=======
+>>>>>>> 605609c8f086d6d7d7a78f62cfaefa565697e810
 
 export const useAuthOperations = () => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
+  const [session, setSession] = useState<any | null>(null);
 
   const { login: loginFn, isLoading: loginLoading, error: loginError } = useLogin();
   const { logout, isLoading: logoutLoading } = useLogout();

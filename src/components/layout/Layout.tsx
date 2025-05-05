@@ -1,6 +1,6 @@
 
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Navbar from './Navbar';
 import Sidebar from './Sidebar';
 import { useAuth } from '@/contexts/auth';
@@ -12,22 +12,34 @@ interface LayoutProps {
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const { currentUser, isLoading } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const isLoggedIn = !!currentUser;
   
-  React.useEffect(() => {
-    // If the user is not logged in and we're trying to access a protected route,
-    // redirect to login
+  useEffect(() => {
+    // Se o usuário não estiver logado e estiver tentando acessar uma rota protegida
     if (!isLoading && !isLoggedIn) {
-      const protectedRoutes = ['/dashboard', '/my-profile', '/settings', '/admin'];
+      const protectedRoutes = ['/dashboard', '/my-profile', '/settings', '/admin', '/tournaments', '/athletes', '/messages'];
       const isProtectedRoute = protectedRoutes.some(route => 
-        window.location.pathname.startsWith(route)
+        location.pathname.startsWith(route)
       );
       
       if (isProtectedRoute) {
-        navigate('/login');
+        console.log('Redirecionando rota protegida para login:', location.pathname);
+        navigate('/login', { state: { from: location.pathname } });
       }
     }
-  }, [isLoading, isLoggedIn, navigate]);
+    
+    // Se o usuário estiver logado e estiver tentando acessar uma página de autenticação
+    if (!isLoading && isLoggedIn) {
+      const authRoutes = ['/login', '/register', '/forgot-password'];
+      const isAuthRoute = authRoutes.some(route => location.pathname === route);
+      
+      if (isAuthRoute) {
+        console.log('Usuário já logado, redirecionando para dashboard');
+        navigate('/dashboard');
+      }
+    }
+  }, [isLoading, isLoggedIn, navigate, location.pathname]);
 
   if (isLoading) {
     return (

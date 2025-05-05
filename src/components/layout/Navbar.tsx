@@ -13,7 +13,6 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Menu, X, User, LogOut, Settings, Trophy, Plus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import LanguageSwitcher from '../LanguageSwitcher';
 
 const Navbar: React.FC = () => {
   const { currentUser, logout } = useAuth();
@@ -67,8 +66,6 @@ const Navbar: React.FC = () => {
               )}
             </>
           )}
-          
-          <LanguageSwitcher />
           
           {currentUser ? (
             <DropdownMenu>
@@ -136,10 +133,6 @@ const Navbar: React.FC = () => {
                 )}
               </>
             )}
-            
-            <div className="my-2">
-              <LanguageSwitcher />
-            </div>
             
             {currentUser ? (
               <>

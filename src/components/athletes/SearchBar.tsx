@@ -7,9 +7,10 @@ import { useState } from "react";
 interface SearchBarProps {
   setSearchTerm: (term: string) => void;
   label: string;
+  placeholder?: string;
 }
 
-const SearchBar: React.FC<SearchBarProps> = ({ setSearchTerm, label }) => {
+const SearchBar: React.FC<SearchBarProps> = ({ setSearchTerm, label, placeholder = "Nome, cidade ou país..." }) => {
   const [searchTerm, setSearchTermInternal] = useState<string>("");
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -26,7 +27,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ setSearchTerm, label }) => {
         <Input
           type="text"
           id="search"
-          placeholder="Nome, cidade ou país..."
+          placeholder={placeholder}
           value={searchTerm}
           onChange={handleInputChange}
           className="pl-10 bg-zinc-900 border-zinc-800"

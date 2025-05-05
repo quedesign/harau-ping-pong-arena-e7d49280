@@ -1,3 +1,4 @@
+
 import React, {
   createContext,
   useContext,
@@ -20,12 +21,14 @@ interface AuthContextProps {
   login: (email: string, password: string, onLoginSuccess: (userData: User) => void) => Promise<void>;
   logout: () => Promise<void>;
   register: (
-    user: Omit<User, "id" | "createdAt">,
-    onRegisterSuccess: (userData: User) => void,
-  ) => Promise<void>;
+    name: string,
+    email: string, 
+    password: string,
+    role: string,
+  ) => Promise<boolean>;
   resetPassword: (email: string, onResetSuccess: () => void) => Promise<void>;
   createTestUser: () => Promise<void>;
-  loginWithGoogle: () => Promise<void>;
+  loginWithGoogle: (onLoginSuccess?: (userData: User) => void) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextProps>({} as AuthContextProps);

@@ -6,12 +6,13 @@ import { AthleteProfile } from '@/types';
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
 
+
 interface AthleteCardProps {
   athlete: AthleteProfile;
 }
 
-const AthleteCard: React.FC<AthleteCardProps> = ({ athlete }) => {
-  const [isFollowing, setIsFollowing] = useState<boolean>(false);
+export const AthleteCard: React.FC<AthleteCardProps> = ({ athlete }) => {
+  const [isFollowing, setIsFollowing] = useState(false);
   const handleSendMessage = () => {
     console.log('Send message to', athlete.userId);
   };

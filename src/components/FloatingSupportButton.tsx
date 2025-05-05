@@ -1,7 +1,9 @@
+
 import { useState } from 'react';
-import { SupportForm } from "./SupportForm";
-import { Button } from "@/components/ui/button";
-import { MessageCircle } from "lucide-react";
+import { Button } from '@/components/ui/button';
+import { MessageCircle } from 'lucide-react';
+import { SupportForm } from './SupportForm';
+
 
 export const FloatingSupportButton = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -20,6 +22,5 @@ export const FloatingSupportButton = () => {
                     <SupportForm onClose={toggleForm} />
                 </div>
             )}
-        </div>
-    );
+        </div>    );
 };

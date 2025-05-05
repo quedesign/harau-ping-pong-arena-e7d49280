@@ -1,5 +1,5 @@
+
 import { Badge } from "@/components/ui/badge";
-import { useState } from "react";
 
 interface LevelFilterProps {
   filters: Record<string, string[]>;
@@ -8,6 +8,12 @@ interface LevelFilterProps {
 
 const LevelFilter: React.FC<LevelFilterProps> = ({ filters, setFilters }) => {
   const levels = ["beginner", "intermediate", "advanced", "professional"];
+  const levelLabels: Record<string, string> = {
+    "beginner": "Iniciante",
+    "intermediate": "Intermediário",
+    "advanced": "Avançado",
+    "professional": "Profissional"
+  };
 
   const toggleFilter = (level: string) => {
     setFilters((prevFilters) => {
@@ -41,7 +47,7 @@ const LevelFilter: React.FC<LevelFilterProps> = ({ filters, setFilters }) => {
           }`}
           variant="outline"
         >
-          {level}
+          {levelLabels[level] || level}
         </Badge>
       ))}
     </div>

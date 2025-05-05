@@ -1,5 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, FormEvent } from 'react';
 import emailjs from '@emailjs/browser';
+
+
 
 interface SupportFormProps {
   onClose: () => void;
@@ -7,16 +9,15 @@ interface SupportFormProps {
 
 export const SupportForm: React.FC<SupportFormProps> = ({ onClose }) => {
     const [name, setName] = useState('');
-    const [messageType, setMessageType] = useState('');
+    const [messageType, setMessageType] = useState('suggestion');
     const [message, setMessage] = useState('');
     const [isSending, setIsSending] = useState<boolean>(false);
     const [isSent, setIsSent] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
-        emailjs.init("O_L9K4MvjR50hNlS2");
-    }, []);
-
+    
+    
+    
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
         setIsSending(true);
@@ -27,16 +28,21 @@ export const SupportForm: React.FC<SupportFormProps> = ({ onClose }) => {
                 from_name: name,
                 message_type: messageType,
                 message: message,
-                to_email: 'monteiro.barboza@gmail.com',
             };
+            
+            const response = await emailjs.send(
+                'service_03m029g',
+                'template_011z40k',
+                templateParams,
+                'x_QyYm3P2r302tU_h'
+            );
 
-            const result = await emailjs.send("service_q5e66qg", "template_9w7c63u", templateParams);
-            console.log(result)
-
-            setName('');
-            setMessageType('suggestion');
-            setMessage('');
-            setIsSent(true);
+            if (response.status === 200) {
+                setName('');
+                setMessageType('suggestion');
+                setMessage('');
+                setIsSent(true);
+            };
         } catch (err: any) {
             setError(err.message || 'Error sending message');
             console.error('Error sending message', err);
@@ -49,7 +55,7 @@ export const SupportForm: React.FC<SupportFormProps> = ({ onClose }) => {
         <div className="bg-zinc-900 p-6 rounded-lg">
             {isSent ? (
                 <div className="text-green-500">Mensagem enviada!</div>
-            ) : (
+            ): (
                 <form onSubmit={handleSubmit}>
                     <div className="mb-4">
                         <label htmlFor="name" className="block mb-2 text-gray-100">Nome</label>
@@ -58,11 +64,10 @@ export const SupportForm: React.FC<SupportFormProps> = ({ onClose }) => {
                     <div className="mb-4">
                         <label htmlFor="messageType" className="block mb-2 text-gray-100">Tipo de Mensagem</label>
                         <select id="messageType" className="w-full p-2 border border-zinc-700 rounded-md bg-zinc-800 text-gray-100" value={messageType} onChange={(e) => setMessageType(e.target.value)}>
-                            <option value="">Selecione</option>
-                            <option value="Sugestão">Sugestão</option>
-                            <option value="Reclamação">Reclamação</option>
-                            <option value="Parceria">Parceria</option>
-                            <option value="Outros">Outros</option>
+                            <option value="suggestion">Sugestão</option>
+                            <option value="complaint">Reclamação</option>
+                            <option value="partnership">Parceria</option>
+                            <option value="others">Outros</option>
                         </select>
                     </div>
                     <div className="mb-4">
@@ -88,8 +93,7 @@ export const SupportForm: React.FC<SupportFormProps> = ({ onClose }) => {
                     </div>
                 </form>
             )}
-        </div>
-    );
+        </div>);
 };
 
 export default SupportForm;

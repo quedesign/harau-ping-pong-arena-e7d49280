@@ -1,5 +1,5 @@
+
 import { Badge } from "@/components/ui/badge";
-import { useState } from "react";
 
 interface PlayingStyleFilterProps {
   filters: Record<string, string[]>;
@@ -7,7 +7,12 @@ interface PlayingStyleFilterProps {
 }
 
 const PlayingStyleFilter: React.FC<PlayingStyleFilterProps> = ({ filters, setFilters }) => {
-  const playingStyles = ["offensive", "defensive", "all-around"];
+  const playingStyles = ["offensive", "defensive", "all-round"];
+  const playingStylesLabels: Record<string, string> = {
+    "offensive": "Ofensivo",
+    "defensive": "Defensivo",
+    "all-round": "All-around"
+  };
 
   const toggleFilter = (playingStyle: string) => {
     setFilters((prevFilters) => {
@@ -41,7 +46,7 @@ const PlayingStyleFilter: React.FC<PlayingStyleFilterProps> = ({ filters, setFil
           }`}
           variant="outline"
         >
-          {playingStyle}
+          {playingStylesLabels[playingStyle] || playingStyle}
         </Badge>
       ))}
     </div>

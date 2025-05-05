@@ -25,20 +25,20 @@ const Sidebar: React.FC = () => {
 
   // Define menu items based on user role
   const athleteMenuItems = [
-    { path: '/dashboard', icon: <BarChart size={20} />, label: 'Dashboard' },
-    { path: '/tournaments', icon: <Trophy size={20} />, label: 'Tournaments' },
-    { path: '/athletes', icon: <Users size={20} />, label: 'Find Athletes' },
-    { path: '/my-profile', icon: <User size={20} />, label: 'My Profile' },
-    { path: '/settings', icon: <Settings size={20} />, label: 'Settings' },
+    { path: '/dashboard', icon: <BarChart size={20} />, label: 'Painel' },
+    { path: '/tournaments', icon: <Trophy size={20} />, label: 'Torneios' },
+    { path: '/athletes', icon: <Users size={20} />, label: 'Encontrar Atletas' },
+    { path: '/my-profile', icon: <User size={20} />, label: 'Meu Perfil' },
+    { path: '/settings', icon: <Settings size={20} />, label: 'Configurações' },
   ];
   
   const adminMenuItems = [
-    { path: '/dashboard', icon: <BarChart size={20} />, label: 'Dashboard' },
-    { path: '/tournaments', icon: <Trophy size={20} />, label: 'Tournaments' },
-    { path: '/admin/create-tournament', icon: <PlusCircle size={20} />, label: 'Create Tournament' },
-    { path: '/athletes', icon: <Users size={20} />, label: 'Athletes' },
-    { path: '/my-profile', icon: <User size={20} />, label: 'My Profile' },
-    { path: '/settings', icon: <Settings size={20} />, label: 'Settings' },
+    { path: '/dashboard', icon: <BarChart size={20} />, label: 'Painel' },
+    { path: '/tournaments', icon: <Trophy size={20} />, label: 'Torneios' },
+    { path: '/admin/create-tournament', icon: <PlusCircle size={20} />, label: 'Criar Torneio' },
+    { path: '/athletes', icon: <Users size={20} />, label: 'Atletas' },
+    { path: '/my-profile', icon: <User size={20} />, label: 'Meu Perfil' },
+    { path: '/settings', icon: <Settings size={20} />, label: 'Configurações' },
   ];
   
   const menuItems = currentUser.role === 'admin' ? adminMenuItems : athleteMenuItems;

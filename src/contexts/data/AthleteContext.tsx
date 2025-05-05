@@ -1,20 +1,19 @@
 import React, { createContext, useContext, useCallback } from 'react';
-import { AthleteProfile, User } from '@/types';
-import { supabase } from '@/integrations/supabase/client';
+import { AthleteProfile } from '@/types';
+import { database } from '@/integrations/firebase/client';
+import { get, ref, set, child, remove } from 'firebase/database';
 import { useTranslation } from 'react-i18next';
 import { useToast } from '@/hooks/use-toast';
-import { SupabaseAthleteData, formatSupabaseAthleteProfile } from './athlete/mappers';
+import { formatFirebaseAthleteProfile, mapFirebaseAthleteToAthlete } from './athlete/mappers';
 
 interface AthleteContextType {
   athleteProfiles: AthleteProfile[];
-  getAthleteProfile: (userId: string) => Promise<AthleteProfile | undefined>;
+  getAthleteProfile: (userId: string) => Promise<AthleteProfile | null>;
   createAthleteProfile: (profile: AthleteProfile) => Promise<AthleteProfile>;
   updateAthleteProfile: (userId: string, data: Partial<AthleteProfile>) => Promise<AthleteProfile>;
 }
 
 const AthleteContext = createContext<AthleteContextType | undefined>(undefined);
-
-
 
 
 
@@ -24,53 +23,22 @@ export const AthleteProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [athleteProfiles, setAthleteProfiles] = React.useState<AthleteProfile[]>([]);
   const [loading, setLoading] = React.useState(true);
 
-  
   const fetchAthleteProfiles = useCallback(async () => {
-    
-    
     setLoading(true);
     try {
-      // Primeira, buscar perfis básicos
-      const { data: profilesData, error: profilesError } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('role', 'athlete');
-      
-      if (profilesError) {
-        throw profilesError;
-      }
+      const athletesRef = ref(database, 'athletes');
+      const snapshot = await get(athletesRef);
 
-      if (profilesData) {
-        const profiles: User[] = profilesData.map(p => ({
-          id: p.id,
-          name: p.name,
-          email: p.email,
-          role: p.role as 'athlete' | 'admin',
-          profileImage: p.profile_image,
-          createdAt: new Date(p.created_at)
-        }));
+      if (snapshot.exists()) {
+        const athletesData = snapshot.val();
+        const formattedProfiles = Object.keys(athletesData).map(userId => {
+          return formatFirebaseAthleteProfile({ userId, ...athletesData[userId] });
+        });
 
-        // Agora buscar detalhes dos atletas
-        const { data: athleteData, error: athleteError } = await supabase
-          .from('athlete_profiles')
-          .select('*');
-        
-        if (athleteError) {
-          throw athleteError;
-        }
-
-        if (athleteData) {
-          const formattedProfiles = athleteData.map(athlete => {
-            const profile = profiles.find(p => p.id === athlete.user_id);
-            const data = athlete as SupabaseAthleteData;
-            return formatSupabaseAthleteProfile(data);
-          });
-
-          setAthleteProfiles(formattedProfiles);
-        }
+        setAthleteProfiles(formattedProfiles);
       }
     } catch (error) {
-      console.error('Erro ao buscar perfis de atletas:', error);
+      console.error('Error fetching athlete profiles:', error);
       toast({
         title: t('common.error'),
         description: t('athletes.fetchError'),
@@ -81,53 +49,43 @@ export const AthleteProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }
   }, [setAthleteProfiles, t]);
 
-    React.useEffect(() => {
-      fetchAthleteProfiles();
-    }, [fetchAthleteProfiles]);
+  React.useEffect(() => {
+    fetchAthleteProfiles();
+  }, [fetchAthleteProfiles]);
 
-
-  const getAthleteProfile = async (userId: string): Promise<AthleteProfile | undefined> => {
+  const getAthleteProfile = async (userId: string): Promise<AthleteProfile | null> => {
     try {
-      // First check if we already have it in state
       const cachedProfile = athleteProfiles.find(p => p.userId === userId);
       if (cachedProfile) return cachedProfile;
-      
-      // Fetch from Supabase
-      const { data, error } = await supabase
-        .from('athlete_profiles')
-        .select('*')
-        .eq('user_id', userId)
-        .single();
-      
-      if (error) {
-        if (error.code === 'PGRST116') {
-          // Not found
-          return undefined;
-        }
-        throw error;
-      }
 
-      if (data) {
-        // Handle data from Supabase with potential missing fields
-        const athlete = data as SupabaseAthleteData;
-        const profile = formatSupabaseAthleteProfile(athlete);
+      const athleteRef = child(ref(database), `athletes/${userId}`);
+      const snapshot = await get(athleteRef);
 
-        // Add to local state
+      if (snapshot.exists()) {
+        const athleteData = snapshot.val();
+        const profile = formatFirebaseAthleteProfile({ userId, ...athleteData });
         setAthleteProfiles(prev => [...prev, profile]);
         return profile;
       }
+      return null;
     } catch (error) {
-      console.error('Erro ao buscar perfil de atleta:', error);
-      return undefined;
+      console.error('Error fetching athlete profile:', error);
+      return null;
     }
   };
 
   const createAthleteProfile = async (profile: AthleteProfile): Promise<AthleteProfile> => {
     const { location, equipment, ...rest } = profile;
-    
-    // Prepare data for Supabase
-    const athleteData = {
-     user_id: rest.userId,
+
+    try {
+      const athleteData = {
+      userId: rest.userId,
+       name: rest.name,
+       email: rest.email,
+       role: rest.role,
+       profileImage: rest.profileImage,
+       createdAt: new Date().toISOString(),
+       updatedAt: new Date().toISOString(),
       handedness: rest.handedness || null,
       height: rest.height || null,
       weight: rest.weight || null,
@@ -149,34 +107,29 @@ export const AthleteProvider: React.FC<{ children: React.ReactNode }> = ({ child
       preferred_locations: rest.preferredLocations,
       racket: equipment?.racket,
       rubbers: equipment?.rubbers
-    };
-    
-    const { data, error } = await supabase
-      .from('athlete_profiles')
-      .insert(athleteData)
-      .select()
-      .single();
-    
-    if (error) {
-      console.error('Erro ao criar perfil de atleta:', error);
+      };
+
+      await set(ref(database, `athletes/${profile.userId}`), athleteData);
+      await set(ref(database, `users/${profile.userId}/role`), 'athlete');
+
+
+      const newProfile = formatFirebaseAthleteProfile(athleteData);
+
+      setAthleteProfiles(prev => [...prev, newProfile]);
+
+      return newProfile;
+    } catch (error) {
+      console.error('Error creating athlete profile:', error);
       throw error;
     }
-
-    if (!data) {
-      throw new Error('No data returned from create');
-    }
-
-    // Convert back to app format
-    const newProfile = formatSupabaseAthleteProfile(data)
-    // Update local state
-    setAthleteProfiles(prev => [...prev, newProfile]);
-    
-    return newProfile;
   };
 
   const updateAthleteProfile = async (userId: string, profileData: Partial<AthleteProfile>): Promise<AthleteProfile> => {
-    // Prepare data for Supabase
-    const updateData: Partial<SupabaseAthleteData> = { updated_at: new Date().toISOString() };
+    try {
+    const updateData: Partial<AthleteProfile> = {
+      updatedAt: new Date().toISOString()
+    };
+
     
     if (profileData.handedness) updateData.handedness = profileData.handedness;
     if (profileData.height !== undefined) updateData.height = profileData.height;
@@ -207,38 +160,39 @@ export const AthleteProvider: React.FC<{ children: React.ReactNode }> = ({ child
       if (profileData.equipment.rubbers !== undefined) updateData.rubbers = profileData.equipment.rubbers;
     }
     
-    const { data: updatedData, error } = await supabase
-      .from('athlete_profiles')
-      .update(updateData)
-      .eq('user_id', userId)
-      .select()
-      .single();
-    
-    if (error) {
-      console.error('Erro ao atualizar perfil de atleta:', error);
+      await set(ref(database, `athletes/${userId}`), updateData);
+
+      const updatedAthleteProfile = await getAthleteProfile(userId);
+      if (!updatedAthleteProfile) {
+        throw new Error('Failed to fetch updated athlete profile');
+      }
+
+      setAthleteProfiles(prev => prev.map(p => p.userId === userId ? updatedAthleteProfile : p));
+
+      return updatedAthleteProfile;
+    } catch (error) {
+      console.error('Error updating athlete profile:', error);
       throw error;
     }
-
-    if (!updatedData) {
-      throw new Error('No data returned from update');
-    }
-
-    // Convert back to app format
-    const athlete = updatedData as SupabaseAthleteData;
-    const profile = formatSupabaseAthleteProfile(athlete);
-    
-    // Update local state
-    setAthleteProfiles(prev => prev.map(p => p.userId === userId ? profile : p));
-    
-    return profile;
   };
 
+   const deleteAthleteProfile = async (userId: string): Promise<void> => {
+    try {
+      await remove(ref(database, `athletes/${userId}`));
+      setAthleteProfiles(prev => prev.filter(p => p.userId !== userId));
+    } catch (error) {
+      console.error('Error deleting athlete profile:', error);
+      throw error;
+    }
+  };
   const value = {
     athleteProfiles,
     getAthleteProfile,
     createAthleteProfile,
-    updateAthleteProfile
+    updateAthleteProfile,
+    deleteAthleteProfile
   };
+    
 
   return <AthleteContext.Provider value={value}>{children}</AthleteContext.Provider>;
 };

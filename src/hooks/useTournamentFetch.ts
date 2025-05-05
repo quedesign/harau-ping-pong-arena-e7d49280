@@ -60,10 +60,6 @@ export const useTournamentFetch = (tournamentId?: string) => {
           status: data.status as 'upcoming' | 'ongoing' | 'completed',
           pixKey: data.pix_key,
         };
-        
-        if (participants) {
-          formattedTournament.registeredParticipants = participants.map(p => p.athlete_id);
-        }
 
         setTournament(formattedTournament);
       }
@@ -94,9 +90,10 @@ export const useTournamentFetch = (tournamentId?: string) => {
       const data = await readData('tournaments');
 
       if (!data) {
-        throw new Error('No data returned from fetchTournaments');
+        setTournaments([]);
+        return
       }
-      const tournamentArray = Object.entries(data).map(([id, item]) => ({
+      const tournamentArray = Object.entries(data).map(([id, item]: [string, any]) => ({
         id,
         name: item.name,
         description: item.description,

@@ -11,7 +11,8 @@
     "settings": "Configurações",
     "loading": "Carregando...",
     "success": "Sucesso",
-    "error": "Erro"
+    "error": "Erro",
+    "findAthletes": "Encontrar Atletas"
   },
   "auth": {
     "email": "E-mail",
@@ -47,6 +48,9 @@
     "loginDescription": "Entre com seus dados de acesso",
     "noAccount": "Ainda não possui conta?",
     "registerNow": "Cadastre-se"
+  },
+  "tournament":{
+    "create": "Criar Torneio"
   },
   "home": {
     "title": "Encontre Competições. Marque Partidas. Jogue Sempre.",

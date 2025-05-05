@@ -1,4 +1,4 @@
-import React from 'react';
+import { StrictMode } from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -11,7 +11,7 @@ import { DataProvider } from "@/contexts/DataContext";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/auth/Login";
-import Register from "./pages/auth/Register"; // Updated import path
+import Register from "./pages/auth/Register";
 import Dashboard from "./pages/Dashboard";
 import ForgotPassword from "./pages/ForgotPassword";
 
@@ -35,11 +35,11 @@ import Settings from "./pages/Settings";
 // Create a new QueryClient instance
 const queryClient = new QueryClient();
 
-const App: React.FC = () => {
+const App = () => {
   return (
-    <React.StrictMode>
-      <QueryClientProvider client={queryClient}>
-        <AuthProvider>
+    <StrictMode>    
+      <AuthProvider>
+        <QueryClientProvider client={queryClient}>
           <DataProvider>
             <TooltipProvider>
               <Toaster />
@@ -50,7 +50,7 @@ const App: React.FC = () => {
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
-                
+
                 {/* Shared routes */}
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/tournaments" element={<TournamentList />} />
@@ -58,35 +58,35 @@ const App: React.FC = () => {
                 <Route path="/athletes" element={<AthleteList />} />
                 <Route path="/athletes/:id" element={<AthleteProfile />} />
                 <Route path="/atletas" element={<AthleteSearch />} />
-                
-                {/* User profile and settings - accessible to all logged in users */}
+
+                {/* User profile and settings */}
                 <Route path="/my-profile" element={<MyProfile />} />
                 <Route path="/settings" element={<Settings />} />
-                
+
                 {/* Message routes */}
                 <Route path="/messages" element={<MessageList />} />
                 <Route path="/messages/:id" element={<MessageDetail />} />
-                
+
                 {/* Admin routes */}
                 <Route path="/admin/dashboard" element={<Navigate to="/dashboard" />} />
                 <Route path="/admin/tournaments" element={<Navigate to="/tournaments" />} />
                 <Route path="/admin/create-tournament" element={<CreateTournament />} />
                 <Route path="/admin/tournaments/:id/manage" element={<ManageTournament />} />
                 <Route path="/admin/athletes" element={<Navigate to="/athletes" />} />
-                
-                {/* Redirects for old profile paths */}
+
+                {/* Redirects for old paths */}
                 <Route path="/profile" element={<Navigate to="/my-profile" />} />
                 <Route path="/admin/profile" element={<Navigate to="/my-profile" />} />
                 <Route path="/admin/settings" element={<Navigate to="/settings" />} />
-                
-                {/* Catch-all route */}
+
+                {/* Catch-all */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </TooltipProvider>
           </DataProvider>
-        </AuthProvider>
-      </QueryClientProvider>
-    </React.StrictMode>
+        </QueryClientProvider>
+      </AuthProvider>
+    </StrictMode>
   );
 };
 

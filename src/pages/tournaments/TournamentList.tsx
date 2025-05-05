@@ -65,7 +65,7 @@ const TournamentList = () => {
     <Layout>
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">Tournaments</h1>
-        <p className="text-zinc-400">Discover and join table tennis tournaments</p>
+        <p className="text-zinc-400">Descubra e participe de torneios de tênis de mesa</p>
       </div>
       <div className="mb-6">
         <div className="relative">

@@ -29,8 +29,9 @@ export const useRegister = () => {
           email: email,
           role: role,
         }
-
+        console.log('User data to be written:', userFirebase);
         await writeData(`users/${user.uid}`, userFirebase)
+        console.log('User data successfully written');
 
         toast.success(t("auth.registerSuccess"), {
           description: t("auth.accountCreated"),

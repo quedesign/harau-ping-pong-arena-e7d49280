@@ -39,10 +39,10 @@ const Dashboard = () => {
     return (
       <Layout>
         <div className="text-center py-12">
-          <h2 className="text-2xl font-bold">Please log in to view your dashboard</h2>
+          <h2 className="text-2xl font-bold">Por favor, faça login para visualizar seu painel</h2>
           <Link to="/login">
-            <Button className="mt-4">Login</Button>
-          </Link>
+              <Button className="mt-4">Entrar</Button>
+            </Link>
         </div>
       </Layout>
     );
@@ -62,18 +62,18 @@ const Dashboard = () => {
   return (
     <Layout>
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Welcome, {currentUser.name}</h1>
+        <h1 className="text-3xl font-bold mb-2">Bem-vindo(a), {currentUser.name}</h1>
         <p className="text-zinc-400">
           {currentUser.role === 'admin'
-            ? 'Manage your tournaments and athletes from your admin dashboard.'
-            : 'Track your matches, find tournaments, and connect with other players.'}
-        </p>
+            ? 'Gerencie seus torneios e atletas pelo seu painel de administrador.'
+            : 'Acompanhe suas partidas, encontre torneios e conecte-se com outros jogadores.'}
+          </p>
       </div>
 
       <div className="mb-10">
         <div className="flex items-center mb-3 gap-2">
           <Users className="text-primary" size={22} />
-          <h2 className="text-xl font-semibold">Athletes You Follow</h2>
+          <h2 className="text-xl font-semibold">Atletas que Você Segue</h2>
         </div>
         {followedProfiles.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -91,13 +91,13 @@ const Dashboard = () => {
                     <Link to={`/messages/${profile.userId}`}>
                       <Button size="sm" variant="secondary" className="flex gap-1 items-center">
                         <MessageCircle size={16} className="mr-1 text-primary" />
-                        Chat
+                        Conversar
                       </Button>
                     </Link>
                     <Button
                       size="icon"
                       variant="ghost"
-                      onClick={() => handleUnfollow(profile.userId)}
+                        onClick={() => handleUnfollow(profile.userId)}
                       aria-label="Unfollow"
                       className="text-zinc-400 hover:text-red-500 border border-transparent hover:border-red-400"
                       title="Unfollow"
@@ -112,7 +112,7 @@ const Dashboard = () => {
         ) : (
           <div className="text-center py-6 bg-zinc-900 rounded-lg border border-zinc-800">
             <Users className="mx-auto h-8 w-8 text-zinc-600 mb-2" />
-            <p className="text-zinc-400">You are not following any athletes yet. Go to the "Find Athletes" page to follow and connect.</p>
+            <p className="text-zinc-400">Você ainda não está seguindo nenhum atleta. Vá para a página "Encontrar Atletas" para seguir e conectar-se.</p>
           </div>
         )}
       </div>
@@ -123,7 +123,7 @@ const Dashboard = () => {
             <div className="flex justify-between items-start">
               <div>
                 <p className="text-zinc-400 text-sm mb-1">
-                  {currentUser.role === 'admin' ? 'My Tournaments' : 'Registered Tournaments'}
+                  {currentUser.role === 'admin' ? 'Meus Torneios' : 'Torneios Inscritos'}
                 </p>
                 <p className="text-3xl font-bold">{userTournaments.length}</p>
               </div>
@@ -137,8 +137,8 @@ const Dashboard = () => {
         <Card className="bg-zinc-900 border-zinc-800">
           <CardContent className="p-6">
             <div className="flex justify-between items-start">
-              <div>
-                <p className="text-zinc-400 text-sm mb-1">Upcoming Matches</p>
+              <div>                
+                <p className="text-zinc-400 text-sm mb-1">Próximas Partidas</p>
                 <p className="text-3xl font-bold">{upcomingMatches.length}</p>
               </div>
               <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
@@ -153,7 +153,7 @@ const Dashboard = () => {
             <div className="flex justify-between items-start">
               <div>
                 <p className="text-zinc-400 text-sm mb-1">
-                  {currentUser.role === 'admin' ? 'Athletes' : 'Connections'}
+                  {currentUser.role === 'admin' ? 'Atletas' : 'Conexões'}
                 </p>
                 <p className="text-3xl font-bold">{athleteProfiles.length}</p>
               </div>
@@ -168,7 +168,7 @@ const Dashboard = () => {
           <CardContent className="p-6">
             <div className="flex justify-between items-start">
               <div>
-                <p className="text-zinc-400 text-sm mb-1">Total Matches</p>
+                <p className="text-zinc-400 text-sm mb-1">Total de Partidas</p>
                 <p className="text-3xl font-bold">{userMatches.length}</p>
               </div>
               <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
@@ -184,8 +184,8 @@ const Dashboard = () => {
           <>
             <Card className="bg-zinc-900 border-zinc-800 col-span-1 md:col-span-2">
               <CardHeader>
-                <CardTitle>Recent Tournaments</CardTitle>
-                <CardDescription>Manage your created tournaments</CardDescription>
+                <CardTitle>Torneios Recentes</CardTitle>
+                <CardDescription>Gerencie seus torneios criados</CardDescription>
               </CardHeader>
               <CardContent>
                 {userTournaments.length > 0 ? (
@@ -200,7 +200,7 @@ const Dashboard = () => {
                         </div>
                         <Link to={`/admin/tournaments/${tournament.id}`}>
                           <Button variant="outline" size="sm" className="border-zinc-700">
-                            View
+                            Ver
                           </Button>
                         </Link>
                       </div>
@@ -208,11 +208,11 @@ const Dashboard = () => {
                   </div>
                 ) : (
                   <div className="text-center py-8">
-                    <p className="text-zinc-400 mb-4">You haven't created any tournaments yet</p>
+                    <p className="text-zinc-400 mb-4">Você ainda não criou nenhum torneio</p>
                     <Link to="/admin/create-tournament">
                       <Button>
                         <PlusCircle size={16} className="mr-2" />
-                        Create Tournament
+                        Criar Torneio
                       </Button>
                     </Link>
                   </div>
@@ -222,37 +222,37 @@ const Dashboard = () => {
             
             <Card className="bg-zinc-900 border-zinc-800">
               <CardHeader>
-                <CardTitle>Quick Actions</CardTitle>
-                <CardDescription>Tournament management tools</CardDescription>
+                <CardTitle>Ações Rápidas</CardTitle>
+                <CardDescription>Ferramentas de gerenciamento de torneios</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
                 <Link to="/admin/create-tournament">
                   <Button className="w-full justify-start" variant="outline">
                     <PlusCircle size={16} className="mr-2" />
-                    Create Tournament
+                    Criar Torneio
                   </Button>
                 </Link>
                 <Link to="/admin/tournaments">
                   <Button className="w-full justify-start" variant="outline">
                     <Trophy size={16} className="mr-2" />
-                    Manage Tournaments
+                    Gerenciar Torneios
                   </Button>
                 </Link>
                 <Link to="/admin/athletes">
                   <Button className="w-full justify-start" variant="outline">
                     <Users size={16} className="mr-2" />
-                    View Athletes
+                    Ver Atletas
                   </Button>
                 </Link>
               </CardContent>
-            </Card>
+            </Card>          
           </>
         ) : (
           <>
             <Card className="bg-zinc-900 border-zinc-800 col-span-1 md:col-span-2">
               <CardHeader>
-                <CardTitle>Upcoming Matches</CardTitle>
-                <CardDescription>Your scheduled matches</CardDescription>
+                <CardTitle>Próximas Partidas</CardTitle>
+                <CardDescription>Suas Partidas Agendadas</CardDescription>
               </CardHeader>
               <CardContent>
                 {upcomingMatches.length > 0 ? (
@@ -261,28 +261,28 @@ const Dashboard = () => {
                       <div key={match.id} className="flex justify-between items-center p-3 bg-black rounded-md border border-zinc-800">
                         <div>
                           <h3 className="font-medium">
-                            {match.playerOneId === currentUser.id ? 'You' : 'Opponent'} vs. 
-                            {match.playerTwoId === currentUser.id ? ' You' : ' Opponent'}
+                            {match.playerOneId === currentUser.id ? 'Você' : 'Oponente'} vs.
+                            {match.playerTwoId === currentUser.id ? ' Você' : ' Oponente'}
                           </h3>
                           <p className="text-sm text-zinc-400">
                             {match.scheduledTime.toLocaleDateString()} at {match.scheduledTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                           </p>
                         </div>
                         <Link to={`/matches/${match.id}`}>
-                          <Button variant="outline" size="sm" className="border-zinc-700">
-                            View
-                          </Button>
-                        </Link>
+                            <Button variant="outline" size="sm" className="border-zinc-700">
+                                Ver
+                              </Button>
+                            </Link>
                       </div>
                     ))}
                   </div>
                 ) : (
                   <div className="text-center py-8">
-                    <p className="text-zinc-400 mb-4">You don't have any upcoming matches</p>
+                    <p className="text-zinc-400 mb-4">Você não tem nenhuma partida agendada</p>
                     <Link to="/athletes">
                       <Button>
                         <Users size={16} className="mr-2" />
-                        Find Players
+                        Encontrar Jogadores
                       </Button>
                     </Link>
                   </div>
@@ -292,8 +292,8 @@ const Dashboard = () => {
             
             <Card className="bg-zinc-900 border-zinc-800">
               <CardHeader>
-                <CardTitle>Available Tournaments</CardTitle>
-                <CardDescription>Tournaments you can join</CardDescription>
+                <CardTitle>Torneios Disponíveis</CardTitle>
+                <CardDescription>Torneios que você pode participar</CardDescription>
               </CardHeader>
               <CardContent>
                 {tournaments.filter(t => t.status === 'upcoming').length > 0 ? (
@@ -313,13 +313,13 @@ const Dashboard = () => {
                       ))}
                     <Link to="/tournaments">
                       <Button variant="link" className="w-full mt-2">
-                        View All Tournaments
+                        Ver Todos os Torneios
                       </Button>
                     </Link>
                   </div>
                 ) : (
-                  <div className="text-center py-6">
-                    <p className="text-zinc-400">No upcoming tournaments</p>
+                  <div className="text-center py-6">                   
+                    <p className="text-zinc-400">Nenhum torneio futuro</p>
                   </div>
                 )}
               </CardContent>

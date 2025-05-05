@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { FormProvider, useForm } from 'react-hook-form';
 import Layout from '@/components/layout/Layout';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { useTranslation } from 'react-i18next';
@@ -10,6 +11,8 @@ const Login = () => {
   const { t } = useTranslation();
   const location = useLocation();
   const from = location.state?.from || '/dashboard';
+
+  const form = useForm()
 
   return (
     <Layout>
@@ -24,7 +27,9 @@ const Login = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <LoginForm />
+            <FormProvider {...form}>
+              <LoginForm />
+            </FormProvider>
           </CardContent>
           <CardFooter>
             <p className="text-center text-sm text-zinc-400 w-full">

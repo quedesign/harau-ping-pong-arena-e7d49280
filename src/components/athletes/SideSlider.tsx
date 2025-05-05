@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -8,7 +9,7 @@ interface SideSliderProps {
   children: React.ReactNode;
   isOpen: boolean;
   onClose: () => void;
-}+}
+}
 
 export const SideSlider: React.FC<SideSliderProps> = ({ title, children, isOpen, onClose }) => {
 

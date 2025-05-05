@@ -24,6 +24,6 @@ export default defineConfig(({ mode }) => ({
     },
   },
   esbuild: {
-    jsx: "react",
+    jsx: "preserve",
   },
 }));

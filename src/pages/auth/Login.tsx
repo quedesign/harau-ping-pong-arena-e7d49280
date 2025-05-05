@@ -1,18 +1,27 @@
 
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { FormProvider, useForm } from 'react-hook-form';
 import Layout from '@/components/layout/Layout';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { useTranslation } from 'react-i18next';
 import { LoginForm } from '@/components/auth/LoginForm';
+import { useAuth } from '@/contexts/auth';
 
 const Login = () => {
   const { t } = useTranslation();
   const location = useLocation();
+  const navigate = useNavigate();
   const from = location.state?.from || '/dashboard';
-
-  const form = useForm()
+  const { currentUser, isLoading } = useAuth();
+  const form = useForm();
+  
+  // Redirect if user is already logged in
+  React.useEffect(() => {
+    if (currentUser && !isLoading) {
+      navigate(from);
+    }
+  }, [currentUser, isLoading, navigate, from]);
 
   return (
     <Layout>

@@ -1,3 +1,4 @@
+
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -13,8 +14,8 @@ import { PasswordInput } from "@/components/auth/PasswordInput";
 
 export const LoginForm = () => {
   const { t } = useTranslation();
-    const { login, isLoading, error, setError, loginWithGoogle } = useAuth();
-    const navigate = useNavigate();
+  const { login, isLoading, error, setError, loginWithGoogle } = useAuth();
+  const navigate = useNavigate();
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -35,14 +36,15 @@ export const LoginForm = () => {
     }
   };
 
-    const handleGoogleLogin = async () => {
-        try {
-        await loginWithGoogle();
+  const handleGoogleLogin = async () => {
+    try {
+      await loginWithGoogle((user) => {
         navigate('/dashboard');
-        } catch (error) {
-        console.error('Error during Google login:', error);
-        }
-    };
+      });
+    } catch (error) {
+      console.error('Error during Google login:', error);
+    }
+  };
 
   const alert = error && (
     <Alert variant="destructive" className="mb-4">
@@ -102,7 +104,11 @@ export const LoginForm = () => {
         variant="outline"
         className="w-full"
         onClick={handleGoogleLogin}
-        ><Mail className="mr-2 h-4 w-4" />{t("auth.loginWithGoogle", "Entrar com o Google")}</Button>
+        disabled={isLoading}
+        >
+          <Mail className="mr-2 h-4 w-4" />
+          {t("auth.loginWithGoogle", "Entrar com o Google")}
+        </Button>
     </form>
   );
 };

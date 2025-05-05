@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -33,7 +32,7 @@ import ManageTournament from "./pages/admin/ManageTournament";
 import MyProfile from "./pages/MyProfile";
 import Settings from "./pages/Settings";
 
-// Cria uma nova instância do QueryClient
+// Create a new QueryClient instance
 const queryClient = new QueryClient();
 
 const App: React.FC = () => {

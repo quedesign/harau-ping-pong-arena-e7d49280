@@ -1,7 +1,6 @@
 
-import { useState } from 'react';
-import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 import { ChevronLeft } from 'lucide-react';
 
 interface SideSliderProps {
@@ -12,7 +11,6 @@ interface SideSliderProps {
 }
 
 export const SideSlider: React.FC<SideSliderProps> = ({ title, children, isOpen, onClose }) => {
-
   return (
     <div
       className={cn(
@@ -43,7 +41,7 @@ export const SideSlider: React.FC<SideSliderProps> = ({ title, children, isOpen,
                 <ChevronLeft className="h-6 w-6"/>
               </Button>
             </div>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-col gap-4">
               {children}
             </div>
           </div>

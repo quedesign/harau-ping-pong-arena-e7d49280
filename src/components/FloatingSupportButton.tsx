@@ -1,5 +1,6 @@
+
 import { useState } from 'react';
-import { SupportForm } from './SupportForm';
+import SupportForm from './SupportForm';
 import { Button } from '@/components/ui/button';
 import { MessageCircle } from 'lucide-react';
 

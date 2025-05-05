@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { SideSlider } from './SideSlider';
 import LevelFilter from './LevelFilter';
 import LocationFilter from './LocationFilter';
 import PlayingStyleFilter from './PlayingStyleFilter';

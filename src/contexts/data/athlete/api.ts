@@ -19,10 +19,10 @@ export const fetchAllAthleteProfiles = async (): Promise<AthleteProfile[]> => {
 export const fetchAthleteProfile = async (userId: string): Promise<AthleteProfile | undefined> => {
   const data = await readData(`athletes/${userId}`);
 
-  if (!data) {
-    throw new Error('No data returned from fetchAthleteProfile');
+  if (!data) {    
+    return undefined;
   }
-
+  
   return {
     userId,
     ...data,

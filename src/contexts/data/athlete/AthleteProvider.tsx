@@ -1,10 +1,10 @@
 
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { AthleteProfile } from '@/types';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react'
+import { AthleteProfile, User } from '@/types'
 import { AthleteContextType } from './types';
-import { fetchAllAthleteProfiles, fetchAthleteProfile, createNewAthleteProfile, updateExistingAthleteProfile } from './api';
-import { useTranslation } from 'react-i18next';
-import { toast } from '@/hooks/use-toast';
+import { fetchAllAthleteProfiles, fetchAthleteProfile, createNewAthleteProfile, updateExistingAthleteProfile } from './api'
+import { useTranslation } from 'react-i18next'
+import { toast } from '@/hooks/use-toast'
 import { loadProfiles } from './utils'
 const AthleteContext = createContext<AthleteContextType | undefined>(undefined);
 
@@ -27,14 +27,20 @@ export const AthleteProvider: React.FC<{ children: React.ReactNode }> = ({ child
       try {
         // First check if we already have it in state
         const cachedProfile = athleteProfiles.find(p => p.userId === userId);
-        if (cachedProfile) return cachedProfile;
+        if (cachedProfile) return cachedProfile
         // Fetch from Supabase
         const profile = await fetchAthleteProfile(userId);
         // Add to local state if found
         if (profile) {
           setAthleteProfiles(prev => [...prev, profile]);
+          return profile
+        } else {
+          const newProfile:AthleteProfile = {userId: userId} as AthleteProfile
+          const createdProfile = await createNewAthleteProfile(newProfile)
+          setAthleteProfiles(prev => [...prev, createdProfile]);
+          return createdProfile
         }
-        return profile;
+
       } catch (error) {
         console.error('Error fetching athlete profile:', error);
         return undefined;

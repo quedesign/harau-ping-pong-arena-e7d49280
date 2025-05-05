@@ -24,6 +24,7 @@ export default defineConfig(({ mode }) => ({
     },
   },
   esbuild: {
-    jsx: "preserve",
+    jsxFactory: "React.createElement",
+    jsxFragment: "React.Fragment",
   },
 }));

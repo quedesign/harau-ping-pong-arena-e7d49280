@@ -25,5 +25,6 @@ export default defineConfig(({ mode }) => ({
   esbuild: {
     jsxFactory: "React.createElement",
     jsxFragment: "React.Fragment",
+    jsx: "automatic"
   }
 }));

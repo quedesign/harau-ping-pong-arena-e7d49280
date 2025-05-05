@@ -6,12 +6,8 @@ import { useLogout } from './operations/useLogout';
 import { useRegister } from './operations/useRegister';
 import { useTestUser } from './operations/useTestUser';
 import { useResetPassword } from './operations/useResetPassword';
-<<<<<<< HEAD
-import { getAuth } from 'firebase/auth';
 import { database } from '@/integrations/firebase/client';
 import { ref, get } from 'firebase/database';
-=======
->>>>>>> 605609c8f086d6d7d7a78f62cfaefa565697e810
 
 export const useAuthOperations = () => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
@@ -27,21 +23,10 @@ export const useAuthOperations = () => {
 
   const login = async (email: string, password: string, onLoginSuccess: (role: string) => void) => {
     try {
-      const userCredential = await loginFn(email, password);
-
-      if(userCredential.user){
-        const { user } = userCredential;
-
-        const userRef = ref(database, `users/${user.uid}`);
-        const snapshot = await get(userRef);
-
-        if (snapshot.exists()) {
-          const userData = snapshot.val();
-
-          setCurrentUser({ ...userData, id: user.uid });
-          setSession(userCredential);
-          onLoginSuccess(userData.role);
-        }
+      await loginFn(email, password, (userData) => {
+         setCurrentUser({ ...userData, id: userData.id });
+         onLoginSuccess(userData.role);
+      });
       }
     } catch (err) {
       console.log(err);

@@ -12,8 +12,8 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [
     react({
-      jsxImportSource: 'react'
-      // Remove the TypeScript plugin that was causing the error
+      jsxImportSource: 'react',
+      plugins: []
     }),
     mode === 'development' &&
     componentTagger(),
@@ -24,6 +24,6 @@ export default defineConfig(({ mode }) => ({
     },
   },
   esbuild: {
-    jsx: 'automatic', // This ensures JSX is properly handled
+    jsx: 'react-jsx',
   },
 }));

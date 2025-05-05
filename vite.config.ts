@@ -12,7 +12,7 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [
     react({
-      jsxImportSource: 'react',
+      jsxImportSource: "react",
       plugins: []
     }),
     mode === 'development' &&
@@ -24,6 +24,6 @@ export default defineConfig(({ mode }) => ({
     },
   },
   esbuild: {
-    jsx: 'react-jsx',
+    jsx: "automatic",
   },
 }));

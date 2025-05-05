@@ -19,9 +19,11 @@ export const AthleteProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setLoading(false);
     return result;
   }, [t]);
+  
   useEffect(() => {
     fetchAthleteProfiles();
   }, [fetchAthleteProfiles]);
+  
   const getAthleteProfile = useCallback(
     async (userId: string): Promise<AthleteProfile | undefined> => {
       try {
@@ -48,6 +50,7 @@ export const AthleteProvider: React.FC<{ children: React.ReactNode }> = ({ child
     },
     [athleteProfiles],
   );
+  
   const createAthleteProfile = useCallback(
     async (profile: AthleteProfile): Promise<AthleteProfile> => {
       try {
@@ -62,15 +65,16 @@ export const AthleteProvider: React.FC<{ children: React.ReactNode }> = ({ child
     },
     [],
   );
+  
   const updateAthleteProfile = useCallback(async (userId: string, profileData: Partial<AthleteProfile>): Promise<AthleteProfile> => {
     const profile = await updateExistingAthleteProfile(userId, profileData);
     setAthleteProfiles(prev => prev.map(p => p.userId === userId ? profile : p));
     return profile;
-  }, [])
+  }, []);
 
   const value = {
     athleteProfiles,
-    loading,
+    isLoading: loading,
     getAthleteProfile,
     createAthleteProfile,
     updateAthleteProfile

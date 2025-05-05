@@ -15,10 +15,21 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const AthleteProfile: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const { getAthleteById, isLoading } = useAthlete();
+  const { getAthleteProfile, isLoading } = useAthlete();
 
-  // Get the athlete from context
-  const athlete = id ? getAthleteById(id) : null;
+  // Get the athlete from context using the correct function
+  const [athlete, setAthlete] = React.useState<any>(null);
+
+  React.useEffect(() => {
+    const fetchAthlete = async () => {
+      if (id) {
+        const athleteData = await getAthleteProfile(id);
+        setAthlete(athleteData);
+      }
+    };
+    
+    fetchAthlete();
+  }, [id, getAthleteProfile]);
 
   if (isLoading) {
     return (
@@ -63,11 +74,11 @@ const AthleteProfile: React.FC = () => {
               </TabsList>
               
               <TabsContent value="tournaments" className="mt-4">
-                <AthleteTournaments athleteId={athlete.id} />
+                <AthleteTournaments athleteId={athlete.userId} />
               </TabsContent>
               
               <TabsContent value="matches" className="mt-4">
-                <AthleteMatches athleteId={athlete.id} />
+                <AthleteMatches athleteId={athlete.userId} />
               </TabsContent>
               
               <TabsContent value="availability" className="mt-4 space-y-6">

@@ -1,12 +1,14 @@
 
-import { useState } from 'react';
-import { User } from '@/types';
+import { useEffect, useState } from 'react';
+import { User } from '@/types/index';
 import { useLogin } from './operations/useLogin';
 import { useLogout } from './operations/useLogout';
 import { useRegister } from './operations/useRegister';
 import { useTestUser } from './operations/useTestUser';
 import { useResetPassword } from './operations/useResetPassword';
-import { Session } from '@supabase/supabase-js';
+import { getAuth } from 'firebase/auth';
+import { database } from '@/integrations/firebase/client';
+import { ref, get } from 'firebase/database';
 
 export const useAuthOperations = () => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
@@ -14,11 +16,35 @@ export const useAuthOperations = () => {
   const [error, setError] = useState<string | null>(null);
   const [session, setSession] = useState<Session | null>(null);
 
-  const { login, isLoading: loginLoading, error: loginError } = useLogin();
+  const { login: loginFn, isLoading: loginLoading, error: loginError } = useLogin();
   const { logout, isLoading: logoutLoading } = useLogout();
   const { register, isLoading: registerLoading, error: registerError } = useRegister();
   const { resetPassword, isLoading: resetLoading, error: resetError } = useResetPassword();
   const { createTestUser, isLoading: createTestUserLoading } = useTestUser();
+
+  const login = async (email: string, password: string, onLoginSuccess: (role: string) => void) => {
+    try {
+      const userCredential = await loginFn(email, password);
+
+      if(userCredential.user){
+        const { user } = userCredential;
+
+        const userRef = ref(database, `users/${user.uid}`);
+        const snapshot = await get(userRef);
+
+        if (snapshot.exists()) {
+          const userData = snapshot.val();
+
+          setCurrentUser({ ...userData, id: user.uid });
+          setSession(userCredential);
+          onLoginSuccess(userData.role);
+        }
+      }
+    } catch (err) {
+      console.log(err);
+      setError(err as string);
+    }
+  };
 
   return {
     currentUser,

@@ -1,19 +1,14 @@
 
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/auth';
 import { useTranslation } from 'react-i18next';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const Navbar = () => {
     const { currentUser } = useAuth();
-    const { i18n, t } = useTranslation();
-    const currentLanguage = i18n.language;
-    const navigate = useNavigate();
+    const { t } = useTranslation();
 
   const handleRegister = () => {
-    console.log("Redirecionando para a página de registro");
-    navigate('/register');
   };
 
   const handleLanguageChange = (language: string) => {
@@ -27,23 +22,6 @@ const Navbar = () => {
         <span className="text-primary text-2xl">.</span>
       </div>
       <div className="flex items-center space-x-4">
-        <Select onValueChange={handleLanguageChange} defaultValue={currentLanguage}>
-          <SelectTrigger className="w-[100px] bg-transparent border-none text-white hover:bg-white/10">
-            <SelectValue placeholder="Language" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="pt">
-              Português
-            </SelectItem>
-            <SelectItem value="en">
-              English
-            </SelectItem>
-            <SelectItem value="es">
-              Español
-            </SelectItem>
-          </SelectContent>
-        </Select>
-
       <div className="space-x-4">
         {currentUser ? (
           <Link to="/dashboard">

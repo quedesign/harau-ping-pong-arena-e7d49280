@@ -17,6 +17,7 @@ export const useSettings = () => {
   const { t, i18n } = useTranslation();
   const { currentUser } = useAuth();
 
+  const [loading, setLoading] = useState<boolean>(true);
   const initialSettings: UserSettings = {
     darkMode: false,
     emailNotifications: true,
@@ -29,20 +30,20 @@ export const useSettings = () => {
     if (storedSettings) {
       const parsedSettings = JSON.parse(storedSettings) as UserSettings;
       i18n.changeLanguage(parsedSettings.language);
+      setLoading(false);
       return parsedSettings;
     }
+    setLoading(false);
     return initialSettings;
   });
 
   useEffect(() => {
-    const storedSettings = localStorage.getItem(localStorageKey);
-    if (storedSettings) {
-      const parsedSettings = JSON.parse(storedSettings) as UserSettings;
-      setSettings(parsedSettings);
-    }
-    i18n.changeLanguage(settings.language);
-    
-  }, []);
+      if(!loading){
+        i18n.changeLanguage(settings.language);
+      }
+    }, [settings.language]);
+
+  
 
   useEffect(() => {localStorage.setItem(localStorageKey, JSON.stringify(settings))}, [settings]);
 
@@ -72,6 +73,7 @@ export const useSettings = () => {
   return {
     settings,
     setSettings,
+    loading,
     handleUpdateSettings,
   };
 };

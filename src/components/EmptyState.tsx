@@ -1,3 +1,4 @@
+
 import { Trophy } from 'lucide-react';
 
 interface EmptyStateProps {
@@ -13,7 +14,3 @@ export const EmptyState: React.FC<EmptyStateProps> = ({ message }) => {
     </div>
   );
 };
-```
-```typescript
-export * from './AthleteCard';
-export * from './EmptyState';

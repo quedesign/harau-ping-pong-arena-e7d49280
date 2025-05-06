@@ -19,7 +19,7 @@ export const useUserProfile = () => {
     try {
       // Update user profile in Supabase
       const { error } = await supabase
-        .from('users')
+        .from('profiles')
         .update({
           name: user.name,
           email: user.email,

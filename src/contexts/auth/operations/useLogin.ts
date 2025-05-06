@@ -28,9 +28,9 @@ export const useLogin = () => {
       if (signInError) throw signInError;
 
       if (authData.user) {
-        // Fetch additional user data from the users table
+        // Fetch additional user data from the profiles table
         const { data: userData, error: userError } = await supabase
-          .from('users')
+          .from('profiles')
           .select('*')
           .eq('id', authData.user.id)
           .single();

@@ -34,9 +34,9 @@ export const useRegister = () => {
       if (signUpError) throw signUpError;
 
       if (authData.user) {
-        // Insert into the users table
+        // Insert into the profiles table
         const { error: insertError } = await supabase
-          .from('users')
+          .from('profiles')
           .insert({
             id: authData.user.id,
             name: name,
@@ -47,13 +47,16 @@ export const useRegister = () => {
 
         if (insertError) throw insertError;
 
-        // If user is an athlete, create an athlete record
+        // If user is an athlete, create an athlete profile record
         if (role === 'athlete') {
           const { error: athleteError } = await supabase
-            .from('athletes')
+            .from('athlete_profiles')
             .insert({
-              id: authData.user.id,
+              user_id: authData.user.id,
               level: 'beginner',
+              handedness: 'right',
+              city: 'São Paulo',
+              state: 'SP',
               wins: 0,
               losses: 0
             });

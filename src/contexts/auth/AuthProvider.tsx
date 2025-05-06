@@ -32,7 +32,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         try {
           // Fetch additional user data from the database
           const { data: userData, error: userError } = await supabase
-            .from('users')
+            .from('profiles')
             .select('*')
             .eq('id', session.user.id)
             .single();

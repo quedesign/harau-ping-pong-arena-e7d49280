@@ -1,3 +1,4 @@
+
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -116,7 +117,7 @@ export const LoginForm = () => {
         )}
       </Button>
 
-      {/* Google login button sem verificação redundante */}
+      {/* Botão de login com Google */}
       <Button
         type="button"
         variant="outline"

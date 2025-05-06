@@ -3,12 +3,13 @@ import { useEffect, useMemo, useState } from "react";
 import { User, UserRole } from "@/types";
 import AuthContext, { AuthContextType } from "./AuthContext";
 import { useAuthOperations } from "./useAuthOperations";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { pathname } = useLocation();
+  const navigate = useNavigate();
   
   const {
     login,
@@ -89,6 +90,78 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [pathname, currentUser]);
 
+  // Monitor auth state changes from Supabase
+  useEffect(() => {
+    const { supabase } = require('@/integrations/supabase/client');
+    
+    // Set up auth state change listener for Google login
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        console.log("Auth state changed:", event, session?.user?.id);
+        
+        if (session && session.user) {
+          // Fetch user data from profiles table
+          supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', session.user.id)
+            .single()
+            .then(({ data: profile }) => {
+              if (profile) {
+                const user: User = {
+                  id: session.user.id,
+                  email: session.user.email || '',
+                  name: profile.name || session.user.user_metadata?.name || 'Usuário',
+                  role: profile.role as UserRole,
+                  profileImage: profile.profile_image || '',
+                  createdAt: new Date(profile.created_at),
+                };
+                
+                setCurrentUser(user);
+                
+                // Redirect to dashboard after successful login
+                if (event === 'SIGNED_IN') {
+                  navigate('/dashboard');
+                }
+              }
+            });
+        } else if (event === 'SIGNED_OUT') {
+          setCurrentUser(null);
+        }
+      }
+    );
+    
+    // Check current session on mount
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session && session.user) {
+        // Fetch user data from profiles table
+        supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', session.user.id)
+          .single()
+          .then(({ data: profile }) => {
+            if (profile) {
+              const user: User = {
+                id: session.user.id,
+                email: session.user.email || '',
+                name: profile.name || session.user.user_metadata?.name || 'Usuário',
+                role: profile.role as UserRole,
+                profileImage: profile.profile_image || '',
+                createdAt: new Date(profile.created_at),
+              };
+              
+              setCurrentUser(user);
+            }
+          });
+      }
+    });
+    
+    return () => {
+      subscription?.unsubscribe();
+    };
+  }, [navigate]);
+
   const loginWithEmailAndPassword = async (email: string, password: string) => {
     setIsLoading(true);
     try {
@@ -109,6 +182,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       const success = await register(name, email, password, role);
       // User is set in the register callback
+      if (success) {
+        navigate('/dashboard');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -120,6 +196,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       await logoutOperation();
       setCurrentUser(null);
       localStorage.removeItem('sessionTimeout');
+      navigate('/login');
     } finally {
       setIsLoading(false);
     }

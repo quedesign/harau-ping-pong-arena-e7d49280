@@ -1,159 +1,35 @@
 
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useAuth } from '@/contexts/auth';
 import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useToast } from '@/hooks/use-toast';
-import { useTranslation } from 'react-i18next';
-import { UserCog, Key, Award, Badge } from 'lucide-react';
-import ProfileTab from '@/components/profile/ProfileTab';
-import SecurityTab from '@/components/profile/SecurityTab';
-import SportsDataTab from '@/components/profile/SportsDataTab';
-import EquipmentTab from '@/components/profile/EquipmentTab';
-import { useAthlete } from '@/contexts/data/athlete';
-import { AthleteProfile, User } from '@/types';
-import { supabase } from '@/integrations/supabase/client';
+import { useAthleteProfile } from '@/hooks/useAthleteProfile';
+import MyProfileTabs from '@/components/profile/MyProfileTabs';
+import { AthleteProfile } from '@/types';
 
 const MyProfile = () => {
   const { currentUser } = useAuth();
-  const { getAthleteProfile, updateAthleteProfile } = useAthlete();
   const navigate = useNavigate();
-  const { toast } = useToast();
-  const { t } = useTranslation();
-  
-  const [athleteProfile, setAthleteProfile] = useState<AthleteProfile | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { athleteProfile, loading, updateProfile } = useAthleteProfile();
 
   useEffect(() => {
     if (!currentUser) {
       navigate('/login');
-      return;
     }
-
-    const fetchProfile = async () => {
-      setLoading(true);
-      try {
-        if (currentUser.role === 'athlete' && currentUser.id) {
-          const profile = await getAthleteProfile(currentUser.id);
-          setAthleteProfile(profile || null);
-        }
-      } catch (error) {
-        console.error("Error fetching athlete profile:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProfile();
-  }, [currentUser, getAthleteProfile, navigate]);
+  }, [currentUser, navigate]);
 
   if (!currentUser) {
     return null;
   }
 
-  const handleUpdateProfile = async (user: User) => {
-    try {
-      // Check if user.id exists
-      if (!currentUser.id) {
-        toast({
-          title: t('common.error'),
-          description: "User ID is missing",
-          variant: 'destructive',
-        });
-        return;
-      }
-
-      // Update user profile in Supabase
-      const { error } = await supabase
-        .from('users')
-        .update({
-          name: user.name,
-          email: user.email,
-          profile_image: user.profileImage
-        })
-        .eq('id', currentUser.id);
-
-      if (error) throw error;
-
-      toast({
-        title: t('common.success'),
-        description: t('profile.updateSuccess'),
-      });
-    } catch (error) {
-      console.error("Error updating user profile:", error);
-      toast({
-        title: t('common.error'),
-        description: t('profile.updateError'),
-        variant: 'destructive',
-      });
-    }
-  };
-
-  const handlePasswordChange = async (currentPassword: string, newPassword: string) => {
-    try {
-      // Supabase doesn't provide a direct way to verify current password before changing
-      // We'll just attempt to change the password directly
-      const { error } = await supabase.auth.updateUser({
-        password: newPassword
-      });
-      
-      if (error) throw error;
-      
-      toast({
-        title: t('common.success'),
-        description: t('profile.passwordUpdateSuccess'),
-      });
-    } catch (error) {
-      console.error("Error updating password:", error);
-      toast({
-        title: t('common.error'),
-        description: t('auth.currentPasswordIncorrect'),
-        variant: 'destructive',
-      });
-    }
-  };
-
   const handleUpdateSportsData = async (data: Partial<AthleteProfile>) => {
-    if (!currentUser || !athleteProfile || !currentUser.id) return;
-    
-    try {
-      const updatedProfile = await updateAthleteProfile(currentUser.id, data);
-      setAthleteProfile(updatedProfile);
-      
-      toast({
-        title: t('common.success'),
-        description: 'Dados esportivos atualizados com sucesso',
-      });
-    } catch (error) {
-      console.error("Error updating sports data:", error);
-      toast({
-        title: t('common.error'),
-        description: 'Erro ao atualizar dados esportivos',
-        variant: 'destructive',
-      });
-    }
+    if (!currentUser.id || !athleteProfile) return;
+    await updateProfile(data);
   };
 
   const handleUpdateEquipment = async (equipment: { racket?: string; rubbers?: string }) => {
-    if (!currentUser || !athleteProfile || !currentUser.id) return;
-    
-    try {
-      const updatedProfile = await updateAthleteProfile(currentUser.id, { equipment });
-      setAthleteProfile(updatedProfile);
-      
-      toast({
-        title: t('common.success'),
-        description: 'Dados de equipamento atualizados com sucesso',
-      });
-    } catch (error) {
-      console.error("Error updating equipment:", error);
-      toast({
-        title: t('common.error'),
-        description: 'Erro ao atualizar dados de equipamento',
-        variant: 'destructive',
-      });
-    }
+    if (!currentUser.id || !athleteProfile) return;
+    await updateProfile({ equipment });
   };
 
   if (loading) {
@@ -169,56 +45,12 @@ const MyProfile = () => {
   return (
     <Layout>
       <div className="container max-w-4xl py-6">
-        <Tabs defaultValue="profile" className="space-y-6">
-          <TabsList>
-            <TabsTrigger value="profile">
-              <UserCog className="h-4 w-4 mr-2" />
-              {t('profile.personalInfo')}
-            </TabsTrigger>
-            <TabsTrigger value="security">
-              <Key className="h-4 w-4 mr-2" />
-              {t('profile.security')}
-            </TabsTrigger>
-            {currentUser.role === 'athlete' && (
-              <>
-                <TabsTrigger value="sportsData">
-                  <Award className="h-4 w-4 mr-2" />
-                  Dados Esportivos
-                </TabsTrigger>
-                <TabsTrigger value="equipment">
-                  <Badge className="h-4 w-4 mr-2" />
-                  Equipamentos
-                </TabsTrigger>
-              </>
-            )}
-          </TabsList>
-
-          <TabsContent value="profile">
-            <ProfileTab currentUser={currentUser} onUpdate={handleUpdateProfile} />
-          </TabsContent>
-
-          <TabsContent value="security">
-            <SecurityTab onPasswordChange={handlePasswordChange} />
-          </TabsContent>
-
-          {currentUser.role === 'athlete' && (
-            <>
-              <TabsContent value="sportsData">
-                <SportsDataTab 
-                  profile={athleteProfile} 
-                  onUpdate={handleUpdateSportsData} 
-                />
-              </TabsContent>
-              
-              <TabsContent value="equipment">
-                <EquipmentTab 
-                  equipment={athleteProfile?.equipment} 
-                  onUpdate={handleUpdateEquipment} 
-                />
-              </TabsContent>
-            </>
-          )}
-        </Tabs>
+        <MyProfileTabs 
+          currentUser={currentUser}
+          athleteProfile={athleteProfile}
+          onUpdateSportsData={handleUpdateSportsData}
+          onUpdateEquipment={handleUpdateEquipment}
+        />
       </div>
     </Layout>
   );

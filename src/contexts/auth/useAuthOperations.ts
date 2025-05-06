@@ -63,6 +63,38 @@ export const useAuthOperations = () => {
     }
   };
 
+  // Add updateUser function
+  const updateUser = async (userData: Partial<User>): Promise<void> => {
+    if (!currentUser?.id) return;
+    
+    setIsLoading(true);
+    try {
+      // Update user profile in Supabase
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          name: userData.name,
+          email: userData.email,
+          // Add other fields as needed
+        })
+        .eq('id', currentUser.id);
+
+      if (error) throw error;
+
+      // Update local state
+      setCurrentUser({
+        ...currentUser,
+        ...userData,
+      });
+      
+    } catch (error: any) {
+      console.error("Error updating user profile:", error);
+      setError(error?.message || "Failed to update user profile");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return {
     currentUser,
     setCurrentUser,
@@ -75,6 +107,7 @@ export const useAuthOperations = () => {
     register,
     resetPassword,
     createTestUser,
-    loginWithGoogle
+    loginWithGoogle,
+    updateUser  // Export the new updateUser function
   };
 };

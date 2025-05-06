@@ -93,9 +93,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setIsLoading(true);
     try {
       const success = await login(email, password);
-      if (success) {
-        // User is set in the login callback
-      }
+      // User is set in the login callback
     } finally {
       setIsLoading(false);
     }
@@ -110,9 +108,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setIsLoading(true);
     try {
       const success = await register(name, email, password, role);
-      if (success) {
-        // User is set in the register callback
-      }
+      // User is set in the register callback
     } finally {
       setIsLoading(false);
     }
@@ -133,11 +129,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     if (!currentUser) return;
     setIsLoading(true);
     try {
-      const updatedUser = await updateUserOperation({
-        ...currentUser,
-        ...userData,
-      });
-      setCurrentUser(updatedUser);
+      await updateUserOperation(userData);
+      // currentUser is updated in the updateUserOperation
     } finally {
       setIsLoading(false);
     }

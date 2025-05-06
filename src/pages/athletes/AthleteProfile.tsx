@@ -16,7 +16,7 @@ import AthleteTournaments from '@/components/athlete/AthleteTournaments';
 import AthleteMatches from '@/components/athlete/AthleteMatches';
 import AthletePreferredLocations from '@/components/athlete/AthletePreferredLocations';
 import AthletePreferredTimes from '@/components/athlete/AthletePreferredTimes';
-import { supabase } from '@/integrations/supabase/client';
+import { checkSupabaseConnection } from '@/integrations/supabase/client';
 
 const AthleteProfile = () => {
   const { id } = useParams<{ id: string }>();
@@ -28,6 +28,17 @@ const AthleteProfile = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const [isCurrentUser, setIsCurrentUser] = useState(false);
+  const [supabaseConnected, setSupabaseConnected] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    // Verificar a conexão com o Supabase
+    const checkConnection = async () => {
+      const isConnected = await checkSupabaseConnection();
+      setSupabaseConnected(isConnected);
+    };
+    
+    checkConnection();
+  }, []);
 
   useEffect(() => {
     const fetchAthleteProfile = async () => {
@@ -70,6 +81,11 @@ const AthleteProfile = () => {
         <div className="flex flex-col items-center justify-center py-12">
           <h2 className="text-2xl font-bold text-red-500 mb-2">Profile not found</h2>
           <p className="text-gray-500">{error?.message || 'Could not load athlete profile'}</p>
+          {supabaseConnected === false && (
+            <p className="text-red-500 mt-4">
+              Erro na conexão com o Supabase. Verifique suas credenciais.
+            </p>
+          )}
         </div>
       </Layout>
     );
@@ -78,20 +94,26 @@ const AthleteProfile = () => {
   return (
     <Layout>
       <div className="container py-6">
-        <AthleteProfileHeader athlete={athlete} />
+        <AthleteProfileHeader athlete={athlete} athleteName={athlete.name} />
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
           <div className="space-y-6">
-            <AthleteProfileCard profile={athlete} />
-            <AthleteStats stats={{
-              totalMatches: 0,
-              tournamentsPlayed: 0,
-              longestStreak: '0 vitórias',
-              winRate: athlete.wins > 0 ? Math.round((athlete.wins / (athlete.wins + athlete.losses)) * 100) : 0,
-              averagePointsPerGame: 0,
-              bestTournament: 'N/A'
-            }} />
-            <AthleteEquipments equipment={athlete.equipment} athlete={athlete} />
+            <AthleteProfileCard profile={athlete} athleteName={athlete.name} />
+            <AthleteStats 
+              wins={athlete.wins} 
+              losses={athlete.losses} 
+              stats={{
+                totalMatches: 0,
+                tournamentsPlayed: 0,
+                longestStreak: '0 vitórias',
+                winRate: athlete.wins > 0 ? Math.round((athlete.wins / (athlete.wins + athlete.losses)) * 100) : 0,
+                averagePointsPerGame: 0,
+                bestTournament: 'N/A'
+              }} 
+            />
+            {athlete.equipment && (
+              <AthleteEquipments equipment={athlete.equipment} athlete={athlete} />
+            )}
           </div>
           
           <div className="md:col-span-2">
@@ -105,7 +127,6 @@ const AthleteProfile = () => {
               
               <TabsContent value="info" className="mt-4 space-y-4">
                 <AthleteDetailsSection 
-                  athlete={athlete}
                   playingStyle={athlete.playingStyle}
                   gripStyle={athlete.gripStyle}
                   playFrequency={athlete.playFrequency}
@@ -125,12 +146,31 @@ const AthleteProfile = () => {
               </TabsContent>
               
               <TabsContent value="availability" className="mt-4 space-y-6">
-                <AthletePreferredLocations preferredLocations={athlete.preferredLocations} athlete={athlete} />
-                <AthletePreferredTimes availableTimes={athlete.availableTimes} athlete={athlete} />
+                {athlete.preferredLocations && (
+                  <AthletePreferredLocations 
+                    preferredLocations={athlete.preferredLocations} 
+                    athlete={athlete} 
+                  />
+                )}
+                {athlete.availableTimes && (
+                  <AthletePreferredTimes 
+                    availableTimes={athlete.availableTimes} 
+                    athlete={athlete} 
+                  />
+                )}
               </TabsContent>
             </Tabs>
           </div>
         </div>
+
+        {supabaseConnected === false && (
+          <div className="mt-8 p-4 bg-red-800/20 border border-red-800 rounded-md">
+            <p className="text-red-400 font-medium">
+              Atenção: Sua aplicação não está conectada ao Supabase corretamente. 
+              Verifique suas credenciais na configuração do cliente Supabase.
+            </p>
+          </div>
+        )}
       </div>
     </Layout>
   );

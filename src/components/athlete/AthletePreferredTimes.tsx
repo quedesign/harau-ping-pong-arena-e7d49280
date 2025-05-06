@@ -1,32 +1,42 @@
 
-import { Card, CardContent } from "@/components/ui/card";
-import { Calendar } from "lucide-react";
-import { AthletePreferredTimesProps } from "./types";
+import React from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Clock } from 'lucide-react';
+import { AthleteProfile } from '@/types';
+import { AthletePreferredTimesProps } from './types';
 
-const AthletePreferredTimes: React.FC<AthletePreferredTimesProps> = ({ athlete, availableTimes }) => {
-  const times = availableTimes || athlete.availableTimes || [];
-  
-  if (!times || times.length === 0) {
+const AthletePreferredTimes: React.FC<AthletePreferredTimesProps> = ({
+  availableTimes = [],
+  athlete
+}) => {
+  if (!availableTimes || availableTimes.length === 0) {
     return null;
   }
-  
-  return (
-    <div className="w-full">
-      <h3 className="text-sm font-medium mb-3 flex items-center gap-2">
-        <Calendar size={16} />
-        Horários disponíveis
-      </h3>
 
-      <div className="bg-zinc-800 p-3 rounded-md text-sm">
-        <ul className="list-disc list-inside space-y-1">
-          {times.map((time, index) => (
-            <li key={index} className="text-zinc-300">
+  return (
+    <Card className="bg-zinc-900 border-zinc-800 mt-6">
+      <CardHeader className="pb-2">
+        <CardTitle className="flex items-center text-lg">
+          <Clock className="h-5 w-5 mr-2" />
+          Horários Disponíveis
+        </CardTitle>
+        <CardDescription>
+          Quando {athlete?.name || 'o atleta'} costuma jogar
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="flex flex-wrap gap-2">
+          {availableTimes.map((time, index) => (
+            <div
+              key={index}
+              className="bg-zinc-800 text-zinc-200 px-3 py-1 rounded-full text-sm"
+            >
               {time}
-            </li>
+            </div>
           ))}
-        </ul>
-      </div>
-    </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 

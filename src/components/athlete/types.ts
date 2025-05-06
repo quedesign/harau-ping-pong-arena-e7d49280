@@ -14,15 +14,16 @@ export interface AthleteProfileCardProps {
 export interface AthleteStatsProps {
   athlete?: AthleteProfile;
   stats?: any;
+  wins?: number;
+  losses?: number;
 }
 
 export interface AthleteEquipmentsProps {
-  athlete?: AthleteProfile;
+  athlete: AthleteProfile;
   equipment?: AthleteEquipment;
 }
 
 export interface AthleteDetailsSectionProps {
-  athlete?: AthleteProfile;
   playingStyle?: string;
   gripStyle?: string;
   playFrequency?: string;
@@ -33,12 +34,12 @@ export interface AthleteDetailsSectionProps {
 }
 
 export interface AthleteTournamentsProps {
-  athleteId?: string;
+  athleteId: string;
   tournaments?: any[];
 }
 
 export interface AthleteMatchesProps {
-  athleteId?: string;
+  athleteId: string;
 }
 
 export interface AthletePreferredLocationsProps {

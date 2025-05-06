@@ -44,10 +44,28 @@ const AthleteProfileCard: React.FC<AthleteProfileCardProps> = ({
         </CardContent>
       </Card>
       
-      {profile.equipment && <AthleteEquipments equipment={profile.equipment} athlete={profile} />}
-      {profile.availableTimes && <AthletePreferredTimes availableTimes={profile.availableTimes} athlete={profile} />}
-      {profile.preferredLocations && <AthletePreferredLocations preferredLocations={profile.preferredLocations} athlete={profile} />}
+      {profile.equipment && (
+        <AthleteEquipments 
+          equipment={profile.equipment} 
+          athlete={profile} 
+        />
+      )}
+      
+      {profile.availableTimes && (
+        <AthletePreferredTimes 
+          availableTimes={profile.availableTimes} 
+          athlete={profile} 
+        />
+      )}
+      
+      {profile.preferredLocations && (
+        <AthletePreferredLocations 
+          preferredLocations={profile.preferredLocations} 
+          athlete={profile} 
+        />
+      )}
     </>
   );
 };
+
 export default AthleteProfileCard;

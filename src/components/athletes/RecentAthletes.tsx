@@ -1,4 +1,3 @@
-
 import AthleteCard from '@/components/athletes/AthleteCard';
 import { Loader2 } from 'lucide-react';
 import { useGetAthletes } from '@/hooks/useGetAthletes';
@@ -14,7 +13,7 @@ const RecentAthletes: React.FC = () => {
     );
   }
   
-  if(error){
+  if (error) {
     return (
       <div className="p-4 bg-red-500/10 text-red-500 rounded-lg">
         Erro ao carregar atletas: {error}
@@ -33,7 +32,7 @@ const RecentAthletes: React.FC = () => {
             key={athlete.id}
             athlete={{
               userId: athlete.id,
-              name: athlete.name ? String(athlete.name) : 'Atleta', // Ensure name is always a string
+              name: athlete.name ?? 'Atleta', // agora sempre será uma string
               level: 'beginner' as 'beginner',
               bio: `Atleta desde ${athlete.createdAt?.toLocaleDateString() ?? 'recentemente'}`,
               location: {

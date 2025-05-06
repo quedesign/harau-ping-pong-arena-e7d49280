@@ -1,4 +1,3 @@
-
 // Type definitions for Harau Ping Pong App
 
 // User types
@@ -138,7 +137,7 @@ export interface AuthContextType {
   logout: () => Promise<void>;
   register: (name: string, email: string, password: string, role: UserRole) => Promise<boolean>;
   resetPassword: (email: string) => Promise<boolean>;
-  createTestUser: () => Promise<void>;
+  createTestUser: () => Promise<boolean>;
   setError?: (error: string | null) => void;
   loginWithGoogle?: (callback?: (user: User) => void) => Promise<void>;
 }

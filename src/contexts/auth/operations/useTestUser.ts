@@ -1,11 +1,14 @@
 
 import { useState } from "react";
-import { UserRole, UseLogin } from "@/types";
+import { UserRole } from "@/types";
 
-export const useTestUser = (register: (...args: any[]) => Promise<boolean>, login: UseLogin) => {
+export const useTestUser = (
+  register: (name: string, email: string, password: string, role: UserRole) => Promise<boolean>,
+  login: (email: string, password: string, callback?: (userData: any) => void) => Promise<boolean>
+) => {
   const [isLoading, setIsLoading] = useState(false);
 
-  const createTestUser = async () => {
+  const createTestUser = async (): Promise<boolean> => {
     setIsLoading(true);
     try {
       const testUser = {

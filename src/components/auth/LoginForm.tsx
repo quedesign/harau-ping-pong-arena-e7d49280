@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, Loader2, Mail } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { loginSchema, type LoginFormValues, } from '@/pages/auth/schema';
+import { loginSchema, type LoginFormValues } from '@/pages/auth/schema';
 import { useAuth } from '@/contexts/auth';
 import { Input } from "@/components/ui/input";
 import { Link, useNavigate } from 'react-router-dom';
@@ -32,7 +32,7 @@ export const LoginForm = () => {
         navigate('/dashboard');
       });
       
-      if (success && !setError) {
+      if (success && !error) {
         navigate('/dashboard');
       }
     } catch (err) {

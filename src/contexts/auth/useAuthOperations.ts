@@ -22,19 +22,20 @@ export const useAuthOperations = () => {
   const { resetPassword, isLoading: resetLoading, error: resetError } = useResetPassword();
   const { createTestUser, isLoading: createTestUserLoading } = useTestUser(register, loginFn);
 
-  const login = async (email: string, password: string, onLoginSuccess: (userData: User) => void) => {
+  const login = async (email: string, password: string, callback?: (userData: User) => void) => {
     try {
-      await loginFn(email, password, (userData) => {
+      return await loginFn(email, password, (userData) => {
         setCurrentUser(userData);
-        onLoginSuccess(userData);
+        if (callback) callback(userData);
       });
     } catch (err) {
       console.log(err);
       setError(err as string);
+      return false;
     }
   };
 
-  const loginWithGoogle = async (onLoginSuccess?: (userData: User) => void) => {
+  const loginWithGoogle = async (callback?: (userData: User) => void) => {
     setIsLoading(true);
     setError(null);
     

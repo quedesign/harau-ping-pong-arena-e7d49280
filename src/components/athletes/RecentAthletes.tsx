@@ -1,3 +1,4 @@
+
 import AthleteCard from '@/components/athletes/AthleteCard';
 import { Loader2 } from 'lucide-react';
 import { useGetAthletes } from '@/hooks/useGetAthletes';
@@ -32,7 +33,7 @@ const RecentAthletes: React.FC = () => {
             key={athlete.id}
             athlete={{
               userId: athlete.id,
-              name: athlete.name ?? 'Atleta', // agora sempre será uma string
+              name: athlete.name || 'Atleta', // Using || to ensure we always have a string
               level: 'beginner' as 'beginner',
               bio: `Atleta desde ${athlete.createdAt?.toLocaleDateString() ?? 'recentemente'}`,
               location: {

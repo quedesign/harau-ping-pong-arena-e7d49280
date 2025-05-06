@@ -1,86 +1,57 @@
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { PlusCircle, MessageCircle, Eye, MapPin } from 'lucide-react';
-import { AthleteProfile } from '@/types';
-import { Link } from 'react-router-dom';
-import { useState } from 'react';
+import { MapPin } from 'lucide-react';
 
-export interface AthleteCardProps {
-  athlete: AthleteProfile;
-  onClick?: () => void;
+interface AthleteCardProps {
+  athlete: {
+    userId: string;
+    name: string; // This now requires a string (not undefined)
+    level: 'beginner' | 'intermediate' | 'advanced' | 'professional';
+    bio?: string;
+    location?: {
+      city?: string;
+      state?: string;
+      country?: string;
+    };
+    wins?: number;
+    losses?: number;
+  };
 }
 
-export const AthleteCard: React.FC<AthleteCardProps> = ({ athlete, onClick }) => {
-  const [isFollowing, setIsFollowing] = useState(false);
-  const handleSendMessage = () => {
-    console.log('Send message to', athlete.userId);
-  };
-
-  const handleFollow = () => {
-    setIsFollowing(!isFollowing);
-    console.log(isFollowing ? 'Unfollow athlete' : 'Follow athlete', athlete.userId);
-  };
-
-  const handleViewProfile = () => {
-    if (onClick) {
-      onClick();
-    } else {
-      window.location.href = `/athletes/${athlete.userId}`;
-    }
-  };
+const AthleteCard: React.FC<AthleteCardProps> = ({ athlete }) => {
+  const { name, level, bio, location } = athlete;
   
-  const name = athlete?.name || `Atleta ${athlete.userId}`;
+  // Format location string if available
+  const formattedLocation = location 
+    ? [location.city, location.state, location.country].filter(Boolean).join(', ')
+    : '';
 
   return (
-    <Card className="bg-zinc-900 border-zinc-800 hover:border-zinc-700 transition-colors w-full">
-      <CardHeader className="pb-1 px-3 pt-3">
-        <div className="flex justify-between items-start">
-          <CardTitle className="text-lg truncate">{name}</CardTitle>
-          {athlete.level && (
-            <Badge className="bg-blue-500/20 text-blue-400">
-              {athlete.level}
-            </Badge>
-          )}
-        </div>
-        <CardDescription className="line-clamp-2 text-xs">
-          {athlete.bio || 'Sem biografia disponível'}
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="px-3 pb-3">
-        <div className="mb-2">
-          {athlete.location && (
-            <div className="flex items-center text-zinc-400">
-              <MapPin className="h-3 w-3 mr-1" />
-              <span className="text-xs">
-                {athlete.location.city}, {athlete.location.country}
-              </span>
+    <Card className="hover:bg-accent/10 transition-colors">
+      <CardContent className="p-4">
+        <div className="flex items-center gap-3">
+          <Avatar className="h-10 w-10">
+            <AvatarFallback>{name.charAt(0)}</AvatarFallback>
+            <AvatarImage src={`https://api.dicebear.com/7.x/initials/svg?seed=${name}`} />
+          </Avatar>
+          
+          <div className="flex-1">
+            <div className="flex items-center justify-between">
+              <h3 className="font-medium">{name}</h3>
+              <Badge variant="outline" className="text-xs capitalize">{level}</Badge>
             </div>
-          )}
-        </div>
-        <div className="flex items-center justify-start gap-2 mt-3">
-          <Button variant="outline" size="sm" onClick={handleFollow} className="h-8 px-2 text-xs whitespace-nowrap">
-            <PlusCircle className="h-3 w-3 mr-1" />
-            {isFollowing? "Seguindo" : "Seguir"}
-          </Button>
-          <Button variant="outline" size="sm" onClick={handleSendMessage} className="h-8 px-2 text-xs whitespace-nowrap">
-            <MessageCircle className="h-3 w-3 mr-1" />
-            Mensagem
-          </Button>
-          {onClick ? (
-            <Button size="sm" onClick={handleViewProfile} className="h-8 px-2 text-xs whitespace-nowrap">
-              <Eye className="h-3 w-3 mr-1" />
-              Perfil
-            </Button>
-          ) : (
-            <Link to={`/athletes/${athlete.userId}`}>
-              <Button size="sm" className="h-8 px-2 text-xs whitespace-nowrap">
-                <Eye className="h-3 w-3 mr-1" />
-                Perfil
-              </Button>
-            </Link>
-          )}
+            
+            {bio && <p className="text-sm text-muted-foreground line-clamp-1 mt-1">{bio}</p>}
+            
+            {formattedLocation && (
+              <div className="flex items-center text-xs text-muted-foreground mt-1">
+                <MapPin className="h-3 w-3 mr-1" />
+                <span>{formattedLocation}</span>
+              </div>
+            )}
+          </div>
         </div>
       </CardContent>
     </Card>

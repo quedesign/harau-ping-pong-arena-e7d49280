@@ -33,7 +33,7 @@ const RecentAthletes: React.FC = () => {
             key={athlete.id}
             athlete={{
               userId: athlete.id,
-              name: (athlete.name || 'Atleta') as string, // Explicitly cast to string
+              name: athlete.name ? String(athlete.name) : 'Atleta', // Ensure name is always a string
               level: 'beginner' as 'beginner',
               bio: `Atleta desde ${athlete.createdAt?.toLocaleDateString() ?? 'recentemente'}`,
               location: {

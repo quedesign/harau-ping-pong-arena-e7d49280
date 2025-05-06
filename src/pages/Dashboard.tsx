@@ -7,6 +7,7 @@ import WolfProLinkBanner from '@/components/WolfProLinkBanner';
 import RecentAthletes from '@/components/athletes/RecentAthletes';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BarChart, Calendar, Users } from 'lucide-react';
+import UpcomingTournaments from '@/components/tournaments/UpcomingTournaments';
 
 const Dashboard = () => {
   const { currentUser } = useAuth();
@@ -29,7 +30,7 @@ const Dashboard = () => {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
               <CardTitle className="text-sm font-medium">Total Treinos</CardTitle>
-              <Calendar className="h-4 w-4 text-muted-foreground" />
+              <Calendar className="h-4 w-4 text-primary" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">12</div>
@@ -41,7 +42,7 @@ const Dashboard = () => {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
               <CardTitle className="text-sm font-medium">Torneios Participados</CardTitle>
-              <BarChart className="h-4 w-4 text-muted-foreground" />
+              <BarChart className="h-4 w-4 text-primary" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">4</div>
@@ -53,7 +54,7 @@ const Dashboard = () => {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
               <CardTitle className="text-sm font-medium">Rede de Contatos</CardTitle>
-              <Users className="h-4 w-4 text-muted-foreground" />
+              <Users className="h-4 w-4 text-primary" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">+28</div>
@@ -64,7 +65,10 @@ const Dashboard = () => {
           </Card>
         </div>
         
-        <RecentAthletes />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+          <RecentAthletes />
+          <UpcomingTournaments />
+        </div>
       </div>
     </Layout>
   );

@@ -1,94 +1,144 @@
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { AuthContextType } from './types';
-import { User, UserRole } from '@/types';
-import { useAuthOperations } from './useAuthOperations';
-import { supabase } from '@/integrations/supabase/client';
+import { useEffect, useMemo, useState } from "react";
+import { User } from "@/types";
+import AuthContext, { AuthContextType } from "./AuthContext";
+import { useAuthOperations } from "./useAuthOperations";
+import { useLocation } from "react-router-dom";
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const { pathname } = useLocation();
+  
   const {
-    currentUser,
-    setCurrentUser,
-    isLoading,
-    setIsLoading,
-    error,
     login,
-    logout,
     register,
-    createTestUser,
+    logout: logoutOperation,
     resetPassword,
-    setError,
+    updateUser: updateUserOperation,
     loginWithGoogle,
+    loginWithGithub,
+    loginAsTestUser,
+    getCurrentUser
   } = useAuthOperations();
 
-  useEffect(() => {
+  const onAuthStateChange = async () => {
     setIsLoading(true);
-    
-    // Listen for auth state changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (session?.user) {
-        try {
-          // Fetch additional user data from the database
-          const { data: userData, error: userError } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', session.user.id)
-            .single();
-
-          if (userError) throw userError;
-
-          // Combine Supabase auth user with database data
-          const fullUser: User = {
-            id: session.user.id,
-            email: session.user.email || '',
-            name: userData.name || 'User',
-            role: userData.role as UserRole, // Use as to cast to our enum
-            profileImage: userData.profile_image || '',
-            createdAt: new Date(userData.created_at),
-          };
-          
-          setCurrentUser(fullUser);
-          console.log('User authenticated and loaded:', fullUser);
-        } catch (error) {
-          console.error('Error fetching user data:', error);
-          setCurrentUser(null);
-        }
+    try {
+      const user = await getCurrentUser();
+      if (user) {
+        setCurrentUser(user);
       } else {
-        console.log('No authenticated user');
         setCurrentUser(null);
       }
+    } catch (error) {
+      console.error("Error checking auth state:", error);
+      setCurrentUser(null);
+    } finally {
       setIsLoading(false);
-    });
+    }
+  };
 
-    // Cleanup subscription on unmount
-    return () => {
-      subscription.unsubscribe();
+  useEffect(() => {
+    // Set a longer session timeout (8 hours)
+    localStorage.setItem('sessionTimeout', String(Date.now() + 8 * 60 * 60 * 1000));
+    
+    // Initialize authentication state
+    onAuthStateChange();
+    
+    // Set up session check interval
+    const checkSession = () => {
+      const timeout = localStorage.getItem('sessionTimeout');
+      if (timeout && Date.now() > Number(timeout)) {
+        localStorage.removeItem('sessionTimeout');
+        logoutOperation();
+      } else {
+        // Refresh session timeout if user is active
+        localStorage.setItem('sessionTimeout', String(Date.now() + 8 * 60 * 60 * 1000));
+      }
     };
-  }, [setCurrentUser, setIsLoading]);
+    
+    const sessionInterval = setInterval(checkSession, 60000); // Check every minute
+    
+    return () => {
+      clearInterval(sessionInterval);
+    };
+  }, []);
+
+  // Refresh session when user navigates
+  useEffect(() => {
+    if (currentUser) {
+      localStorage.setItem('sessionTimeout', String(Date.now() + 8 * 60 * 60 * 1000));
+    }
+  }, [pathname, currentUser]);
+
+  const loginWithEmailAndPassword = async (email: string, password: string) => {
+    setIsLoading(true);
+    try {
+      const user = await login(email, password);
+      setCurrentUser(user);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const registerWithEmailAndPassword = async (
+    name: string,
+    email: string,
+    password: string,
+    role: string
+  ) => {
+    setIsLoading(true);
+    try {
+      const user = await register(name, email, password, role);
+      setCurrentUser(user);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const logout = async () => {
+    setIsLoading(true);
+    try {
+      await logoutOperation();
+      setCurrentUser(null);
+      localStorage.removeItem('sessionTimeout');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const updateUser = async (userData: Partial<User>) => {
+    if (!currentUser) return;
+    setIsLoading(true);
+    try {
+      const updatedUser = await updateUserOperation({
+        ...currentUser,
+        ...userData,
+      });
+      setCurrentUser(updatedUser);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const isAdmin = useMemo(() => {
+    return currentUser?.role === "admin";
+  }, [currentUser]);
 
   const value: AuthContextType = {
     currentUser,
     isLoading,
-    error,
-    login,
+    isAdmin,
+    loginWithEmailAndPassword,
+    registerWithEmailAndPassword,
     logout,
-    register,
-    createTestUser,
     resetPassword,
-    setError,
+    updateUser,
     loginWithGoogle,
-    setCurrentUser
+    loginWithGithub,
+    loginAsTestUser,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-};
-
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
 };

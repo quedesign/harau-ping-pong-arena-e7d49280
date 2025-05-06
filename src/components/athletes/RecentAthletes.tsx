@@ -1,43 +1,50 @@
 
-import { AthleteProfile } from '@/types';
-import { useGetAthletes } from '@/hooks/useGetAthletes';
+import AthleteCard from '@/components/athletes/AthleteCard';
 import { Loader2 } from 'lucide-react';
+import { useGetAthletes } from '@/hooks/useGetAthletes';
 
 const RecentAthletes: React.FC = () => {
   const { athletes, isLoading, error } = useGetAthletes();
   
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-screen">
-          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+      <div className="flex items-center justify-center p-12">
+        <Loader2 className="h-6 w-6 animate-spin text-primary" />
       </div>
     );
   }
   
   if(error){
-    return <div>Error: {error}</div>
+    return (
+      <div className="p-4 bg-red-500/10 text-red-500 rounded-lg">
+        Erro ao carregar atletas: {error}
+      </div>
+    );
   }
   
   const lastSixAthletes = athletes ? athletes.slice(-6).reverse() : [];
   
   return (
-    <section className="mb-6">
+    <section>
       <h2 className="text-lg font-semibold mb-4">Atletas Recentes</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 gap-4">
         {lastSixAthletes.map((athlete) => (
-          <div
+          <AthleteCard
             key={athlete.id}
-            className="bg-zinc-900 p-4 rounded-lg border border-zinc-800"
-          >
-            <h3 className="font-semibold">{athlete.name || `Atleta ${athlete.id}`}</h3>
-            {athlete.role && <p className="text-zinc-400 text-sm">{athlete.role}</p>}
-            {/* For other fields, check if they exist before rendering */}
-            {athlete.createdAt && (
-              <p className="text-zinc-400 text-sm">
-                Desde: {new Date(athlete.createdAt).toLocaleDateString()}
-              </p>
-            )}
-          </div>
+            athlete={{
+              userId: athlete.id,
+              name: athlete.name,
+              level: 'Amador',
+              bio: `Atleta desde ${athlete.createdAt?.toLocaleDateString() || 'recentemente'}`,
+              location: {
+                city: 'São Paulo',
+                state: 'SP',
+                country: 'Brasil'
+              },
+              wins: 0,
+              losses: 0
+            }}
+          />
         ))}
       </div>
     </section>

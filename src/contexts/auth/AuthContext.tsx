@@ -1,21 +1,21 @@
-import React, {
-  createContext,
-  useContext,
-  PropsWithChildren,
-} from "react";
-import { AuthContextType } from "@/contexts/auth/types";
 
-// This file is now deprecated in favor of AuthProvider.tsx
-// We're keeping it as a simple reexport to prevent breaking existing imports
+import { createContext } from 'react';
+import { User } from '@/types';
 
-const AuthContext = createContext<AuthContextType>({} as AuthContextType);
+export interface AuthContextType {
+  currentUser: User | null;
+  isLoading: boolean;
+  isAdmin: boolean;
+  loginWithEmailAndPassword: (email: string, password: string) => Promise<void>;
+  registerWithEmailAndPassword: (name: string, email: string, password: string, role: string) => Promise<void>;
+  logout: () => Promise<void>;
+  resetPassword: (email: string) => Promise<void>;
+  updateUser: (user: Partial<User>) => Promise<void>;
+  loginWithGoogle: () => Promise<void>;
+  loginWithGithub: () => Promise<void>;
+  loginAsTestUser: () => Promise<void>;
+}
 
-// This component is no longer used directly - see AuthProvider.tsx
-export const AuthProvider: React.FC<PropsWithChildren> = ({ children }) => {
-  console.warn('AuthContext.tsx is deprecated. Please import from AuthProvider.tsx instead');
-  // The actual implementation is in AuthProvider.tsx
-  return null as any; // This should never be used
-};
+const AuthContext = createContext<AuthContextType | null>(null);
 
-// Reexport the hook from the new file
-export { useAuth } from './AuthProvider';
+export default AuthContext;

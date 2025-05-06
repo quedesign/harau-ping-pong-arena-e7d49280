@@ -5,7 +5,7 @@
 export type UserRole = 'athlete' | 'admin';
 
 export interface User {
-  id?: string; // Added id to fix issues
+  id?: string;
   name: string;
   email: string;
   role: UserRole;
@@ -34,9 +34,9 @@ export interface AthleteEquipment {
 // Athlete specific profile
 export interface AthleteProfile {
   userId: string;
-  name?: string; // Added name to fix issues
-  email?: string; // Added email for consistency
-  role?: UserRole; // Added role field
+  name?: string;
+  email?: string;
+  role?: UserRole;
   handedness: 'left' | 'right' | 'ambidextrous';
   height?: number; // in cm
   weight?: number; // in kg
@@ -54,10 +54,10 @@ export interface AthleteProfile {
   yearsPlaying?: number;
   wins: number;
   losses: number;
-  profileImage?: string; // Added for consistency
-  createdAt?: Date; // Added createdAt
+  profileImage?: string;
+  createdAt?: Date;
   
-  // New fields for sports data
+  // Sports data
   playingStyle?: PlayingStyle;
   gripStyle?: GripStyle;
   playFrequency?: PlayFrequency;

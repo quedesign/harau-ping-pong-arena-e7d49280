@@ -21,9 +21,16 @@ export const useGetAthletes = (): useGetAthletesResponse => {
       try {
         const users = await readData('users');
         if (users) {
-          const athletesArray: User[] = Object.entries(users)
-            .filter(([, user]) => user.role === 'athlete')
-            .map(([id, user]) => ({ id, ...user }));
+          const athletesArray: User[] = Object.entries(users as Record<string, any>)
+            .filter(([, userData]) => (userData as any).role === 'athlete')
+            .map(([id, userData]) => ({
+              id,
+              name: (userData as any).name || '',
+              email: (userData as any).email || '',
+              role: (userData as any).role || 'athlete',
+              profileImage: (userData as any).profile_image,
+              createdAt: new Date((userData as any).created_at || Date.now()),
+            }));
           setAthletes(athletesArray);
         } else {
           setAthletes([]);

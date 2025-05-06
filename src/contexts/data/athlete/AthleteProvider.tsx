@@ -5,7 +5,8 @@ import { AthleteContextType } from './types';
 import { fetchAllAthleteProfiles, fetchAthleteProfile, createNewAthleteProfile, updateExistingAthleteProfile } from './api'
 import { useTranslation } from 'react-i18next'
 import { toast } from '@/hooks/use-toast'
-import { loadProfiles } from './utils'
+import { loadProfiles } from '../utils'
+
 const AthleteContext = createContext<AthleteContextType | undefined>(undefined);
 
 export const AthleteProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -15,10 +16,10 @@ export const AthleteProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   const fetchAthleteProfiles = useCallback(async () => {
     setLoading(true);
-    const result = await loadProfiles(fetchAllAthleteProfiles, setAthleteProfiles, t);
+    const result = await loadProfiles(fetchAllAthleteProfiles, setAthleteProfiles);
     setLoading(false);
     return result;
-  }, [t]);
+  }, []);
   
   useEffect(() => {
     fetchAthleteProfiles();

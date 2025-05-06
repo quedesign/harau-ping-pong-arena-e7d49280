@@ -1,66 +1,83 @@
 
 import { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
+import { database } from '@/integrations/firebase/client';
+import { ref, get, set } from 'firebase/database';
 import { useAuth } from '@/contexts/auth';
+import { toast } from 'sonner';
 
-interface UserSettings {
-  darkMode: boolean;
-  emailNotifications: boolean;
+interface Settings {
+  theme: 'dark' | 'light' | 'system';
+  language: 'en' | 'pt';
+  notifications: {
+    email: boolean;
+    browser: boolean;
+    mobile: boolean;
+  };
 }
 
+const defaultSettings: Settings = {
+  theme: 'dark',
+  language: 'pt',
+  notifications: {
+    email: true,
+    browser: true,
+    mobile: false,
+  },
+};
+
 export const useSettings = () => {
-  const localStorageKey = 'user-settings';
-  const { t } = useTranslation();
+  const [settings, setSettings] = useState<Settings>(defaultSettings);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const { currentUser } = useAuth();
 
-  const [loading, setLoading] = useState<boolean>(true);
-  const initialSettings: UserSettings = {
-    darkMode: false,
-    emailNotifications: true,
-  };
-
-  const [settings, setSettings] = useState<UserSettings>(() => {
-    const storedSettings = localStorage.getItem(localStorageKey);
-    if (storedSettings) {
-      setLoading(false);
-      return JSON.parse(storedSettings) as UserSettings;
-    }
-    setLoading(false);
-    return initialSettings;
-  });
-
   useEffect(() => {
-    const storedSettings = localStorage.getItem(localStorageKey);
-    if (storedSettings) {
-      const parsedSettings = JSON.parse(storedSettings) as UserSettings;
-      setSettings(parsedSettings);
-    }
-  }, []);
+    const fetchSettings = async () => {
+      if (!currentUser) {
+        setSettings(defaultSettings);
+        setIsLoading(false);
+        return;
+      }
 
-  useEffect(() => {localStorage.setItem(localStorageKey, JSON.stringify(settings))}, [settings]);
+      try {
+        const settingsRef = ref(database, `settings/${currentUser.id}`);
+        const snapshot = await get(settingsRef);
 
-  const handleUpdateSettings = async (e: React.FormEvent) => {
-    e.preventDefault();
+        if (snapshot.exists()) {
+          setSettings(snapshot.val() as Settings);
+        } else {
+          // Initialize default settings for new user
+          await set(settingsRef, defaultSettings);
+          setSettings(defaultSettings);
+        }
+      } catch (error) {
+        console.error('Error fetching settings:', error);
+        toast.error('Erro ao carregar configurações');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchSettings();
+  }, [currentUser]);
+
+  const updateSettings = async (newSettings: Partial<Settings>) => {
+    if (!currentUser) return;
 
     try {
-      toast({
-        title: t('common.success'),
-        description: t('settings.updateSuccess'),
-      });
+      const updatedSettings = { ...settings, ...newSettings };
+      const settingsRef = ref(database, `settings/${currentUser.id}`);
+      await set(settingsRef, updatedSettings);
+      setSettings(updatedSettings);
+      toast.success('Configurações atualizadas com sucesso');
     } catch (error) {
       console.error('Error updating settings:', error);
-      toast({
-        title: t('common.error'),
-        description: t('settings.updateError'),
-        variant: 'destructive',
-      });
+      toast.error('Erro ao atualizar configurações');
     }
   };
 
   return {
     settings,
-    setSettings,
-    loading,
-    handleUpdateSettings,
+    updateSettings,
+    isLoading,
   };
 };

@@ -1,45 +1,16 @@
 
 import { AthleteProfile } from '@/types';
-
-export interface SupabaseAthleteData {
-  id: string;
-  handedness?: string;
-  height?: number;
-  weight?: number;
-  level?: string;
-  city?: string;
-  state?: string;
-  country?: string;
-  bio?: string;
-  years_playing?: number;
-  wins?: number;
-  losses?: number;
-  playing_style?: string;
-  grip_style?: string;
-  play_frequency?: string;
-  tournament_participation?: string;
-  club?: string;
-  racket?: string;
-  rubbers?: string;
-  created_at?: string;
-  updated_at?: string;
-  users?: {
-    name: string;
-    email: string;
-    profile_image?: string;
-    created_at: string;
-  };
-}
+import { SupabaseAthleteData } from './types';
 
 export const mapSupabaseToAthleteProfile = (data: SupabaseAthleteData): AthleteProfile => {
   return {
     userId: data.id,
     name: data.users?.name || '',
     email: data.users?.email || '',
-    handedness: data.handedness as 'left' | 'right' | 'ambidextrous',
+    handedness: data.handedness as 'left' | 'right' | 'ambidextrous' || 'right',
     height: data.height,
     weight: data.weight,
-    level: data.level as 'beginner' | 'intermediate' | 'advanced' | 'professional',
+    level: data.level as 'beginner' | 'intermediate' | 'advanced' | 'professional' || 'beginner',
     location: {
       city: data.city || '',
       state: data.state || '',

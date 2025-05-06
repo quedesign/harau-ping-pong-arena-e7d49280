@@ -1,8 +1,9 @@
+
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { Match } from '@/types';
 import { database } from '@/integrations/firebase/client';
 import { ref, get, set, update, child, push, remove } from 'firebase/database';
-import { toast } from '@/components/ui/sonner';
+import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 
 interface MatchContextType {
@@ -12,6 +13,7 @@ interface MatchContextType {
   updateMatch: (matchId: string, data: Partial<Match>) => Promise<void>;
   generateBracket: (tournamentId?: string) => Promise<any>;
   deleteMatch: (matchId: string) => Promise<void>;
+  error?: Error | null;
 }
 
 const MatchContext = createContext<MatchContextType | undefined>(undefined);
@@ -25,10 +27,13 @@ export const MatchProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     return {
       id: id,
       tournamentId: match.tournamentId,
-      athlete1Id: match.athlete1Id,
-      athlete2Id: match.athlete2Id,
-      winnerId: match.winnerId || null,
-      status: match.status,
+      playerOneId: match.playerOneId,
+      playerTwoId: match.playerTwoId,
+      scores: match.scores || { playerOne: [], playerTwo: [] },
+      winner: match.winner || undefined,
+      status: match.status || 'scheduled',
+      scheduledTime: new Date(match.scheduledTime || Date.now()),
+      location: match.location
     };
   };
 
@@ -47,11 +52,7 @@ export const MatchProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         setMatches([]);
       }
     } catch (error) {
-      toast({
-        title: t('common.error'),
-        description: t('matches.fetchError'),
-        variant: 'destructive'
-      });
+      toast.error(t('common.error'));
     } finally {
       setLoading(false);
     }
@@ -85,8 +86,10 @@ export const MatchProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const generateBracket = async (tournamentId?: string) => {
     try {
       //TODO: Implement
+      return {};
     } catch (error) {
       toast.error(t('common.errorCreating'));
+      return {};
     }
   };
 

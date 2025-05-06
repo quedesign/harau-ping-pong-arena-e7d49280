@@ -1,3 +1,4 @@
+
 import { Match } from "@/types";
 
 export const fetchMatches = async (): Promise<Match[]> => {
@@ -9,18 +10,26 @@ export const fetchMatches = async (): Promise<Match[]> => {
           {
             id: "1",
             tournamentId: "1",
-            athlete1Id: "1",
-            athlete2Id: "2",
-            score1: 2,
-            score2: 1,
+            playerOneId: "1",
+            playerTwoId: "2",
+            scores: {
+              playerOne: [2],
+              playerTwo: [1]
+            },
+            scheduledTime: new Date(),
+            status: "completed"
           },
           {
             id: "2",
             tournamentId: "1",
-            athlete1Id: "3",
-            athlete2Id: "4",
-            score1: 0,
-            score2: 2,
+            playerOneId: "3",
+            playerTwoId: "4",
+            scores: {
+              playerOne: [0],
+              playerTwo: [2]
+            },
+            scheduledTime: new Date(),
+            status: "completed"
           },
         ]);
       }, 1000);

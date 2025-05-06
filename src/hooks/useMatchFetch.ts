@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Match } from '@/types';
 import { supabase } from '@/integrations/supabase/client';
 import { useTranslation } from 'react-i18next';
@@ -11,11 +11,7 @@ export const useMatchFetch = (tournamentId?: string) => {
   const [error, setError] = useState<Error | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {    
-      fetchMatches();    
-  }, [fetchMatches, tournamentId]);
-
-  const fetchMatches = async () => {
+  const fetchMatches = useCallback(async () => {
     setLoading(true);
     setIsLoading(true);
     
@@ -58,7 +54,11 @@ export const useMatchFetch = (tournamentId?: string) => {
       setLoading(false);
       setIsLoading(false);
     }
-  };
+  }, [tournamentId]);
+  
+  useEffect(() => {    
+      fetchMatches();    
+  }, [fetchMatches]);
 
   // Return proper values based on whether we're fetching for a tournament or all matches  
   return tournamentId 

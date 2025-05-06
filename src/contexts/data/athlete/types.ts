@@ -7,6 +7,7 @@ export interface AthleteContextType {
   getAthleteProfile: (userId: string) => Promise<AthleteProfile | undefined>;
   createAthleteProfile: (profile: AthleteProfile) => Promise<AthleteProfile>;
   updateAthleteProfile: (userId: string, profileData: Partial<AthleteProfile>) => Promise<AthleteProfile>;
+  deleteAthleteProfile?: (userId: string) => Promise<void>;
 }
 
 export interface SupabaseAthleteData {

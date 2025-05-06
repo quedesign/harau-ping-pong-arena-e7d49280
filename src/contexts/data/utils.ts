@@ -5,7 +5,7 @@ import { createContext } from 'react';
 export const DataContext = createContext({});
 
 // Helper function for athlete profile loading
-export const loadProfiles = async (fetchFunction: any, setFunction: any, t: any) => {
+export const loadProfiles = async (fetchFunction: any, setFunction: any) => {
   try {
     const profiles = await fetchFunction();
     setFunction(profiles);

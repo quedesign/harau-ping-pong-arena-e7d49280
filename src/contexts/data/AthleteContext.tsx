@@ -90,23 +90,26 @@ export const AthleteProvider: React.FC<{ children: React.ReactNode }> = ({ child
         state: location?.state || '',
         country: location?.country || '',
         bio: rest.bio || '',
-        years_playing: rest.yearsPlaying || 0,
+        yearsPlaying: rest.yearsPlaying || 0,
         wins: rest.wins || 0,
         losses: rest.losses || 0,
         // New fields
-        playing_style: rest.playingStyle || 'all-round',
-        grip_style: rest.gripStyle || 'shakehand',
-        play_frequency: rest.playFrequency || 'weekly',
-        tournament_participation: rest.tournamentParticipation || 'never',
+        playingStyle: rest.playingStyle || 'all-round',
+        gripStyle: rest.gripStyle || 'shakehand',
+        playFrequency: rest.playFrequency || 'weekly',
+        tournamentParticipation: rest.tournamentParticipation || 'never',
         club: rest.club || '',
-        available_times: rest.availableTimes || [],
-        preferred_locations: rest.preferredLocations || [],
+        availableTimes: rest.availableTimes || [],
+        preferredLocations: rest.preferredLocations || [],
         racket: equipment?.racket || '',
         rubbers: equipment?.rubbers || ''
       };
 
       await set(ref(database, `athletes/${profile.userId}`), athleteData);
-      await set(ref(database, `users/${profile.userId}/role`), 'athlete');
+      
+      if (rest.role) {
+        await set(ref(database, `users/${profile.userId}/role`), rest.role);
+      }
 
       const newProfile = formatFirebaseAthleteProfile(athleteData);
       setAthleteProfiles(prev => [...prev, newProfile]);
@@ -129,7 +132,7 @@ export const AthleteProvider: React.FC<{ children: React.ReactNode }> = ({ child
       if (profileData.weight !== undefined) updateData.weight = profileData.weight;
       if (profileData.level) updateData.level = profileData.level;
       if (profileData.bio !== undefined) updateData.bio = profileData.bio;
-      if (profileData.yearsPlaying !== undefined) updateData.years_playing = profileData.yearsPlaying;
+      if (profileData.yearsPlaying !== undefined) updateData.yearsPlaying = profileData.yearsPlaying;
       if (profileData.wins !== undefined) updateData.wins = profileData.wins;
       if (profileData.losses !== undefined) updateData.losses = profileData.losses;
       
@@ -140,13 +143,13 @@ export const AthleteProvider: React.FC<{ children: React.ReactNode }> = ({ child
       }
 
       // New fields
-      if (profileData.playingStyle) updateData.playing_style = profileData.playingStyle;
-      if (profileData.gripStyle) updateData.grip_style = profileData.gripStyle;
-      if (profileData.playFrequency) updateData.play_frequency = profileData.playFrequency;
-      if (profileData.tournamentParticipation) updateData.tournament_participation = profileData.tournamentParticipation;
+      if (profileData.playingStyle) updateData.playingStyle = profileData.playingStyle;
+      if (profileData.gripStyle) updateData.gripStyle = profileData.gripStyle;
+      if (profileData.playFrequency) updateData.playFrequency = profileData.playFrequency;
+      if (profileData.tournamentParticipation) updateData.tournamentParticipation = profileData.tournamentParticipation;
       if (profileData.club !== undefined) updateData.club = profileData.club;
-      if (profileData.availableTimes !== undefined) updateData.available_times = profileData.availableTimes;
-      if (profileData.preferredLocations !== undefined) updateData.preferred_locations = profileData.preferredLocations;
+      if (profileData.availableTimes !== undefined) updateData.availableTimes = profileData.availableTimes;
+      if (profileData.preferredLocations !== undefined) updateData.preferredLocations = profileData.preferredLocations;
       
       if (profileData.equipment) {
         if (profileData.equipment.racket !== undefined) updateData.racket = profileData.equipment.racket;

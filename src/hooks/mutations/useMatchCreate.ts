@@ -20,16 +20,15 @@ export const useMatchCreate = (
     };
 
     const id = await writeData("matches", matchInsertData);
-    if (!id) throw new Error("No data returned from create");
+    const generatedId = typeof id === 'string' ? id : Date.now().toString();
 
     const data = {
       ...matchInsertData,
-      id
+      id: generatedId
     }
 
-
     const newMatch: Match = {
-      id: data.id as string,
+      id: data.id,
       tournamentId: data.tournamentId,
       playerOneId: data.playerOneId,
       playerTwoId: data.playerTwoId,

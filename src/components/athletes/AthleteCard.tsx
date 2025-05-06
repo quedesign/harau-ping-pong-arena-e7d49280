@@ -7,7 +7,7 @@ import { AthleteProfile } from '@/types';
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
 
-interface AthleteCardProps {
+export interface AthleteCardProps {
   athlete: AthleteProfile;
   onClick?: () => void;
 }

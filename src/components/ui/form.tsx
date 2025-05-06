@@ -1,3 +1,4 @@
+
 import * as React from "react"
 import * as LabelPrimitive from "@radix-ui/react-label"
 import { Slot } from '@radix-ui/react-slot';
@@ -5,7 +6,6 @@ import {
   Controller,
   ControllerProps,
   FieldPath,
-
   FieldValues,
   FormProvider,
   useFormContext,
@@ -13,7 +13,6 @@ import {
 
 import { cn } from "@/lib/utils"
 import { Label } from "@/components/ui/label"
-
 import { FormItemContextValue, FormFieldContextValue } from "./form-utils";
 
 const Form = FormProvider
@@ -58,7 +57,6 @@ const FormField = <
 
 const FormItemContext = React.createContext<FormItemContextValue>({} as FormItemContextValue);
 
-
 const FormItem = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
@@ -91,9 +89,9 @@ const FormLabel = React.forwardRef<
 FormLabel.displayName = "FormLabel"
 
 const FormControl = React.forwardRef<
-  React.ElementRef<typeof Slot>,
-  React.ComponentPropsWithoutRef<typeof Slot>
->(({ children, ...props }, ref) => {
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ ...props }, ref) => {
   const { error, formItemId, formDescriptionId, formMessageId } = useFormField();
 
   return (
@@ -106,9 +104,8 @@ const FormControl = React.forwardRef<
           : `${formDescriptionId} ${formMessageId}`
       }
       aria-invalid={!!error}
-        {...props}
-    >
-        {children}</div>
+      {...props}
+    />
   )
 })
 FormControl.displayName = "FormControl"

@@ -2,50 +2,95 @@
 declare module 'react-beautiful-dnd' {
   import * as React from 'react';
 
-  // Element types
-  export type DraggableId = string;
-  export type DroppableId = string;
-  export type TypeId = string;
-  export type ZIndex = number | string;
+  export type Id = string;
+  export type DraggableId = Id;
+  export type DroppableId = Id;
+  export type TypeId = Id;
+  export type ZIndex = React.CSSProperties['zIndex'];
   export type DropReason = 'DROP' | 'CANCEL';
   export type Announce = (message: string) => void;
 
-  // Hooks
-  export function useKeyboardSensor(args: any): any;
-  export function useMouseSensor(args: any): any;
-  export function useTouchSensor(args: any): any;
-
-  // Styles
-  export interface Style {
-    [key: string]: string | number;
+  export interface Position {
+    x: number;
+    y: number;
   }
 
-  // Responders
-  export type OnBeforeCaptureResponder = (before: BeforeCapture) => void;
-  export type OnBeforeDragStartResponder = (start: DragStart) => void;
-  export type OnDragStartResponder = (start: DragStart, provided: ResponderProvided) => void;
-  export type OnDragUpdateResponder = (update: DragUpdate, provided: ResponderProvided) => void;
-  export type OnDragEndResponder = (result: DropResult, provided: ResponderProvided) => void;
-
-  export interface ResponderProvided {
-    announce: Announce;
-  }
-
-  // State
-  export interface BeforeCapture {
-    draggableId: DraggableId;
-    mode: MovementMode;
-  }
+  export type MovementMode = 'FLUID' | 'SNAP';
 
   export interface DraggableLocation {
     droppableId: DroppableId;
     index: number;
   }
 
-  export interface DragStart {
+  export interface DraggableRubric {
     draggableId: DraggableId;
     type: TypeId;
     source: DraggableLocation;
+  }
+
+  export type VerticalAlignment = 'top' | 'center' | 'bottom';
+
+  export type HorizontalAlignment = 'left' | 'center' | 'right';
+
+  export interface DraggingStyle {
+    position: 'fixed';
+    top: number;
+    left: number;
+    boxSizing: 'border-box';
+    width: number;
+    height: number;
+    transition: string;
+    zIndex: ZIndex;
+    transform: string;
+    pointerEvents: 'none';
+  }
+
+  export interface NotDraggingStyle {
+    transform?: string;
+    transition?: 'none';
+  }
+
+  export type DraggableStyle = DraggingStyle | NotDraggingStyle;
+
+  export interface DraggableProps {
+    draggableId: DroppableId;
+    index: number;
+    isDragDisabled?: boolean;
+    disableInteractiveElementBlocking?: boolean;
+    children: (provided: DraggableProvided, snapshot: DraggableStateSnapshot) => React.ReactElement;
+  }
+
+  export class Draggable extends React.Component<DraggableProps> {}
+
+  export interface DroppableProps {
+    droppableId: DroppableId;
+    type?: TypeId;
+    ignoreContainerClipping?: boolean;
+    isDropDisabled?: boolean;
+    isCombineEnabled?: boolean;
+    direction?: 'vertical' | 'horizontal';
+    children: (provided: DroppableProvided, snapshot: DroppableStateSnapshot) => React.ReactElement;
+  }
+
+  export class Droppable extends React.Component<DroppableProps> {}
+
+  export interface DragDropContextProps {
+    onBeforeCapture?: (before: BeforeCapture) => void;
+    onBeforeDragStart?: (initial: DragStart) => void;
+    onDragStart?: (initial: DragStart) => void;
+    onDragUpdate?: (update: DragUpdate) => void;
+    onDragEnd: (result: DropResult) => void;
+    children: React.ReactNode;
+  }
+
+  export class DragDropContext extends React.Component<DragDropContextProps> {}
+
+  export interface BeforeCapture {
+    draggableId: DraggableId;
+    mode: MovementMode;
+  }
+
+  export interface DragStart extends DraggableRubric {
     mode: MovementMode;
   }
 
@@ -63,122 +108,56 @@ declare module 'react-beautiful-dnd' {
     droppableId: DroppableId;
   }
 
-  // Components
-  export interface DraggableChildrenFn {
-    (
-      provided: DraggableProvided,
-      snapshot: DraggableStateSnapshot,
-      rubric: DraggableRubric,
-    ): React.ReactNode;
-  }
-
-  export interface DroppableChildrenFn {
-    (
-      provided: DroppableProvided,
-      snapshot: DroppableStateSnapshot,
-    ): React.ReactNode;
-  }
-
-  // Components
-  export type MovementMode = 'FLUID' | 'SNAP';
-
-  export interface DraggableProps {
-    draggableId: DraggableId;
-    index: number;
-    children: DraggableChildrenFn;
-    isDragDisabled?: boolean;
-    disableInteractiveElementBlocking?: boolean;
-    shouldRespectForcePress?: boolean;
-  }
-
-  export interface DroppableProps {
-    droppableId: DroppableId;
-    children: DroppableChildrenFn;
-    type?: TypeId;
-    mode?: MovementMode;
-    isDropDisabled?: boolean;
-    isCombineEnabled?: boolean;
-    ignoreContainerClipping?: boolean;
-    renderClone?: DraggableChildrenFn;
-    getContainerForClone?: () => HTMLElement;
-  }
-
-  export interface DragDropContextProps {
-    children: React.ReactNode;
-    onBeforeCapture?: OnBeforeCaptureResponder;
-    onBeforeDragStart?: OnBeforeDragStartResponder;
-    onDragStart?: OnDragStartResponder;
-    onDragUpdate?: OnDragUpdateResponder;
-    onDragEnd: OnDragEndResponder;
-    enableDefaultSensors?: boolean;
-    sensors?: React.ReactNode;
-  }
-
-  // Provided
   export interface DraggableProvided {
-    innerRef: (element?: HTMLElement | null) => void;
-    draggableProps: DraggableProps;
+    innerRef: (element: HTMLElement | null) => void;
+    draggableProps: DraggableProps & {
+      style?: DraggableStyle;
+    };
     dragHandleProps: DragHandleProps | null;
   }
 
-  export interface DroppableProvided {
-    innerRef: (element?: HTMLElement | null) => void;
-    droppableProps: DroppableProps;
-    placeholder?: React.ReactNode;
-  }
-
-  export interface DragHandleProps {
-    onFocus: () => void;
-    onBlur: () => void;
-    onMouseDown: (event: React.MouseEvent<any>) => void;
-    onKeyDown: (event: React.KeyboardEvent<any>) => void;
-    onTouchStart: (event: React.TouchEvent<any>) => void;
-    tabIndex: number;
-    'aria-grabbed': boolean;
-    draggable: boolean;
-    onDragStart: () => void;
-    onDrop: () => void;
-  }
-
-  // State
   export interface DraggableStateSnapshot {
     isDragging: boolean;
     isDropAnimating: boolean;
-    dropAnimation?: DropAnimation;
-    draggingOver?: DroppableId;
-    combineWith?: DraggableId;
-    combineTargetFor?: DraggableId;
-    mode?: MovementMode;
-  }
-
-  export interface DroppableStateSnapshot {
-    isDraggingOver: boolean;
-    draggingOverWith?: DraggableId;
-    draggingFromThisWith?: DraggableId;
-    isUsingPlaceholder: boolean;
+    isClone: boolean;
+    dropAnimation: DropAnimation | null;
+    draggingOver: DroppableId | null;
+    combineWith: DraggableId | null;
+    combineTargetFor: DraggableId | null;
+    mode: MovementMode | null;
   }
 
   export interface DropAnimation {
     duration: number;
     curve: string;
     moveTo: Position;
-    opacity?: number;
-    scale?: number;
+    opacity: number | null;
+    scale: number | null;
   }
 
-  export interface Position {
-    x: number;
-    y: number;
+  export interface DragHandleProps {
+    role: string;
+    tabIndex: number;
+    'aria-describedby': string;
+    'data-rbd-drag-handle-draggable-id': string;
+    'data-rbd-drag-handle-context-id': string;
+    draggable: boolean;
+    onDragStart: React.DragEventHandler<any>;
   }
 
-  export interface DraggableRubric {
-    draggableId: DraggableId;
-    type: TypeId;
-    source: DraggableLocation;
+  export interface DroppableProvided {
+    innerRef: (element: HTMLElement | null) => void;
+    placeholder?: React.ReactElement | null;
+    droppableProps: {
+      'data-rbd-droppable-context-id': string;
+      'data-rbd-droppable-id': string;
+    };
   }
 
-  // Components
-  export class DragDropContext extends React.Component<DragDropContextProps> {}
-  export class Droppable extends React.Component<DroppableProps> {}
-  export class Draggable extends React.Component<DraggableProps> {}
+  export interface DroppableStateSnapshot {
+    isDraggingOver: boolean;
+    draggingOverWith: DraggableId | null;
+    draggingFromThisWith: DraggableId | null;
+    isUsingPlaceholder: boolean;
+  }
 }

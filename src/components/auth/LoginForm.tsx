@@ -27,12 +27,10 @@ export const LoginForm = () => {
 
   const onSubmit = async (values: LoginFormValues) => {
     try {
-      const success = await login(values.email, values.password, (user) => {
-        if (setError) setError(null);
-        navigate('/dashboard');
-      });
+      const success = await login(values.email, values.password);
       
       if (success && !error) {
+        if (setError) setError(null);
         navigate('/dashboard');
       }
     } catch (err) {
@@ -44,9 +42,8 @@ export const LoginForm = () => {
     if (!loginWithGoogle) return;
     
     try {
-      await loginWithGoogle((user) => {
-        navigate('/dashboard');
-      });
+      await loginWithGoogle();
+      navigate('/dashboard');
     } catch (error) {
       console.error('Error during Google login:', error);
     }

@@ -1,5 +1,5 @@
 
-import { Athlete, AthleteProfile } from '@/types';
+import { AthleteProfile } from '@/types';
 import { useGetAthletes } from '@/hooks/useGetAthletes';
 import { Loader2 } from 'lucide-react';
 
@@ -26,17 +26,17 @@ const RecentAthletes: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {lastSixAthletes.map((athlete) => (
           <div
-            key={athlete.userId || athlete.id}
+            key={athlete.id}
             className="bg-zinc-900 p-4 rounded-lg border border-zinc-800"
           >
-            <h3 className="font-semibold">{athlete.name || `Atleta ${athlete.userId || athlete.id}`}</h3>
-            {athlete.level && <p className="text-zinc-400 text-sm">{athlete.level}</p>}
-            {athlete.location && (
+            <h3 className="font-semibold">{athlete.name || `Atleta ${athlete.id}`}</h3>
+            {athlete.role && <p className="text-zinc-400 text-sm">{athlete.role}</p>}
+            {/* For other fields, check if they exist before rendering */}
+            {athlete.createdAt && (
               <p className="text-zinc-400 text-sm">
-                {athlete.location.city}, {athlete.location.country}
+                Desde: {new Date(athlete.createdAt).toLocaleDateString()}
               </p>
             )}
-            {athlete.playingStyle && <p className="text-zinc-400 text-sm">{athlete.playingStyle}</p>}
           </div>
         ))}
       </div>

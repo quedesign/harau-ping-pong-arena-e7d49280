@@ -14,6 +14,11 @@ export interface AuthContextType {
   loginWithGoogle: () => Promise<void>;
   loginWithGithub: () => Promise<void>;
   loginAsTestUser: () => Promise<void>;
+  error?: string | null;
+  login?: (email: string, password: string, callback?: (userData: User) => void) => Promise<boolean>;
+  register?: (name: string, email: string, password: string, role: string) => Promise<boolean>;
+  setError?: (error: string | null) => void;
+  setCurrentUser?: (user: User | null) => void;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);

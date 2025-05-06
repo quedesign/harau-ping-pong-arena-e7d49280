@@ -27,7 +27,7 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 const Login = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { login, isLoading, error } = useAuth();
+  const { loginWithEmailAndPassword, isLoading, error } = useAuth();
   
   const [showPassword, setShowPassword] = useState(false);
   
@@ -43,8 +43,8 @@ const Login = () => {
   const onSubmit = async (values: LoginFormValues) => {
     try {
       // Pass the role along with email and password
-      const success = await login(values.email, values.password);
-      if (success) {
+      await loginWithEmailAndPassword(values.email, values.password);
+      if (!error) {
         navigate('/dashboard');
       }
     } catch (err) {

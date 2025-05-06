@@ -4,15 +4,20 @@ import { User, UserRole } from '@/types';
 export interface AuthContextType {
   currentUser: User | null;
   isLoading: boolean;
-  error: string | null;
-  login: (email: string, password: string, callback?: (userData: User) => void) => Promise<boolean>;
+  isAdmin: boolean;
+  loginWithEmailAndPassword: (email: string, password: string) => Promise<void>;
+  registerWithEmailAndPassword: (name: string, email: string, password: string, role: string) => Promise<void>;
   logout: () => Promise<void>;
-  register: (name: string, email: string, password: string, role: UserRole) => Promise<boolean>;
-  resetPassword: (email: string) => Promise<boolean>;
-  createTestUser: () => Promise<boolean>;
-  setError: (error: string | null) => void;
-  setCurrentUser: (user: User | null) => void;
-  loginWithGoogle?: (callback?: (userData: User) => void) => Promise<void>;
+  resetPassword: (email: string) => Promise<void>;
+  updateUser: (user: Partial<User>) => Promise<void>;
+  loginWithGoogle: () => Promise<void>;
+  loginWithGithub: () => Promise<void>;
+  loginAsTestUser: () => Promise<void>;
+  error?: string | null;
+  login?: (email: string, password: string, callback?: (userData: User) => void) => Promise<boolean>;
+  register?: (name: string, email: string, password: string, role: UserRole) => Promise<boolean>;
+  setError?: (error: string | null) => void;
+  setCurrentUser?: (user: User | null) => void;
 }
 
 // FormValues type for LoginForm

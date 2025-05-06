@@ -14,7 +14,7 @@ import { PasswordInput } from "@/components/auth/PasswordInput";
 
 export const LoginForm = () => {
   const { t } = useTranslation();
-  const { login, isLoading, error, setError, loginWithGoogle } = useAuth();
+  const { loginWithEmailAndPassword, isLoading, error, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
 
   const form = useForm<LoginFormValues>({
@@ -27,10 +27,8 @@ export const LoginForm = () => {
 
   const onSubmit = async (values: LoginFormValues) => {
     try {
-      const success = await login(values.email, values.password);
-      
-      if (success && !error) {
-        if (setError) setError(null);
+      await loginWithEmailAndPassword(values.email, values.password);
+      if (!error) {
         navigate('/dashboard');
       }
     } catch (err) {

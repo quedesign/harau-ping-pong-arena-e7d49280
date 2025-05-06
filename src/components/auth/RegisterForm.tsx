@@ -20,7 +20,7 @@ interface RegisterFormProps {
 
 export const RegisterForm = ({ onSuccess }: RegisterFormProps) => {
   const { t } = useTranslation();
-  const { register, isLoading, error, currentUser } = useAuth();
+  const { registerWithEmailAndPassword, isLoading, error, currentUser } = useAuth();
   const navigate = useNavigate();
   const [serverError, setServerError] = useState<string | null>(null);
   
@@ -46,14 +46,14 @@ export const RegisterForm = ({ onSuccess }: RegisterFormProps) => {
     setServerError(null);
     try {
       console.log('Registrando usuário:', values);
-      const success = await register(
+      await registerWithEmailAndPassword(
         values.name,
         values.email,
         values.password,
-        values.role,
+        values.role
       );
-
-      if (success) {
+      
+      if (!error) {
         console.log('Registro bem-sucedido, redirecionando');
         onSuccess();
       }

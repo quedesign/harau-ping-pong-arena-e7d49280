@@ -2,7 +2,6 @@
 import AthleteCard from '@/components/athletes/AthleteCard';
 import { Loader2 } from 'lucide-react';
 import { useGetAthletes } from '@/hooks/useGetAthletes';
-import { AthleteLevel } from '@/types';
 
 const RecentAthletes: React.FC = () => {
   const { athletes, isLoading, error } = useGetAthletes();
@@ -35,7 +34,7 @@ const RecentAthletes: React.FC = () => {
             athlete={{
               userId: athlete.id,
               name: athlete.name || 'Atleta',
-              level: 'beginner' as AthleteLevel,
+              level: 'beginner',
               bio: `Atleta desde ${athlete.createdAt?.toLocaleDateString() || 'recentemente'}`,
               location: {
                 city: 'São Paulo',

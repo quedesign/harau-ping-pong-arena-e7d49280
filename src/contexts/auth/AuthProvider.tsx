@@ -21,6 +21,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setCurrentUser: setAuthCurrentUser,
     isLoading: authIsLoading,
     setIsLoading: setAuthIsLoading,
+    error
   } = useAuthOperations();
 
   // Add missing methods with empty implementations
@@ -162,6 +163,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     loginWithGoogle,
     loginWithGithub,
     loginAsTestUser,
+    error,
+    login,
+    register,
+    setError: useAuthOperations().setError,
+    setCurrentUser
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

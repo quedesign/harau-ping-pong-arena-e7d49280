@@ -33,7 +33,7 @@ const RecentAthletes: React.FC = () => {
             key={athlete.id}
             athlete={{
               userId: athlete.id,
-              name: (athlete.name as string) || 'Atleta', // Type assertion to handle the TypeScript error
+              name: athlete.name || 'Atleta', // Using logical OR to provide a default value
               level: 'beginner',
               bio: `Atleta desde ${athlete.createdAt?.toLocaleDateString() ?? 'recentemente'}`,
               location: {

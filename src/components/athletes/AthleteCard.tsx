@@ -2,12 +2,15 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { MapPin } from 'lucide-react';
+import { MapPin, MessageSquare, UserPlus, UserMinus, User } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useState } from 'react';
+import { useAuth } from '@/contexts/auth';
 
 interface AthleteCardProps {
   athlete: {
     userId: string;
-    name: string; // This now requires a string (not undefined)
+    name: string;
     level: 'beginner' | 'intermediate' | 'advanced' | 'professional';
     bio?: string;
     location?: {
@@ -18,23 +21,39 @@ interface AthleteCardProps {
     wins?: number;
     losses?: number;
   };
-  onClick?: () => void; // Added onClick as an optional prop
+  onClick?: () => void;
+  onFollowClick?: () => void;
+  onMessageClick?: () => void;
 }
 
-const AthleteCard: React.FC<AthleteCardProps> = ({ athlete, onClick }) => {
+const AthleteCard: React.FC<AthleteCardProps> = ({ 
+  athlete, 
+  onClick, 
+  onFollowClick,
+  onMessageClick
+}) => {
   const { name, level, bio, location } = athlete;
+  const { currentUser } = useAuth();
+  const [isFollowing, setIsFollowing] = useState(false);
   
   // Format location string if available
   const formattedLocation = location 
     ? [location.city, location.state, location.country].filter(Boolean).join(', ')
     : '';
 
+  const isCurrentUser = currentUser?.id === athlete.userId;
+
+  const handleFollowClick = () => {
+    if (isCurrentUser) return;
+    setIsFollowing(!isFollowing);
+    if (onFollowClick) onFollowClick();
+  };
+
   return (
     <Card 
       className="hover:bg-accent/10 transition-colors"
-      onClick={onClick} // Use the onClick prop if provided
-      role={onClick ? "button" : undefined} // Add role for accessibility
-      tabIndex={onClick ? 0 : undefined} // Add tabIndex for keyboard navigation
+      role={onClick ? "button" : undefined} 
+      tabIndex={onClick ? 0 : undefined}
     >
       <CardContent className="p-4">
         <div className="flex items-center gap-3">
@@ -57,6 +76,56 @@ const AthleteCard: React.FC<AthleteCardProps> = ({ athlete, onClick }) => {
                 <span>{formattedLocation}</span>
               </div>
             )}
+            
+            <div className="flex mt-3 gap-2">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="text-xs h-8"
+                disabled={isCurrentUser}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleFollowClick();
+                }}
+              >
+                {isFollowing ? (
+                  <>
+                    <UserMinus className="h-3 w-3 mr-1" />
+                    Remover
+                  </>
+                ) : (
+                  <>
+                    <UserPlus className="h-3 w-3 mr-1" />
+                    Seguir
+                  </>
+                )}
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="text-xs h-8"
+                disabled={isCurrentUser}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (onMessageClick) onMessageClick();
+                }}
+              >
+                <MessageSquare className="h-3 w-3 mr-1" />
+                Mensagem
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="text-xs h-8"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (onClick) onClick();
+                }}
+              >
+                <User className="h-3 w-3 mr-1" />
+                Perfil
+              </Button>
+            </div>
           </div>
         </div>
       </CardContent>

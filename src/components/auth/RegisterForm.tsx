@@ -13,6 +13,7 @@ import { PasswordInput } from './PasswordInput';
 import { RoleSelector } from './RoleSelector';
 import { useAuth } from '@/contexts/auth';
 import { useNavigate } from 'react-router-dom';
+import { toast } from "sonner";
 
 interface RegisterFormProps {
   onSuccess: () => void;
@@ -53,13 +54,14 @@ export const RegisterForm = ({ onSuccess }: RegisterFormProps) => {
         values.role
       );
       
-      if (!error) {
-        console.log('Registro bem-sucedido, redirecionando');
-        onSuccess();
-      }
+      // The toast and navigation will be handled in the AuthProvider
+      onSuccess();
     } catch (err) {
       console.error('Erro no registro:', err);
       setServerError(err instanceof Error ? err.message : 'Erro desconhecido ao registrar');
+      toast.error("Erro ao registrar usuário", {
+        description: err instanceof Error ? err.message : 'Erro desconhecido ao registrar'
+      });
     }
   };
 

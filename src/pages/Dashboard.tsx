@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/auth';
 import { useNavigate } from 'react-router-dom';
 import WolfProLinkBanner from '@/components/WolfProLinkBanner';
 import RecentAthletes from '@/components/athletes/RecentAthletes';
+import FollowingAthletes from '@/components/athletes/FollowingAthletes';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BarChart, Calendar, Users } from 'lucide-react';
 import UpcomingTournaments from '@/components/tournaments/UpcomingTournaments';
@@ -23,8 +24,6 @@ const Dashboard = () => {
     <Layout>
       <div className="container py-6">
         <h1 className="text-2xl font-bold mb-6">Dashboard</h1>
-        
-        <WolfProLinkBanner variant="compact" />
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
           <Card>
@@ -65,8 +64,14 @@ const Dashboard = () => {
           </Card>
         </div>
         
+        <WolfProLinkBanner variant="compact" />
+        
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
           <RecentAthletes />
+          <FollowingAthletes />
+        </div>
+        
+        <div className="grid grid-cols-1 gap-6 mb-6">
           <UpcomingTournaments />
         </div>
       </div>

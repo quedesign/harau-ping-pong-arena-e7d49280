@@ -7,6 +7,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useSessionManagement } from "./hooks/useSessionManagement";
 import { useSupabaseAuth } from "./hooks/useSupabaseAuth";
 import { useMockLogins } from "./hooks/useMockLogins";
+import { toast } from "sonner";
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
@@ -38,7 +39,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   // Refresh session when user navigates
   useEffect(() => {
     refreshSession(currentUser);
-  }, [pathname, currentUser]);
+  }, [pathname, currentUser, refreshSession]);
 
   const getCurrentUser = async () => {
     return currentUser;
@@ -70,7 +71,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setIsLoading(true);
     try {
       const success = await login(email, password);
-      // User is set in the login callback
+      if (success) {
+        toast.success("Login realizado com sucesso!");
+        navigate('/dashboard');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -85,10 +89,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setIsLoading(true);
     try {
       const success = await register(name, email, password, role);
-      // User is set in the register callback
       if (success) {
-        navigate('/dashboard');
+        toast.success("Registro realizado com sucesso!");
+        // Wait a moment before logging in to ensure registration is complete
+        setTimeout(async () => {
+          await login(email, password);
+          navigate('/dashboard');
+        }, 500);
       }
+    } catch (error) {
+      console.error("Registration error:", error);
+      toast.error("Erro no registro. Por favor tente novamente.");
     } finally {
       setIsLoading(false);
     }

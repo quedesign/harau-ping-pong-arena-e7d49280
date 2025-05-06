@@ -13,7 +13,7 @@ const WolfProLinkBanner: React.FC<WolfProLinkBannerProps> = ({ variant = 'defaul
   };
 
   return (
-    <Card className="bg-gradient-to-r from-blue-900/60 to-indigo-900/60 border-zinc-700 overflow-hidden mb-6">
+    <Card className="bg-[#141412] border-[#FFCC29] overflow-hidden mb-6">
       <CardContent className={`p-4 ${variant === 'compact' ? 'flex items-center justify-between' : ''}`}>
         <div className={variant === 'compact' ? 'mr-4' : 'mb-3'}>
           <h3 className="font-bold text-white">Melhore sua Performance</h3>
@@ -23,7 +23,7 @@ const WolfProLinkBanner: React.FC<WolfProLinkBannerProps> = ({ variant = 'defaul
         </div>
         <Button 
           onClick={handleVisit}
-          className="bg-blue-600 hover:bg-blue-700"
+          className="bg-[#FFCC29] hover:bg-[#FFCC29]/90 text-black"
         >
           Visitar Site
           <ExternalLink className="ml-2 h-4 w-4" />

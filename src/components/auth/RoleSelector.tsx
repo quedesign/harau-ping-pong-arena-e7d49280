@@ -23,7 +23,7 @@ export const RoleSelector: React.FC<RoleSelectorProps> = ({ form }) => {
               onValueChange={field.onChange}
               className="flex gap-4"
             >
-              <div className="flex items-center space-x-2" >
+              <div className="flex items-center space-x-2">
                 <RadioGroupItem value="athlete" id="athlete" />
                 <Label htmlFor="athlete">Atleta</Label>
               </div>

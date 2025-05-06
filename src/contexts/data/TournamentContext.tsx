@@ -1,8 +1,10 @@
+
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { Tournament } from '@/types';
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
+import { useTournamentMutations } from '@/hooks/useTournamentMutations';
 
 interface TournamentContextType {
   tournaments: Tournament[];
@@ -92,7 +94,8 @@ const useProvideTournament = (): TournamentContextType => {
     }
   }, []);
 
-  const { editTournament, deleteTournament: deleteT } = useTournamentMutations(setTournaments);
+  // Use the imported hook
+  const { editTournament, deleteTournament: deleteT } = useTournamentMutations();
 
   const createTournament = async (tournamentData: Omit<Tournament, 'id'>): Promise<Tournament> => {
     // Implementation

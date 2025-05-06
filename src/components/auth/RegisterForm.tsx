@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -20,9 +20,16 @@ interface RegisterFormProps {
 
 export const RegisterForm = ({ onSuccess }: RegisterFormProps) => {
   const { t } = useTranslation();
-  const { register, isLoading, error } = useAuth();
+  const { register, isLoading, error, currentUser } = useAuth();
   const navigate = useNavigate();
   const [serverError, setServerError] = useState<string | null>(null);
+  
+  useEffect(() => {
+    // If user is already logged in, redirect to dashboard
+    if (currentUser) {
+      navigate('/dashboard');
+    }
+  }, [currentUser, navigate]);
 
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
@@ -49,10 +56,6 @@ export const RegisterForm = ({ onSuccess }: RegisterFormProps) => {
       if (success) {
         console.log('Registro bem-sucedido, redirecionando');
         onSuccess();
-        // Add a small delay before redirecting to dashboard
-        setTimeout(() => {
-          navigate('/dashboard');
-        }, 500);
       }
     } catch (err) {
       console.error('Erro no registro:', err);

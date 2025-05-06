@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,11 +7,23 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { RegisterForm } from '@/components/auth/RegisterForm';
 import { RegisterSuccess } from '@/components/auth/RegisterSuccess';
+import { useAuth } from '@/contexts/auth';
 
 const Register = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [registrationSuccess, setRegistrationSuccess] = useState(false);
+  const { currentUser } = useAuth();
+  
+  // If user is already logged in, redirect to dashboard
+  useEffect(() => {
+    if (currentUser) {
+      console.log('User already logged in, redirecting to dashboard');
+      navigate('/dashboard');
+    } else {
+      console.log('Redirecionando para a página de registro');
+    }
+  }, [currentUser, navigate]);
   
   const handleSuccess = () => {
     setRegistrationSuccess(true);

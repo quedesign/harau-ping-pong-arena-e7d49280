@@ -20,60 +20,78 @@ const AuthCallback = () => {
       }
 
       if (session) {
-        // Check if user exists in the profiles table
-        const { data: userData, error: userError } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', session.user.id)
-          .single();
-        
-        if (userError && userError.code !== 'PGRST116') {
-          console.error('Error fetching user:', userError);
-          setError(userError.message);
-          return;
-        }
-        
-        // If user doesn't exist in the profiles table, create a record
-        if (!userData) {
-          const { error: insertError } = await supabase
+        try {
+          // Check if user exists in the profiles table
+          const { data: userData, error: userError } = await supabase
             .from('profiles')
-            .insert({
-              id: session.user.id,
-              name: session.user.user_metadata.name || session.user.user_metadata.full_name || 'User',
-              email: session.user.email || '',
-              role: 'athlete', // Default role
-              profile_image: session.user.user_metadata.avatar_url || ''
-            });
+            .select('*')
+            .eq('id', session.user.id)
+            .single();
+          
+          // If user doesn't exist in the profiles table, create a record
+          if (!userData) {
+            const { error: insertError } = await supabase
+              .from('profiles')
+              .insert({
+                id: session.user.id,
+                name: session.user.user_metadata.name || session.user.user_metadata.full_name || 'User',
+                email: session.user.email || '',
+                role: 'athlete', // Default role
+                profile_image: session.user.user_metadata.avatar_url || ''
+              });
+              
+            if (insertError) {
+              console.error('Error creating user record:', insertError);
+              if (insertError.code !== '23505') { // Not a duplicate key error
+                setError(insertError.message);
+                return;
+              }
+            }
             
-          if (insertError) {
-            console.error('Error creating user record:', insertError);
-            setError(insertError.message);
-            return;
+            // Check if athlete profile already exists
+            const { data: existingAthleteProfile } = await supabase
+              .from('athlete_profiles')
+              .select('user_id')
+              .eq('user_id', session.user.id)
+              .single();
+            
+            // Create athlete profile if it doesn't exist
+            if (!existingAthleteProfile) {
+              const { error: athleteError } = await supabase
+                .from('athlete_profiles')
+                .insert({
+                  user_id: session.user.id,
+                  level: 'beginner',
+                  handedness: 'right',
+                  city: 'São Paulo',
+                  state: 'SP',
+                  country: 'Brasil',
+                  wins: 0,
+                  losses: 0
+                });
+                
+              if (athleteError) {
+                console.error('Error creating athlete profile:', athleteError);
+                if (athleteError.code !== '23505') { // Not a duplicate key error
+                  setError(athleteError.message);
+                  return;
+                }
+              }
+            }
           }
           
-          // Create athlete profile
-          const { error: athleteError } = await supabase
-            .from('athlete_profiles')
-            .insert({
-              user_id: session.user.id,
-              level: 'beginner',
-              handedness: 'right',
-              city: 'São Paulo',
-              state: 'SP',
-              country: 'Brasil',
-              wins: 0,
-              losses: 0
-            });
-            
-          if (athleteError) {
-            console.error('Error creating athlete profile:', athleteError);
-            setError(athleteError.message);
-            return;
+          // Redirect to dashboard
+          navigate('/dashboard');
+        } catch (err: any) {
+          console.error('Error in auth callback:', err);
+          // If the error is not a duplicate key error, set the error state
+          if (err.code !== '23505') {
+            setError(err.message || 'Error processing authentication');
+          } else {
+            // If it's a duplicate key error, the profile already exists, so we can continue
+            navigate('/dashboard');
           }
         }
-        
-        // Redirect to dashboard
-        navigate('/dashboard');
       } else {
         navigate('/login');
       }

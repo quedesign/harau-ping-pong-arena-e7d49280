@@ -37,39 +37,68 @@ export const useRegister = () => {
       if (authData.user) {
         console.log("Auth data received:", authData.user);
         
-        // Insert into the profiles table
-        const { error: insertError } = await supabase
-          .from('profiles')
-          .insert({
-            id: authData.user.id,
-            name: name,
-            email: email,
-            role: role,
-          });
+        try {
+          // First check if a profile already exists for this user
+          const { data: existingProfile } = await supabase
+            .from('profiles')
+            .select('id')
+            .eq('id', authData.user.id)
+            .single();
+            
+          // If profile doesn't exist, insert it
+          if (!existingProfile) {
+            const { error: insertError } = await supabase
+              .from('profiles')
+              .insert({
+                id: authData.user.id,
+                name: name,
+                email: email,
+                role: role,
+              });
 
-        if (insertError) {
-          console.error("Error creating profile:", insertError);
-          throw insertError;
-        }
+            if (insertError) {
+              console.error("Error creating profile:", insertError);
+              throw insertError;
+            }
+          }
 
-        // If user is an athlete, create an athlete profile record
-        if (role === 'athlete') {
-          const { error: athleteError } = await supabase
-            .from('athlete_profiles')
-            .insert({
-              user_id: authData.user.id,
-              level: 'beginner',
-              handedness: 'right',
-              city: 'São Paulo',
-              state: 'SP',
-              country: 'Brasil',
-              wins: 0,
-              losses: 0
-            });
+          // If user is an athlete, create an athlete profile record
+          if (role === 'athlete') {
+            // Check if athlete profile already exists
+            const { data: existingAthleteProfile } = await supabase
+              .from('athlete_profiles')
+              .select('user_id')
+              .eq('user_id', authData.user.id)
+              .single();
+              
+            // If athlete profile doesn't exist, create it
+            if (!existingAthleteProfile) {
+              const { error: athleteError } = await supabase
+                .from('athlete_profiles')
+                .insert({
+                  user_id: authData.user.id,
+                  level: 'beginner',
+                  handedness: 'right',
+                  city: 'São Paulo',
+                  state: 'SP',
+                  country: 'Brasil',
+                  wins: 0,
+                  losses: 0
+                });
 
-          if (athleteError) {
-            console.error("Error creating athlete profile:", athleteError);
-            throw athleteError;
+              if (athleteError) {
+                console.error("Error creating athlete profile:", athleteError);
+                throw athleteError;
+              }
+            }
+          }
+        } catch (err: any) {
+          // If the error is due to duplicate key, it means the profile was already created
+          // This can happen when auth is created but the function continues execution
+          if (err.code !== '23505') { // PostgreSQL duplicate key violation error code
+            throw err;
+          } else {
+            console.warn("Profile already exists, continuing with registration");
           }
         }
 

@@ -6,32 +6,10 @@ import React, {
   useState,
   PropsWithChildren,
 } from "react";
-import { User } from "@/types";
+import { User, AuthContextType } from "@/types";
 import { useAuthOperations } from "./useAuthOperations";
 
-interface AuthContextProps {
-  currentUser: User | null;
-  setCurrentUser: (user: User | null) => void;
-  isLoading: boolean;
-  setIsLoading: (isLoading: boolean) => void;
-  error: string | null;
-  setError: (error: string | null) => void;
-  session: any | null;
-  setSession: (session: any | null) => void;
-  login: (email: string, password: string, onLoginSuccess: (userData: User) => void) => Promise<void>;
-  logout: () => Promise<void>;
-  register: (
-    name: string,
-    email: string, 
-    password: string,
-    role: string,
-  ) => Promise<boolean>;
-  resetPassword: (email: string, onResetSuccess: () => void) => Promise<void>;
-  createTestUser: () => Promise<void>;
-  loginWithGoogle: (onLoginSuccess?: (userData: User) => void) => Promise<void>;
-}
-
-const AuthContext = createContext<AuthContextProps>({} as AuthContextProps);
+const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
 export const AuthProvider: React.FC<PropsWithChildren> = ({ children }) => {
   const {
@@ -41,8 +19,6 @@ export const AuthProvider: React.FC<PropsWithChildren> = ({ children }) => {
     setIsLoading,
     error,
     setError,
-    session,
-    setSession,
     login,
     logout,
     register,
@@ -51,20 +27,16 @@ export const AuthProvider: React.FC<PropsWithChildren> = ({ children }) => {
     loginWithGoogle,
   } = useAuthOperations();
 
-  const value = {
+  const value: AuthContextType = {
     currentUser,
-    setCurrentUser,
     isLoading,
-    setIsLoading,
     error,
-    setError,
-    session,
-    setSession,
     login,
     logout,
     register,
     resetPassword,
     createTestUser,
+    setError,
     loginWithGoogle,
   };
 

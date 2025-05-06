@@ -5,6 +5,7 @@
 export type UserRole = 'athlete' | 'admin';
 
 export interface User {
+  id?: string; // Added id to fix issues
   name: string;
   email: string;
   role: UserRole;
@@ -24,9 +25,16 @@ export type PlayFrequency = 'daily' | 'weekly' | 'monthly' | 'rarely';
 // Tournament participation
 export type TournamentParticipation = 'never' | 'local' | 'regional' | 'national' | 'international';
 
+// Equipment type
+export interface AthleteEquipment {
+  racket?: string;
+  rubbers?: string;
+}
+
 // Athlete specific profile
 export interface AthleteProfile {
   userId: string;
+  name?: string; // Added name to fix issues
   handedness: 'left' | 'right' | 'ambidextrous';
   height?: number; // in cm
   weight?: number; // in kg
@@ -55,10 +63,19 @@ export interface AthleteProfile {
   preferredLocations?: string[];
   
   // Equipment information
-  equipment?: {
-    racket?: string;
-    rubbers?: string;
+  equipment?: AthleteEquipment;
+}
+
+// For RecentAthletes component
+export interface Athlete {
+  id: string;
+  name: string;
+  level?: string;
+  location?: {
+    city: string;
+    country: string;
   };
+  playingStyle?: string;
 }
 
 // Tournament types
@@ -114,6 +131,17 @@ export interface Bracket {
 
 // Extend the existing AuthContextType
 export interface AuthContextType {
-  // ... keep existing properties
-  createTestUser?: () => Promise<boolean>;
+  currentUser: User | null;
+  isLoading: boolean;
+  error: string | null;
+  login: (email: string, password: string, callback?: (user: User) => void) => Promise<boolean>;
+  logout: () => Promise<void>;
+  register: (name: string, email: string, password: string, role: UserRole) => Promise<boolean>;
+  resetPassword: (email: string) => Promise<boolean>;
+  createTestUser: () => Promise<void>;
+  setError?: (error: string | null) => void;
+  loginWithGoogle?: (callback?: (user: User) => void) => Promise<void>;
 }
+
+// For useLogin hook
+export type UseLogin = (email: string, password: string, callback?: (user: User) => void) => Promise<boolean>;

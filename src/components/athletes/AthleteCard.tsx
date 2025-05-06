@@ -7,12 +7,12 @@ import { AthleteProfile } from '@/types';
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
 
-
 interface AthleteCardProps {
   athlete: AthleteProfile;
+  onClick?: () => void;
 }
 
-export const AthleteCard: React.FC<AthleteCardProps> = ({ athlete }) => {
+export const AthleteCard: React.FC<AthleteCardProps> = ({ athlete, onClick }) => {
   const [isFollowing, setIsFollowing] = useState(false);
   const handleSendMessage = () => {
     console.log('Send message to', athlete.userId);
@@ -24,9 +24,14 @@ export const AthleteCard: React.FC<AthleteCardProps> = ({ athlete }) => {
   };
 
   const handleViewProfile = () => {
-    window.location.href = `/athletes/${athlete.userId}`;
+    if (onClick) {
+      onClick();
+    } else {
+      window.location.href = `/athletes/${athlete.userId}`;
+    }
   };
-    const name = athlete?.name || `Atleta ${athlete.userId}`;
+  
+  const name = athlete?.name || `Atleta ${athlete.userId}`;
 
   return (
     <Card className="bg-zinc-900 border-zinc-800 hover:border-zinc-700 transition-colors">
@@ -63,12 +68,19 @@ export const AthleteCard: React.FC<AthleteCardProps> = ({ athlete }) => {
             <MessageCircle className="h-4 w-4 mr-2" />
             Mensagem
           </Button>
-          <Link to={`/athletes/${athlete.userId}`}>
-          <Button size="sm" onClick={handleViewProfile} className="w-24">
-            <Eye className="h-4 w-4 mr-2" />
-            Perfil
-          </Button>
-          </Link>
+          {onClick ? (
+            <Button size="sm" onClick={handleViewProfile} className="w-24">
+              <Eye className="h-4 w-4 mr-2" />
+              Perfil
+            </Button>
+          ) : (
+            <Link to={`/athletes/${athlete.userId}`}>
+              <Button size="sm" className="w-24">
+                <Eye className="h-4 w-4 mr-2" />
+                Perfil
+              </Button>
+            </Link>
+          )}
         </div>
       </CardContent>
     </Card>

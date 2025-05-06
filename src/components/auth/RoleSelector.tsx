@@ -4,10 +4,10 @@ import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/comp
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { UseFormReturn } from "react-hook-form/dist/types";
-import { RegisterSchemaType } from "@/pages/auth/schema";
+import { RegisterFormValues } from "@/pages/auth/schema";
 
 interface RoleSelectorProps {
-  form: UseFormReturn<RegisterSchemaType>;
+  form: UseFormReturn<RegisterFormValues>;
 }
 
 export const RoleSelector: React.FC<RoleSelectorProps> = ({ form }) => {

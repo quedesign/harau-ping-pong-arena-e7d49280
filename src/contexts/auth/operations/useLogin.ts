@@ -13,8 +13,8 @@ export const useLogin = () => {
   const login = async (
     email: string,
     password: string,
-    onLoginSuccess: (userData: User) => void
-  ): Promise<void> => {
+    onLoginSuccess?: (userData: User) => void
+  ): Promise<boolean> => {
     setIsLoading(true);
     setError(null);
 
@@ -47,15 +47,23 @@ export const useLogin = () => {
             createdAt: new Date(userData.created_at),
           };
 
-          onLoginSuccess(user);
+          if (onLoginSuccess) {
+            onLoginSuccess(user);
+          }
+          
+          return true;
         } else {
-          toast.warn(t("auth.noUserData"), { description: t("auth.noUserDataDescription") });
+          toast.error(t("auth.noUserData"), { description: t("auth.noUserDataDescription") });
+          return false;
         }
       }
+      
+      return false;
     } catch (err: any) {
       const errorMessage = err.message || t("auth.loginFailed");
       setError(errorMessage);
       toast.error(t("common.error"), { description: errorMessage });
+      return false;
     } finally {
       setIsLoading(false);
     }

@@ -1,8 +1,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { AuthContextType } from './types';
+import { AuthContextType, User } from '@/types';
 import { useAuthOperations } from './useAuthOperations';
-import { User } from '@/types';
 import { supabase } from '@/integrations/supabase/client';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -19,6 +18,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     register,
     createTestUser,
     resetPassword,
+    setError,
+    loginWithGoogle,
   } = useAuthOperations();
 
   useEffect(() => {
@@ -66,7 +67,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   }, [setCurrentUser, setIsLoading]);
 
-  const value = {
+  const value: AuthContextType = {
     currentUser,
     isLoading,
     error,
@@ -75,6 +76,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     register,
     createTestUser,
     resetPassword,
+    setError,
+    loginWithGoogle,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

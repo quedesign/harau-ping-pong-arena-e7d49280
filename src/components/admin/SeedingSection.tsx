@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { DragDropContext, Droppable, Draggable, DropResult, DroppableProvided, DraggableProvided } from 'react-beautiful-dnd';
 import { useTranslation } from 'react-i18next';
 import { useTournament, useData } from '@/contexts/data';
 import { Tournament } from '@/types';
@@ -47,7 +47,7 @@ const SeedingSection = ({ tournament }: SeedingSectionProps) => {
     }),
   );
 
-  const handleDragEnd = (result: any) => {
+  const handleDragEnd = (result: DropResult) => {
     if (!result.destination) return;
 
     const reorderedAthletes = [...athletes];
@@ -138,7 +138,7 @@ const SeedingSection = ({ tournament }: SeedingSectionProps) => {
           </div>          
           <DragDropContext onDragEnd={handleDragEnd}>
             <Droppable droppableId="athletes">
-              {(provided) => (
+              {(provided: DroppableProvided) => (
                 <div
                   
                   {...provided.droppableProps}
@@ -151,7 +151,7 @@ const SeedingSection = ({ tournament }: SeedingSectionProps) => {
                       draggableId={athlete.id}
                       index={index}
                     >
-                      {(provided) => (
+                      {(provided: DraggableProvided) => (
                         <div
                           ref={provided.innerRef}
                           {...provided.draggableProps}

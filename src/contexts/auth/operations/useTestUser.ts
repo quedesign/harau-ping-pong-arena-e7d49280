@@ -1,7 +1,6 @@
 
 import { useState } from "react";
-import { UserRole } from "@/types";
-import { UseLogin } from "../types";
+import { UserRole, UseLogin } from "@/types";
 
 export const useTestUser = (register: (...args: any[]) => Promise<boolean>, login: UseLogin) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -19,7 +18,7 @@ export const useTestUser = (register: (...args: any[]) => Promise<boolean>, logi
       const success = await register(testUser.name, testUser.email, testUser.password, testUser.role);
 
       if (!success) {
-        return await login(testUser.email, testUser.password, () => {});
+        return await login(testUser.email, testUser.password);
       }
 
       return true;

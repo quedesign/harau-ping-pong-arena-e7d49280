@@ -27,16 +27,22 @@ export const LoginForm = () => {
 
   const onSubmit = async (values: LoginFormValues) => {
     try {
-      await login(values.email, values.password, (user) => {
-        setError(null);
+      const success = await login(values.email, values.password, (user) => {
+        if (setError) setError(null);
         navigate('/dashboard');
       });
+      
+      if (success && !setError) {
+        navigate('/dashboard');
+      }
     } catch (err) {
       // Error handled in the useLogin hook
     }
   };
 
   const handleGoogleLogin = async () => {
+    if (!loginWithGoogle) return;
+    
     try {
       await loginWithGoogle((user) => {
         navigate('/dashboard');
@@ -99,16 +105,18 @@ export const LoginForm = () => {
             t('auth.login', 'Entrar')
         )}
         </Button>
-        <Button
-        type="button"
-        variant="outline"
-        className="w-full"
-        onClick={handleGoogleLogin}
-        disabled={isLoading}
-        >
-          <Mail className="mr-2 h-4 w-4" />
-          {t("auth.loginWithGoogle", "Entrar com o Google")}
-        </Button>
+        {loginWithGoogle && (
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full"
+            onClick={handleGoogleLogin}
+            disabled={isLoading}
+          >
+            <Mail className="mr-2 h-4 w-4" />
+            {t("auth.loginWithGoogle", "Entrar com o Google")}
+          </Button>
+        )}
     </form>
   );
 };

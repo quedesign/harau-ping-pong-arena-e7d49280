@@ -1,10 +1,12 @@
 
 import { useEffect, useMemo, useState } from "react";
-import { User, UserRole } from "@/types";
+import { User } from "@/types";
 import AuthContext, { AuthContextType } from "./AuthContext";
 import { useAuthOperations } from "./useAuthOperations";
 import { useLocation, useNavigate } from "react-router-dom";
-import { AuthChangeEvent, Session } from "@supabase/supabase-js";
+import { useSessionManagement } from "./hooks/useSessionManagement";
+import { useSupabaseAuth } from "./hooks/useSupabaseAuth";
+import { useMockLogins } from "./hooks/useMockLogins";
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
@@ -26,16 +28,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     error
   } = useAuthOperations();
 
-  // Add missing methods with empty implementations
-  const loginWithGithub = async () => {
-    console.warn("GitHub login not implemented yet");
-    return Promise.resolve();
-  };
+  // Use our custom hooks
+  const { loginWithGithub, loginAsTestUser } = useMockLogins();
+  const { refreshSession } = useSessionManagement();
+  
+  // Set up Supabase auth state listener
+  useSupabaseAuth(setCurrentUser);
 
-  const loginAsTestUser = async () => {
-    console.warn("Test user login not implemented yet");
-    return Promise.resolve();
-  };
+  // Refresh session when user navigates
+  useEffect(() => {
+    refreshSession(currentUser);
+  }, [pathname, currentUser]);
 
   const getCurrentUser = async () => {
     return currentUser;
@@ -59,109 +62,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   useEffect(() => {
-    // Set a longer session timeout (8 hours)
-    localStorage.setItem('sessionTimeout', String(Date.now() + 8 * 60 * 60 * 1000));
-    
     // Initialize authentication state
     onAuthStateChange();
-    
-    // Set up session check interval
-    const checkSession = () => {
-      const timeout = localStorage.getItem('sessionTimeout');
-      if (timeout && Date.now() > Number(timeout)) {
-        localStorage.removeItem('sessionTimeout');
-        logoutOperation();
-      } else {
-        // Refresh session timeout if user is active
-        localStorage.setItem('sessionTimeout', String(Date.now() + 8 * 60 * 60 * 1000));
-      }
-    };
-    
-    const sessionInterval = setInterval(checkSession, 60000); // Check every minute
-    
-    return () => {
-      clearInterval(sessionInterval);
-    };
   }, []);
-
-  // Refresh session when user navigates
-  useEffect(() => {
-    if (currentUser) {
-      localStorage.setItem('sessionTimeout', String(Date.now() + 8 * 60 * 60 * 1000));
-    }
-  }, [pathname, currentUser]);
-
-  // Monitor auth state changes from Supabase
-  useEffect(() => {
-    const { supabase } = require('@/integrations/supabase/client');
-    
-    // Set up auth state change listener for Google login
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event: AuthChangeEvent, session: Session | null) => {
-        console.log("Auth state changed:", event, session?.user?.id);
-        
-        if (session && session.user) {
-          // Fetch user data from profiles table
-          supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', session.user.id)
-            .single()
-            .then(({ data: profile }: { data: any }) => {
-              if (profile) {
-                const user: User = {
-                  id: session.user.id,
-                  email: session.user.email || '',
-                  name: profile.name || session.user.user_metadata?.name || 'Usuário',
-                  role: profile.role as UserRole,
-                  profileImage: profile.profile_image || '',
-                  createdAt: new Date(profile.created_at),
-                };
-                
-                setCurrentUser(user);
-                
-                // Redirect to dashboard after successful login
-                if (event === 'SIGNED_IN') {
-                  navigate('/dashboard');
-                }
-              }
-            });
-        } else if (event === 'SIGNED_OUT') {
-          setCurrentUser(null);
-        }
-      }
-    );
-    
-    // Check current session on mount
-    supabase.auth.getSession().then(({ data: { session } }: { data: { session: Session | null } }) => {
-      if (session && session.user) {
-        // Fetch user data from profiles table
-        supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', session.user.id)
-          .single()
-          .then(({ data: profile }: { data: any }) => {
-            if (profile) {
-              const user: User = {
-                id: session.user.id,
-                email: session.user.email || '',
-                name: profile.name || session.user.user_metadata?.name || 'Usuário',
-                role: profile.role as UserRole,
-                profileImage: profile.profile_image || '',
-                createdAt: new Date(profile.created_at),
-              };
-              
-              setCurrentUser(user);
-            }
-          });
-      }
-    });
-    
-    return () => {
-      subscription?.unsubscribe();
-    };
-  }, [navigate]);
 
   const loginWithEmailAndPassword = async (email: string, password: string) => {
     setIsLoading(true);
@@ -177,7 +80,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     name: string,
     email: string,
     password: string,
-    role: UserRole
+    role: User["role"]
   ) => {
     setIsLoading(true);
     try {

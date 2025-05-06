@@ -42,7 +42,7 @@ export const useLogin = () => {
             id: authData.user.id,
             email: authData.user.email || '',
             name: userData.name,
-            role: userData.role as UserRole, // Type cast to UserRole
+            role: userData.role as UserRole, // Use as to cast to our enum
             profileImage: userData.profile_image || '',
             createdAt: new Date(userData.created_at),
           };

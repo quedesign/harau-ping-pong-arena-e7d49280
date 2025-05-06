@@ -44,7 +44,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             id: session.user.id,
             email: session.user.email || '',
             name: userData.name || 'User',
-            role: userData.role as UserRole, // Type cast to UserRole
+            role: userData.role as UserRole, // Use as to cast to our enum
             profileImage: userData.profile_image || '',
             createdAt: new Date(userData.created_at),
           };
@@ -79,6 +79,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     resetPassword,
     setError,
     loginWithGoogle,
+    setCurrentUser
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

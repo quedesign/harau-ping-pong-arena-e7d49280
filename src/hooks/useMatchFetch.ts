@@ -1,67 +1,60 @@
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { Match } from '@/types';
 import { supabase } from '@/integrations/supabase/client';
-import { useTranslation } from 'react-i18next';
 
-export const useMatchFetch = (tournamentId?: string) => {
-  const { t } = useTranslation();
+interface UseMatchFetchReturn {
+  matches: Match[];
+  loading: boolean;
+  error: Error | null;
+}
+
+export const useMatchFetch = (athleteId?: string): UseMatchFetchReturn => {
   const [matches, setMatches] = useState<Match[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<Error | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
 
-  const fetchMatches = useCallback(async () => {
-    setLoading(true);
-    setIsLoading(true);
-    
-    try {
-      let query = supabase
-        .from('matches')
-        .select('*');
-      
-      // If tournamentId is provided, filter by it
-      if (tournamentId) {
-        query = query.eq('tournament_id', tournamentId);
-      }
-      
-      const { data, error: apiError } = await query;
-      
-      if (apiError) throw apiError;
+  useEffect(() => {
+    const fetchMatches = async () => {
+      try {
+        setLoading(true);
+        let query = supabase.from('matches').select('*');
+        
+        if (athleteId) {
+          query = query.or(`player_one_id.eq.${athleteId},player_two_id.eq.${athleteId}`);
+        }
+        
+        const { data, error } = await query;
+        
+        if (error) throw error;
 
-      if (data) {
-        const formattedMatches: Match[] = data.map(item => ({
-          id: item.id,
-          tournamentId: item.tournament_id,
-          playerOneId: item.player_one_id,
-          playerTwoId: item.player_two_id,
+        // Transform the data to match the Match type
+        const formattedMatches: Match[] = data.map(match => ({
+          id: match.id,
+          tournamentId: match.tournament_id || undefined,
+          playerOneId: match.player_one_id,
+          playerTwoId: match.player_two_id,
           scores: {
             playerOne: [],
             playerTwo: []
           },
-          winner: undefined, // Set as undefined since it's not in the database response
-          scheduledTime: new Date(item.scheduled_time),
-          status: item.status as 'scheduled' | 'completed' | 'cancelled',
-          location: item.location
+          winner: undefined,
+          scheduledTime: new Date(match.scheduled_time),
+          status: match.status as 'scheduled' | 'completed' | 'cancelled',
+          location: match.location || undefined
         }));
 
         setMatches(formattedMatches);
+      } catch (err) {
+        console.error('Error fetching matches:', err);
+        setError(err instanceof Error ? err : new Error('Failed to fetch matches'));
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      console.error('Error fetching matches:', err);
-      setError(err instanceof Error ? err : new Error('Unknown error'));
-    } finally {
-      setLoading(false);
-      setIsLoading(false);
-    }
-  }, [tournamentId]);
-  
-  useEffect(() => {    
-      fetchMatches();    
-  }, [fetchMatches]);
+    };
 
-  // Return proper values based on whether we're fetching for a tournament or all matches  
-  return tournamentId 
-    ? { matches, isLoading, error }
-    : { matches, setMatches, loading };
+    fetchMatches();
+  }, [athleteId]);
+
+  return { matches, loading, error };
 };

@@ -10,7 +10,8 @@ export interface AuthContextType {
   register: (name: string, email: string, password: string, role: UserRole) => Promise<boolean>;
   resetPassword: (email: string) => Promise<boolean>;
   createTestUser: () => Promise<boolean>;
-  setError?: (error: string | null) => void;
+  setError: (error: string | null) => void;
+  setCurrentUser: (user: User | null) => void;
   loginWithGoogle?: (callback?: (userData: User) => void) => Promise<void>;
 }
 

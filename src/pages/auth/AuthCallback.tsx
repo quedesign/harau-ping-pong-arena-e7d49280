@@ -20,9 +20,9 @@ const AuthCallback = () => {
       }
 
       if (session) {
-        // Check if user exists in the users table
+        // Check if user exists in the profiles table
         const { data: userData, error: userError } = await supabase
-          .from('users')
+          .from('profiles')
           .select('*')
           .eq('id', session.user.id)
           .single();
@@ -33,17 +33,16 @@ const AuthCallback = () => {
           return;
         }
         
-        // If user doesn't exist in the users table, create a record
+        // If user doesn't exist in the profiles table, create a record
         if (!userData) {
           const { error: insertError } = await supabase
-            .from('users')
+            .from('profiles')
             .insert({
               id: session.user.id,
               name: session.user.user_metadata.name || session.user.user_metadata.full_name || 'User',
               email: session.user.email || '',
               role: 'athlete', // Default role
-              profile_image: session.user.user_metadata.avatar_url || '',
-              created_at: new Date().toISOString()
+              profile_image: session.user.user_metadata.avatar_url || ''
             });
             
           if (insertError) {
@@ -54,10 +53,14 @@ const AuthCallback = () => {
           
           // Create athlete profile
           const { error: athleteError } = await supabase
-            .from('athletes')
+            .from('athlete_profiles')
             .insert({
-              id: session.user.id,
+              user_id: session.user.id,
               level: 'beginner',
+              handedness: 'right',
+              city: 'São Paulo',
+              state: 'SP',
+              country: 'Brasil',
               wins: 0,
               losses: 0
             });

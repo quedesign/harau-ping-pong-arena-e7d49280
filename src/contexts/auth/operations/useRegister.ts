@@ -43,7 +43,6 @@ export const useRegister = () => {
             name: name,
             email: email,
             role: role,
-            created_at: new Date().toISOString()
           });
 
         if (insertError) throw insertError;
@@ -58,6 +57,7 @@ export const useRegister = () => {
               handedness: 'right',
               city: 'São Paulo',
               state: 'SP',
+              country: 'Brasil',
               wins: 0,
               losses: 0
             });

@@ -32,21 +32,21 @@ export const fetchAllAthleteProfiles = async (): Promise<AthleteProfile[]> => {
     const athleteData: SupabaseAthleteData = {
       id: athlete.user_id,
       handedness: athlete.handedness,
-      height: athlete.height,
-      weight: athlete.weight,
+      height: athlete.height || undefined,
+      weight: athlete.weight || undefined,
       level: athlete.level,
       city: athlete.city,
       state: athlete.state,
       country: athlete.country,
-      bio: athlete.bio,
-      years_playing: athlete.years_playing,
+      bio: athlete.bio || undefined,
+      years_playing: athlete.years_playing || undefined,
       wins: athlete.wins,
       losses: athlete.losses,
-      users: athlete.profiles && athlete.profiles[0] ? {
-        name: athlete.profiles[0].name,
-        email: athlete.profiles[0].email,
-        profile_image: athlete.profiles[0].profile_image,
-        created_at: athlete.profiles[0].created_at
+      users: athlete.profiles ? {
+        name: athlete.profiles.name,
+        email: athlete.profiles.email,
+        profile_image: athlete.profiles.profile_image,
+        created_at: athlete.profiles.created_at
       } : undefined
     };
     
@@ -87,21 +87,21 @@ export const fetchAthleteProfile = async (userId: string): Promise<AthleteProfil
   const athleteData: SupabaseAthleteData = {
     id: data.user_id,
     handedness: data.handedness,
-    height: data.height,
-    weight: data.weight,
+    height: data.height || undefined,
+    weight: data.weight || undefined,
     level: data.level,
     city: data.city,
     state: data.state,
     country: data.country,
-    bio: data.bio,
-    years_playing: data.years_playing,
+    bio: data.bio || undefined,
+    years_playing: data.years_playing || undefined,
     wins: data.wins,
     losses: data.losses,
-    users: data.profiles && data.profiles[0] ? {
-      name: data.profiles[0].name,
-      email: data.profiles[0].email,
-      profile_image: data.profiles[0].profile_image,
-      created_at: data.profiles[0].created_at
+    users: data.profiles ? {
+      name: data.profiles.name,
+      email: data.profiles.email,
+      profile_image: data.profiles.profile_image,
+      created_at: data.profiles.created_at
     } : undefined
   };
   

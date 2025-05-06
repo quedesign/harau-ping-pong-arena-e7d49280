@@ -35,7 +35,7 @@ export interface SupabaseAthleteData {
   users?: {
     name: string;
     email: string;
-    profile_image?: string;
+    profile_image?: string | null; // Updated to accept both null and undefined
     created_at: string;
   };
 }

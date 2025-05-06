@@ -28,10 +28,10 @@ export const useMatchFetch = (athleteId?: string): UseMatchFetchReturn => {
         
         if (error) throw error;
 
-        // Transform the data to match the Match type
+        // Transform the data to match the Match type, handling null vs undefined
         const formattedMatches: Match[] = data.map(match => ({
           id: match.id,
-          tournamentId: match.tournament_id || undefined,
+          tournamentId: match.tournament_id || undefined, // Convert null to undefined
           playerOneId: match.player_one_id,
           playerTwoId: match.player_two_id,
           scores: {
@@ -41,7 +41,7 @@ export const useMatchFetch = (athleteId?: string): UseMatchFetchReturn => {
           winner: undefined,
           scheduledTime: new Date(match.scheduled_time),
           status: match.status as 'scheduled' | 'completed' | 'cancelled',
-          location: match.location || undefined
+          location: match.location || undefined // Convert null to undefined
         }));
 
         setMatches(formattedMatches);

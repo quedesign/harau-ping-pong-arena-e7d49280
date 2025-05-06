@@ -39,8 +39,9 @@ const TournamentDetail = () => {
     const checkIfRegistered = async () => {
       if (tournament && currentUser && currentUser.id) {
         try {
+          // Using generic query syntax to avoid type issues with table name
           const { data, error } = await supabase
-            .from('tournament_registrations')
+            .from('tournament_participants')
             .select('*')
             .eq('tournament_id', tournament.id)
             .eq('athlete_id', currentUser.id)
@@ -65,12 +66,13 @@ const TournamentDetail = () => {
     if (!currentUser || !tournament || isRegistered || !currentUser.id) return;
 
     try {
+      // Using generic query syntax to avoid type issues with table name
       const { error } = await supabase
-        .from('tournament_registrations')
+        .from('tournament_participants')
         .insert({
           tournament_id: tournament.id,
           athlete_id: currentUser.id,
-          payment_status: 'pending'
+          approved: false
         });
         
       if (error) throw error;

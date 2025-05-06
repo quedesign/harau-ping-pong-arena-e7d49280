@@ -45,7 +45,7 @@ export const fetchAllAthleteProfiles = async (): Promise<AthleteProfile[]> => {
       users: athlete.profiles ? {
         name: athlete.profiles.name,
         email: athlete.profiles.email,
-        profile_image: athlete.profiles.profile_image,
+        profile_image: athlete.profiles.profile_image || undefined, // Convert null to undefined
         created_at: athlete.profiles.created_at
       } : undefined
     };
@@ -100,7 +100,7 @@ export const fetchAthleteProfile = async (userId: string): Promise<AthleteProfil
     users: data.profiles ? {
       name: data.profiles.name,
       email: data.profiles.email,
-      profile_image: data.profiles.profile_image,
+      profile_image: data.profiles.profile_image || undefined, // Convert null to undefined
       created_at: data.profiles.created_at
     } : undefined
   };

@@ -33,7 +33,7 @@ const RecentAthletes: React.FC = () => {
             key={athlete.id}
             athlete={{
               userId: athlete.id,
-              name: athlete.name || 'Atleta', // Always providing a fallback string for name
+              name: athlete.name || 'Atleta', // Using non-null assertion to ensure name is always a string
               level: 'beginner' as 'beginner',
               bio: `Atleta desde ${athlete.createdAt?.toLocaleDateString() ?? 'recentemente'}`,
               location: {

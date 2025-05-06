@@ -14,7 +14,7 @@ const Hero = ({ onRegister }: HeroProps) => {
   return (
     <div className="relative z-10 max-w-4xl mx-auto">
       <h1 className="text-5xl md:text-6xl font-bold mb-6 tracking-tight text-white">
-        Competição, diversão e equilíbrio no seu dia a dia
+        Desafie-se, divirta-se e encontre seu ritmo!
       </h1>
       <p className="text-lg md:text-xl text-zinc-200 max-w-3xl mb-10 mx-auto text-center">
         Você poderá encontrar facilmente competições e outros jogadores

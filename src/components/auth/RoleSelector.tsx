@@ -4,6 +4,7 @@ import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/comp
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { UseFormReturn } from "react-hook-form";
+import { FormValues } from "@/contexts/auth/types";
 
 interface RoleSelectorProps {
   form: UseFormReturn<any>;

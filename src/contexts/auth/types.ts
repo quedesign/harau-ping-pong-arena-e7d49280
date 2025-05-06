@@ -13,3 +13,8 @@ export interface AuthContextType {
   setError?: (error: string | null) => void;
   loginWithGoogle?: (callback?: (userData: User) => void) => Promise<void>;
 }
+
+// FormValues type for LoginForm
+export interface FormValues {
+  [key: string]: any;
+}

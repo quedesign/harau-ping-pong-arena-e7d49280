@@ -7,7 +7,6 @@ import Layout from '@/components/layout/Layout';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -43,7 +42,7 @@ const Login = () => {
   const onSubmit = async (values: LoginFormValues) => {
     try {
       // Pass the role along with email and password
-      const success = await login(values.email, values.password, values.role);
+      const success = await login(values.email, values.password);
       if (success) {
         navigate('/dashboard');
       }

@@ -7,6 +7,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { useTranslation } from 'react-i18next';
 import { LoginForm } from '@/components/auth/LoginForm';
 import { useAuth } from '@/contexts/auth';
+import { loginSchema, LoginFormValues } from './schema';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 const Login = () => {
   const { t } = useTranslation();
@@ -14,7 +16,14 @@ const Login = () => {
   const navigate = useNavigate();
   const from = location.state?.from || '/dashboard';
   const { currentUser, isLoading } = useAuth();
-  const form = useForm();
+  
+  const form = useForm<LoginFormValues>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  });
   
   // Redirect if user is already logged in
   React.useEffect(() => {

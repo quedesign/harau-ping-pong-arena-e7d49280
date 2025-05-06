@@ -1,5 +1,5 @@
 
-import { FieldPath, FieldValues } from "react-hook-form";
+import { ControllerProps, FieldPath, FieldValues } from "react-hook-form";
 
 export interface FormFieldContextValue<
   TFieldValues extends FieldValues = FieldValues,

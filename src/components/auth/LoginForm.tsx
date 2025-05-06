@@ -37,13 +37,11 @@ export const LoginForm = () => {
   };
 
   const handleGoogleLogin = async () => {
-    if (loginWithGoogle) {
-      try {
-        await loginWithGoogle();
-        // Redirect will be handled by the auth state listener
-      } catch (error) {
-        console.error('Error during Google login:', error);
-      }
+    try {
+      await loginWithGoogle();
+      // Redirect will be handled by the auth state listener
+    } catch (error) {
+      console.error('Error during Google login:', error);
     }
   };
 
@@ -100,6 +98,7 @@ export const LoginForm = () => {
           t('auth.login', 'Entrar')
         )}
       </Button>
+      {/* Fixed the condition - check if the function exists before rendering the button */}
       {loginWithGoogle && (
         <Button
           type="button"

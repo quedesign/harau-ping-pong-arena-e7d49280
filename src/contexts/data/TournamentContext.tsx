@@ -46,11 +46,11 @@ const useProvideTournament = (): TournamentContextType => {
         location: item.location,
         entryFee: item.entry_fee,
         maxParticipants: item.max_participants,
-        registeredParticipants: [],
+        registeredParticipants: [] as string[],
         createdBy: item.created_by,
-        bannerImage: item.banner_image,
+        bannerImage: item.banner_image || undefined, // Convert null to undefined
         status: item.status as 'upcoming' | 'ongoing' | 'completed',
-        pixKey: item.pix_key,
+        pixKey: item.pix_key || undefined, // Convert null to undefined
       }));
       
       return tournamentsArray;
@@ -82,11 +82,11 @@ const useProvideTournament = (): TournamentContextType => {
         location: data.location,
         entryFee: data.entry_fee,
         maxParticipants: data.max_participants,
-        registeredParticipants: [],
+        registeredParticipants: [] as string[],
         createdBy: data.created_by,
-        bannerImage: data.banner_image,
+        bannerImage: data.banner_image || undefined, // Convert null to undefined
         status: data.status as 'upcoming' | 'ongoing' | 'completed',
-        pixKey: data.pix_key,
+        pixKey: data.pix_key || undefined, // Convert null to undefined
       };
     } catch (err) {
       console.error("Error fetching tournament:", err);

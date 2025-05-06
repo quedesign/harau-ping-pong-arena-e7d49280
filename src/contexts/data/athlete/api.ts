@@ -6,9 +6,9 @@ import { SupabaseAthleteData } from './types';
 
 export const fetchAllAthleteProfiles = async (): Promise<AthleteProfile[]> => {
   const { data, error } = await supabase
-    .from('athletes')
+    .from('athlete_profiles')
     .select(`
-      id,
+      user_id,
       handedness,
       height,
       weight,
@@ -20,14 +20,7 @@ export const fetchAllAthleteProfiles = async (): Promise<AthleteProfile[]> => {
       years_playing,
       wins,
       losses,
-      playing_style,
-      grip_style,
-      play_frequency,
-      tournament_participation,
-      club,
-      racket,
-      rubbers,
-      users(name, email, profile_image, created_at)
+      profiles(name, email, profile_image, created_at)
     `);
 
   if (error) {
@@ -37,7 +30,7 @@ export const fetchAllAthleteProfiles = async (): Promise<AthleteProfile[]> => {
   
   return data.map(athlete => {
     const athleteData: SupabaseAthleteData = {
-      id: athlete.id,
+      id: athlete.user_id,
       handedness: athlete.handedness,
       height: athlete.height,
       weight: athlete.weight,
@@ -49,18 +42,11 @@ export const fetchAllAthleteProfiles = async (): Promise<AthleteProfile[]> => {
       years_playing: athlete.years_playing,
       wins: athlete.wins,
       losses: athlete.losses,
-      playing_style: athlete.playing_style,
-      grip_style: athlete.grip_style,
-      play_frequency: athlete.play_frequency,
-      tournament_participation: athlete.tournament_participation,
-      club: athlete.club,
-      racket: athlete.racket,
-      rubbers: athlete.rubbers,
-      users: athlete.users && athlete.users[0] ? {
-        name: athlete.users[0].name,
-        email: athlete.users[0].email,
-        profile_image: athlete.users[0].profile_image,
-        created_at: athlete.users[0].created_at
+      users: athlete.profiles && athlete.profiles[0] ? {
+        name: athlete.profiles[0].name,
+        email: athlete.profiles[0].email,
+        profile_image: athlete.profiles[0].profile_image,
+        created_at: athlete.profiles[0].created_at
       } : undefined
     };
     
@@ -70,9 +56,9 @@ export const fetchAllAthleteProfiles = async (): Promise<AthleteProfile[]> => {
 
 export const fetchAthleteProfile = async (userId: string): Promise<AthleteProfile | undefined> => {
   const { data, error } = await supabase
-    .from('athletes')
+    .from('athlete_profiles')
     .select(`
-      id,
+      user_id,
       handedness,
       height,
       weight,
@@ -84,16 +70,9 @@ export const fetchAthleteProfile = async (userId: string): Promise<AthleteProfil
       years_playing,
       wins,
       losses,
-      playing_style,
-      grip_style,
-      play_frequency,
-      tournament_participation,
-      club,
-      racket,
-      rubbers,
-      users(name, email, profile_image, created_at)
+      profiles(name, email, profile_image, created_at)
     `)
-    .eq('id', userId)
+    .eq('user_id', userId)
     .single();
 
   if (error) {
@@ -106,7 +85,7 @@ export const fetchAthleteProfile = async (userId: string): Promise<AthleteProfil
   }
   
   const athleteData: SupabaseAthleteData = {
-    id: data.id,
+    id: data.user_id,
     handedness: data.handedness,
     height: data.height,
     weight: data.weight,
@@ -118,18 +97,11 @@ export const fetchAthleteProfile = async (userId: string): Promise<AthleteProfil
     years_playing: data.years_playing,
     wins: data.wins,
     losses: data.losses,
-    playing_style: data.playing_style,
-    grip_style: data.grip_style,
-    play_frequency: data.play_frequency,
-    tournament_participation: data.tournament_participation,
-    club: data.club,
-    racket: data.racket,
-    rubbers: data.rubbers,
-    users: data.users && data.users[0] ? {
-      name: data.users[0].name,
-      email: data.users[0].email,
-      profile_image: data.users[0].profile_image,
-      created_at: data.users[0].created_at
+    users: data.profiles && data.profiles[0] ? {
+      name: data.profiles[0].name,
+      email: data.profiles[0].email,
+      profile_image: data.profiles[0].profile_image,
+      created_at: data.profiles[0].created_at
     } : undefined
   };
   
@@ -140,8 +112,21 @@ export const createNewAthleteProfile = async (profile: AthleteProfile): Promise<
   const supabaseData = mapProfileToSupabaseData(profile);
   
   const { data, error } = await supabase
-    .from('athletes')
-    .insert(supabaseData)
+    .from('athlete_profiles')
+    .insert({
+      user_id: profile.userId,
+      handedness: supabaseData.handedness,
+      height: supabaseData.height,
+      weight: supabaseData.weight, 
+      level: supabaseData.level,
+      city: supabaseData.city,
+      state: supabaseData.state,
+      country: supabaseData.country,
+      bio: supabaseData.bio,
+      years_playing: supabaseData.years_playing,
+      wins: supabaseData.wins,
+      losses: supabaseData.losses
+    })
     .select()
     .single();
 
@@ -161,12 +146,30 @@ export const updateExistingAthleteProfile = async (
   const supabaseData = mapProfileToSupabaseData(profileData);
   
   // Add updated_at field
-  supabaseData.updated_at = new Date().toISOString();
+  const updateData: any = {
+    updated_at: new Date().toISOString()
+  };
+
+  // Only include fields that are present in profileData
+  if (profileData.handedness) updateData.handedness = supabaseData.handedness;
+  if (profileData.height !== undefined) updateData.height = supabaseData.height;
+  if (profileData.weight !== undefined) updateData.weight = supabaseData.weight;
+  if (profileData.level) updateData.level = supabaseData.level;
+  if (profileData.bio !== undefined) updateData.bio = supabaseData.bio;
+  if (profileData.yearsPlaying !== undefined) updateData.years_playing = supabaseData.years_playing;
+  if (profileData.wins !== undefined) updateData.wins = supabaseData.wins;
+  if (profileData.losses !== undefined) updateData.losses = supabaseData.losses;
+
+  if (profileData.location) {
+    if (profileData.location.city) updateData.city = supabaseData.city;
+    if (profileData.location.state) updateData.state = supabaseData.state;
+    if (profileData.location.country) updateData.country = supabaseData.country;
+  }
   
   const { error } = await supabase
-    .from('athletes')
-    .update(supabaseData)
-    .eq('id', userId);
+    .from('athlete_profiles')
+    .update(updateData)
+    .eq('user_id', userId);
 
   if (error) {
     console.error('Error updating athlete profile:', error);

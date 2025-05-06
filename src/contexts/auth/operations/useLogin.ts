@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { supabase } from '@/integrations/supabase/client';
-import { User } from "@/types";
+import { User, UserRole } from "@/types";
 
 export const useLogin = () => {
   const { t } = useTranslation();
@@ -42,7 +42,7 @@ export const useLogin = () => {
             id: authData.user.id,
             email: authData.user.email || '',
             name: userData.name,
-            role: userData.role,
+            role: userData.role as UserRole, // Type cast to UserRole
             profileImage: userData.profile_image || '',
             createdAt: new Date(userData.created_at),
           };

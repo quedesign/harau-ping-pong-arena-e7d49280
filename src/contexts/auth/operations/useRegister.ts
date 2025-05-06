@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { supabase } from '@/integrations/supabase/client';
+import { UserRole } from "@/types";
 
 export const useRegister = () => {
   const { t } = useTranslation();
@@ -13,7 +14,7 @@ export const useRegister = () => {
     name: string,
     email: string,
     password: string,
-    role: string,
+    role: UserRole,
   ): Promise<boolean> => {
     setIsLoading(true);
     setError(null);

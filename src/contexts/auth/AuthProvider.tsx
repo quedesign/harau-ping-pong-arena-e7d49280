@@ -1,7 +1,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { AuthContextType } from './types';
-import { User } from '@/types';
+import { User, UserRole } from '@/types';
 import { useAuthOperations } from './useAuthOperations';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -44,7 +44,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             id: session.user.id,
             email: session.user.email || '',
             name: userData.name || 'User',
-            role: userData.role || 'athlete',
+            role: userData.role as UserRole, // Type cast to UserRole
             profileImage: userData.profile_image || '',
             createdAt: new Date(userData.created_at),
           };

@@ -4,7 +4,7 @@ import { useAuth } from '@/contexts/auth';
 import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import { useTranslation } from 'react-i18next';
 import { UserCog, Key, Award, Badge } from 'lucide-react';
 import ProfileTab from '@/components/profile/ProfileTab';
@@ -54,6 +54,16 @@ const MyProfile = () => {
 
   const handleUpdateProfile = async (user: User) => {
     try {
+      // Check if user.id exists
+      if (!currentUser.id) {
+        toast({
+          title: t('common.error'),
+          description: "User ID is missing",
+          variant: 'destructive',
+        });
+        return;
+      }
+
       // Update user profile in Supabase
       const { error } = await supabase
         .from('users')
@@ -105,7 +115,7 @@ const MyProfile = () => {
   };
 
   const handleUpdateSportsData = async (data: Partial<AthleteProfile>) => {
-    if (!currentUser || !athleteProfile) return;
+    if (!currentUser || !athleteProfile || !currentUser.id) return;
     
     try {
       const updatedProfile = await updateAthleteProfile(currentUser.id, data);
@@ -126,7 +136,7 @@ const MyProfile = () => {
   };
 
   const handleUpdateEquipment = async (equipment: { racket?: string; rubbers?: string }) => {
-    if (!currentUser || !athleteProfile) return;
+    if (!currentUser || !athleteProfile || !currentUser.id) return;
     
     try {
       const updatedProfile = await updateAthleteProfile(currentUser.id, { equipment });

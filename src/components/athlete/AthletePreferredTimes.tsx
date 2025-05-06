@@ -1,12 +1,12 @@
+
 import { Card, CardContent } from "@/components/ui/card";
 import { Calendar } from "lucide-react";
+import { AthletePreferredTimesProps } from "./types";
 
-interface AthletePreferredTimesProps {
-  availableTimes: string[];
-}
-
-const AthletePreferredTimes = ({ availableTimes }: AthletePreferredTimesProps) => {
-  if (!availableTimes || availableTimes.length === 0) {
+const AthletePreferredTimes: React.FC<AthletePreferredTimesProps> = ({ athlete, availableTimes }) => {
+  const times = availableTimes || athlete.availableTimes || [];
+  
+  if (!times || times.length === 0) {
     return null;
   }
   
@@ -19,7 +19,7 @@ const AthletePreferredTimes = ({ availableTimes }: AthletePreferredTimesProps) =
 
       <div className="bg-zinc-800 p-3 rounded-md text-sm">
         <ul className="list-disc list-inside space-y-1">
-          {availableTimes.map((time, index) => (
+          {times.map((time, index) => (
             <li key={index} className="text-zinc-300">
               {time}
             </li>

@@ -1,12 +1,12 @@
+
 import { MapPin } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
+import { AthletePreferredLocationsProps } from './types';
 
-interface AthletePreferredLocationsProps {
-  preferredLocations: string[];
-}
-
-const AthletePreferredLocations: React.FC<AthletePreferredLocationsProps> = ({ preferredLocations }) => {
-  if (!preferredLocations || preferredLocations.length === 0) {
+const AthletePreferredLocations: React.FC<AthletePreferredLocationsProps> = ({ athlete, preferredLocations }) => {
+  const locations = preferredLocations || athlete.preferredLocations || [];
+  
+  if (!locations || locations.length === 0) {
     return null;
   }
 
@@ -22,7 +22,7 @@ const AthletePreferredLocations: React.FC<AthletePreferredLocationsProps> = ({ p
 
         <div className="bg-zinc-800 p-3 rounded-md text-sm">
           <ul className="list-disc list-inside space-y-1">
-            {preferredLocations.map((loc, index) => (
+            {locations.map((loc, index) => (
               <li key={index} className="text-zinc-300">{loc}</li>
             ))}
           </ul>

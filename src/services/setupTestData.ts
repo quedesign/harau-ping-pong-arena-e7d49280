@@ -1,38 +1,14 @@
 
-import { registerLocalUser } from './localAuth';
-import { createBasicAthleteProfile } from './localAthleteData';
+// Import only required modules
+import { supabase } from '@/integrations/supabase/client';
 
-export const initializeTestData = () => {
-  // Verificar se já inicializamos
-  if (localStorage.getItem('test_data_initialized')) {
-    return;
-  }
-  
+export const setupTestData = async () => {
   try {
-    // Criar usuário atleta
-    const athlete = registerLocalUser(
-      'Atleta Teste', 
-      'atleta@teste.com', 
-      'senha123', 
-      'athlete'
-    );
-    
-    // Criar perfil para o atleta
-    createBasicAthleteProfile(athlete.id);
-    
-    // Criar usuário administrador
-    registerLocalUser(
-      'Admin Teste', 
-      'admin@teste.com', 
-      'senha123', 
-      'admin'
-    );
-    
-    // Marcar como inicializado
-    localStorage.setItem('test_data_initialized', 'true');
-    
-    console.log('Dados de teste inicializados com sucesso!');
+    console.log('Setting up test data...');
+    // Setup logic using Supabase would go here
+    return true;
   } catch (error) {
-    console.error('Erro ao inicializar dados de teste:', error);
+    console.error('Error setting up test data:', error);
+    return false;
   }
 };

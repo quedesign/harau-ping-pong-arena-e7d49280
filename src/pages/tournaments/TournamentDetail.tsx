@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useMatch, useTournament } from '@/contexts/data';
@@ -10,7 +11,7 @@ import { CalendarDays, MapPin, Users, Flag, Timer } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Match } from '@/types';
-import { writeData } from '@/integrations/firebase/utils';
+import { supabase } from '@/integrations/supabase/client';
 
 const TournamentDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -35,22 +36,44 @@ const TournamentDetail = () => {
   }, [tournament, matches]);
 
   useEffect(() => {
-    if (tournament && currentUser) {
-      const registered = tournament.registeredParticipants?.includes(currentUser.id) ?? false;
-      setIsRegistered(registered);
-    }
+    const checkIfRegistered = async () => {
+      if (tournament && currentUser && currentUser.id) {
+        try {
+          const { data, error } = await supabase
+            .from('tournament_registrations')
+            .select('*')
+            .eq('tournament_id', tournament.id)
+            .eq('athlete_id', currentUser.id)
+            .single();
+            
+          if (error && error.code !== 'PGRST116') {
+            console.error('Error checking registration:', error);
+            return;
+          }
+          
+          setIsRegistered(!!data);
+        } catch (err) {
+          console.error('Error checking registration status:', err);
+        }
+      }
+    };
+    
+    checkIfRegistered();
   }, [tournament, currentUser]);
 
   const handleRegister = useCallback(async () => {
-    if (!currentUser || !tournament || isRegistered) return;
+    if (!currentUser || !tournament || isRegistered || !currentUser.id) return;
 
     try {
-      await writeData(`tournament_participants/${tournament.id}_${currentUser.id}`, {
-        tournamentId: tournament.id,
-        athleteId: currentUser.id,
-      });
-
-      // if (error) throw error;
+      const { error } = await supabase
+        .from('tournament_registrations')
+        .insert({
+          tournament_id: tournament.id,
+          athlete_id: currentUser.id,
+          payment_status: 'pending'
+        });
+        
+      if (error) throw error;
       
       setIsRegistered(true);
       reload();

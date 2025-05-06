@@ -1,8 +1,8 @@
-
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { Tournament } from '@/types';
-import { useTournamentMutations } from '@/hooks/useTournamentMutations';
-import { readData } from '@/integrations/firebase/utils';
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 interface TournamentContextType {
   tournaments: Tournament[];
@@ -18,38 +18,78 @@ interface TournamentContextType {
 }
 
 const useProvideTournament = (): TournamentContextType => {
+  const { t } = useTranslation();
   const [tournaments, setTournaments] = useState<Tournament[]>([]);
   const [tournament, setTournament] = useState<Tournament | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<Error | null>(null);
 
   const fetchAllTournaments = useCallback(async (): Promise<Tournament[]> => {
-    const data = await readData('tournaments');
-    if (!data) {
-      return [];
+    try {
+      const { data, error } = await supabase
+        .from('tournaments')
+        .select('*');
+      
+      if (error) throw error;
+
+      if (!data) return [];
+      
+      const tournamentsArray = data.map(item => ({
+        id: item.id,
+        name: item.name,
+        description: item.description || '',
+        format: item.format as any,
+        startDate: new Date(item.start_date),
+        endDate: new Date(item.end_date),
+        location: item.location,
+        entryFee: item.entry_fee,
+        maxParticipants: item.max_participants,
+        registeredParticipants: [],
+        createdBy: item.created_by,
+        bannerImage: item.banner_image,
+        status: item.status as 'upcoming' | 'ongoing' | 'completed',
+        pixKey: item.pix_key,
+      }));
+      
+      return tournamentsArray;
+    } catch (err) {
+      console.error("Error fetching tournaments:", err);
+      throw err;
     }
-    
-    const tournamentsArray = Object.entries(data as Record<string, any>).map(([id, tournamentData]) => ({
-      id,
-      ...tournamentData as any,
-      startDate: new Date(tournamentData.startDate as string),
-      endDate: new Date(tournamentData.endDate as string),
-    }) as Tournament);
-    
-    return tournamentsArray;
   }, []);
 
   const fetchTournament = useCallback(async (id: string): Promise<Tournament | undefined> => {
-    const data = await readData(`tournaments/${id}`);
-    if (!data) {
-      throw new Error(`No data returned from fetchTournament with id ${id}`);
+    try {
+      const { data, error } = await supabase
+        .from('tournaments')
+        .select('*')
+        .eq('id', id)
+        .single();
+      
+      if (error) throw error;
+      
+      if (!data) return undefined;
+      
+      return {
+        id: data.id,
+        name: data.name,
+        description: data.description || '',
+        format: data.format as any,
+        startDate: new Date(data.start_date),
+        endDate: new Date(data.end_date),
+        location: data.location,
+        entryFee: data.entry_fee,
+        maxParticipants: data.max_participants,
+        registeredParticipants: [],
+        createdBy: data.created_by,
+        bannerImage: data.banner_image,
+        status: data.status as 'upcoming' | 'ongoing' | 'completed',
+        pixKey: data.pix_key,
+      };
+    } catch (err) {
+      console.error("Error fetching tournament:", err);
+      throw err;
     }
-    return {
-      id,
-      ...(data as any),
-      startDate: new Date((data as any).startDate),
-      endDate: new Date((data as any).endDate),
-    } as Tournament;
   }, []);
 
   const { editTournament, deleteTournament: deleteT } = useTournamentMutations(setTournaments);
@@ -90,6 +130,8 @@ const useProvideTournament = (): TournamentContextType => {
 
   const fetchSingleTournament = useCallback(async (id: string) => {
     try {
+      if (!id) return;
+      
       const tournamentData = await fetchTournament(id)
       if(tournamentData){
         setTournament(tournamentData)

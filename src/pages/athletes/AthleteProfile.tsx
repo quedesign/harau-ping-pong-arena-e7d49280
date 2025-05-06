@@ -84,7 +84,7 @@ const AthleteProfile = () => {
           <div className="space-y-6">
             <AthleteProfileCard athlete={athlete} />
             <AthleteStats athlete={athlete} />
-            <AthleteEquipments athlete={athlete} />
+            <AthleteEquipments equipment={athlete.equipment} />
           </div>
           
           <div className="md:col-span-2">
@@ -101,7 +101,7 @@ const AthleteProfile = () => {
               </TabsContent>
               
               <TabsContent value="tournaments" className="mt-4">
-                <AthleteTournaments athleteId={athlete.userId} />
+                <AthleteTournaments athleteId={athlete.userId} tournaments={[]} />
               </TabsContent>
               
               <TabsContent value="matches" className="mt-4">
@@ -109,8 +109,8 @@ const AthleteProfile = () => {
               </TabsContent>
               
               <TabsContent value="availability" className="mt-4 space-y-6">
-                <AthletePreferredLocations athlete={athlete} />
-                <AthletePreferredTimes athlete={athlete} />
+                <AthletePreferredLocations preferredLocations={athlete.preferredLocations} athlete={athlete} />
+                <AthletePreferredTimes availableTimes={athlete.availableTimes} athlete={athlete} />
               </TabsContent>
             </Tabs>
           </div>

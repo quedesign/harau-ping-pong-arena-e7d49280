@@ -1,22 +1,57 @@
+
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import Layout from '@/components/layout/Layout';
 import { useAthlete } from '@/contexts/data/athlete';
-import { SearchBar, EmptyState, AthleteCard } from '@/components';
+import { Search } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { EmptyState } from '@/components';
+import { AthleteCard } from '@/components/athletes';
 import FilterSection from '@/components/athletes/FilterSection';
 import { FloatingSupportButton } from '@/components/FloatingSupportButton';
 import RecentAthletes from '@/components/athletes/search/RecentAthletes';
 import SearchFilters from '@/components/athletes/search/SearchFilters';
 import AthleteResults from '@/components/athletes/search/AthleteResults';
+
+// Local SearchBar component instead of importing
+const SearchBar = ({ setSearchTerm, label, placeholder = 'Nome, cidade ou país...' }: { 
+  setSearchTerm: (term: string) => void;
+  label: string;
+  placeholder?: string;
+}) => {
+  const [searchTerm, setSearchTermInternal] = useState<string>('');
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const newSearchTerm = event.target.value;
+    setSearchTermInternal(newSearchTerm);
+    setSearchTerm(newSearchTerm);
+  };
+
+  return (
+    <div className='mb-6'>
+      <div className='relative'>
+        <Search className='absolute left-3 top-1/2 transform -translate-y-1/2 text-zinc-400' size={18} />
+        <Input
+          type="text"
+          id="search"
+          placeholder={placeholder}
+          value={searchTerm}
+          onChange={handleInputChange}
+          className="pl-10 bg-zinc-900 border-zinc-800"
+        />
+      </div>
+    </div>
+  );
+};
   
 const AthleteSearch = () => {
   const setActiveTab = useCallback(() => {}, []);
   
-  const { athleteProfiles, loading } = useAthlete();
+  const { athleteProfiles, isLoading } = useAthlete();
   const [noResults, setNoResults] = useState<boolean>(false);
   const [filters, setFilters] = useState<Record<string, string[]>>({});
   const [searchTerm, setSearchTerm] = useState<string>("");
 
-    const filteredAthletes = useMemo(() => {
+  const filteredAthletes = useMemo(() => {
     if (!athleteProfiles) return [];
     
     // Apply filters
@@ -74,7 +109,7 @@ const AthleteSearch = () => {
     }).slice(0, 6);
   }, [athleteProfiles]);
 
-  if (loading) {
+  if (isLoading) {
     return (
       <Layout>
         <div className="p-6">

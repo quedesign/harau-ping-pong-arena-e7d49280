@@ -24,18 +24,24 @@ const CreateTournament = () => {
         toast.error("Você precisa estar logado para criar um torneio");
         return;
       }
+
+      // Validate required fields
+      if (!formData.startDate || !formData.endDate) {
+        toast.error("Datas de início e fim são obrigatórias");
+        return;
+      }
       
       const tournamentData: Omit<Tournament, 'id'> = {
         name: formData.name,
         description: formData.description,
-        format: formData.format,
+        format: formData.formatType, // Changed from format to formatType
         startDate: formData.startDate,
         endDate: formData.endDate,
         location: formData.location,
         entryFee: formData.entryFee,
         maxParticipants: formData.maxParticipants,
         registeredParticipants: [],
-        createdBy: currentUser.id,
+        createdBy: currentUser.id || '',
         bannerImage: formData.bannerImage || '',
         status: 'upcoming',
         pixKey: formData.pixKey || '',

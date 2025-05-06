@@ -12,11 +12,33 @@ import GeneralSettings from '@/components/settings/GeneralSettings';
 const Settings = () => {
   const { currentUser } = useAuth();
   const navigate = useNavigate();
-  const { settings, setSettings, handleUpdateSettings } = useSettings();
+  const { settings, updateSettings, isLoading } = useSettings();
 
   if (!currentUser) {
     navigate('/login');
     return null;
+  }
+
+  const handleDarkModeChange = (checked: boolean) => {
+    updateSettings({ theme: checked ? 'dark' : 'light' });
+  };
+
+  const handleNotificationsChange = (checked: boolean) => {
+    updateSettings({ notifications: checked });
+  };
+
+  const handleSubmit = () => {
+    // This is just a placeholder since the components expect an onSubmit prop
+  };
+
+  if (isLoading) {
+    return (
+      <Layout>
+        <div className="flex justify-center items-center min-h-[70vh]">
+          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
+        </div>
+      </Layout>
+    );
   }
 
   return (
@@ -40,21 +62,17 @@ const Settings = () => {
 
           <TabsContent value="appearance">
             <AppearanceSettings
-              darkMode={settings.darkMode}
-              onDarkModeChange={(checked) => 
-                setSettings({ ...settings, darkMode: checked })
-              }
-              onSubmit={handleUpdateSettings}
+              darkMode={settings.theme === 'dark'}
+              onDarkModeChange={handleDarkModeChange}
+              onSubmit={handleSubmit}
             />
           </TabsContent>
 
           <TabsContent value="notifications">
             <NotificationSettings
-              emailNotifications={settings.emailNotifications}
-              onEmailNotificationsChange={(checked) =>
-                setSettings({ ...settings, emailNotifications: checked })
-              }
-              onSubmit={handleUpdateSettings}
+              emailNotifications={settings.notifications}
+              onEmailNotificationsChange={handleNotificationsChange}
+              onSubmit={handleSubmit}
             />
           </TabsContent>
 

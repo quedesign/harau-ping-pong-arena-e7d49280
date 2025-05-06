@@ -1,3 +1,4 @@
+
 import { useAuth } from '@/contexts/auth';
 import { useData } from '@/contexts/DataContext';
 import { Link } from 'react-router-dom';
@@ -48,12 +49,14 @@ const Dashboard = () => {
     );
   }
 
+  const userId = currentUser.id || '';
+  
   const userTournaments = currentUser.role === 'admin' 
-    ? tournaments.filter(t => t.createdBy === currentUser.id)
-    : tournaments.filter(t => t.registeredParticipants.includes(currentUser.id));
+    ? tournaments.filter(t => t.createdBy === userId)
+    : tournaments.filter(t => t.registeredParticipants.includes(userId));
   
   const userMatches = matches.filter(m => 
-    m.playerOneId === currentUser.id || m.playerTwoId === currentUser.id
+    m.playerOneId === userId || m.playerTwoId === userId
   );
   
   const upcomingMatches = userMatches.filter(m => m.status === 'scheduled')

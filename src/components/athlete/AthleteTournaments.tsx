@@ -1,5 +1,7 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Trophy } from 'lucide-react';
+import { AthleteTournamentsProps } from './types';
 
 interface Tournament {
   id: string;
@@ -8,11 +10,7 @@ interface Tournament {
   result: string;
 }
 
-interface AthleteTournamentsProps {
-  tournaments: Tournament[];
-}
-
-const AthleteTournaments = ({ tournaments }: AthleteTournamentsProps) => {
+const AthleteTournaments: React.FC<AthleteTournamentsProps> = ({ athleteId, tournaments = [] }) => {
   return (
     <Card className="bg-zinc-900 border-zinc-800">
       <CardHeader>

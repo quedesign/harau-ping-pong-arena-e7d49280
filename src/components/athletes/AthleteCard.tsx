@@ -18,9 +18,10 @@ interface AthleteCardProps {
     wins?: number;
     losses?: number;
   };
+  onClick?: () => void; // Added onClick as an optional prop
 }
 
-const AthleteCard: React.FC<AthleteCardProps> = ({ athlete }) => {
+const AthleteCard: React.FC<AthleteCardProps> = ({ athlete, onClick }) => {
   const { name, level, bio, location } = athlete;
   
   // Format location string if available
@@ -29,7 +30,12 @@ const AthleteCard: React.FC<AthleteCardProps> = ({ athlete }) => {
     : '';
 
   return (
-    <Card className="hover:bg-accent/10 transition-colors">
+    <Card 
+      className="hover:bg-accent/10 transition-colors"
+      onClick={onClick} // Use the onClick prop if provided
+      role={onClick ? "button" : undefined} // Add role for accessibility
+      tabIndex={onClick ? 0 : undefined} // Add tabIndex for keyboard navigation
+    >
       <CardContent className="p-4">
         <div className="flex items-center gap-3">
           <Avatar className="h-10 w-10">

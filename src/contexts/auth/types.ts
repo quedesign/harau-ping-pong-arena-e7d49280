@@ -6,7 +6,7 @@ export interface AuthContextType {
   isLoading: boolean;
   isAdmin: boolean;
   loginWithEmailAndPassword: (email: string, password: string) => Promise<void>;
-  registerWithEmailAndPassword: (name: string, email: string, password: string, role: string) => Promise<void>;
+  registerWithEmailAndPassword: (name: string, email: string, password: string, role: UserRole) => Promise<void>;
   logout: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
   updateUser: (user: Partial<User>) => Promise<void>;

@@ -92,9 +92,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const loginWithEmailAndPassword = async (email: string, password: string) => {
     setIsLoading(true);
     try {
-      const user = await login(email, password);
-      if (user) {
-        setCurrentUser(user);
+      const success = await login(email, password);
+      if (success) {
+        // User is set in the login callback
       }
     } finally {
       setIsLoading(false);
@@ -105,13 +105,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     name: string,
     email: string,
     password: string,
-    role: string
+    role: UserRole
   ) => {
     setIsLoading(true);
     try {
-      const user = await register(name, email, password, role as UserRole);
-      if (user) {
-        setCurrentUser(user);
+      const success = await register(name, email, password, role);
+      if (success) {
+        // User is set in the register callback
       }
     } finally {
       setIsLoading(false);

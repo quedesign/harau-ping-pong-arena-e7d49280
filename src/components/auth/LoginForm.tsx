@@ -37,13 +37,13 @@ export const LoginForm = () => {
   };
 
   const handleGoogleLogin = async () => {
-    if (!loginWithGoogle) return;
-    
-    try {
-      await loginWithGoogle();
-      // Redirect will be handled by the auth state listener
-    } catch (error) {
-      console.error('Error during Google login:', error);
+    if (loginWithGoogle) {
+      try {
+        await loginWithGoogle();
+        // Redirect will be handled by the auth state listener
+      } catch (error) {
+        console.error('Error during Google login:', error);
+      }
     }
   };
 

@@ -1,13 +1,13 @@
 
 import { createContext } from 'react';
-import { User } from '@/types';
+import { User, UserRole } from '@/types';
 
 export interface AuthContextType {
   currentUser: User | null;
   isLoading: boolean;
   isAdmin: boolean;
   loginWithEmailAndPassword: (email: string, password: string) => Promise<void>;
-  registerWithEmailAndPassword: (name: string, email: string, password: string, role: string) => Promise<void>;
+  registerWithEmailAndPassword: (name: string, email: string, password: string, role: UserRole) => Promise<void>;
   logout: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
   updateUser: (user: Partial<User>) => Promise<void>;
@@ -16,7 +16,7 @@ export interface AuthContextType {
   loginAsTestUser: () => Promise<void>;
   error?: string | null;
   login?: (email: string, password: string, callback?: (userData: User) => void) => Promise<boolean>;
-  register?: (name: string, email: string, password: string, role: string) => Promise<boolean>;
+  register?: (name: string, email: string, password: string, role: UserRole) => Promise<boolean>;
   setError?: (error: string | null) => void;
   setCurrentUser?: (user: User | null) => void;
 }

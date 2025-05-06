@@ -98,7 +98,7 @@ export const LoginForm = () => {
           t('auth.login', 'Entrar')
         )}
       </Button>
-      {/* Fixed the condition - check if the function exists before rendering the button */}
+      {/* Render the button only if the loginWithGoogle function is available */}
       {loginWithGoogle && (
         <Button
           type="button"

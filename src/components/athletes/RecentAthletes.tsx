@@ -33,7 +33,7 @@ const RecentAthletes: React.FC = () => {
             key={athlete.id}
             athlete={{
               userId: athlete.id,
-              name: athlete.name ?? 'Atleta', // Using null coalescing to ensure a string value
+              name: athlete.name || 'Atleta', // Using logical OR to provide default value
               level: 'beginner',
               bio: `Atleta desde ${athlete.createdAt?.toLocaleDateString() || 'recentemente'}`,
               location: {

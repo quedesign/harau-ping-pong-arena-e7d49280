@@ -29,8 +29,8 @@ const RecentAthletes: React.FC = () => {
       <h2 className="text-lg font-semibold mb-4">Atletas Recentes</h2>
       <div className="grid grid-cols-1 gap-4">
         {lastSixAthletes.map((athlete) => {
-          // Ensure name is always a string, not undefined
-          const athleteName: string = athlete.name || 'Atleta';
+          // Explicitly ensure name is always a string by using nullish coalescing
+          const athleteName = athlete.name ?? 'Atleta';
           
           return (
             <AthleteCard

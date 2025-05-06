@@ -98,8 +98,8 @@ export const LoginForm = () => {
           t('auth.login', 'Entrar')
         )}
       </Button>
-      {/* Render the button only if the loginWithGoogle function is available */}
-      {loginWithGoogle && (
+      {/* Only render Google login button if the loginWithGoogle function exists */}
+      {typeof loginWithGoogle === 'function' && (
         <Button
           type="button"
           variant="outline"

@@ -29,8 +29,8 @@ const RecentAthletes: React.FC = () => {
       <h2 className="text-lg font-semibold mb-4">Atletas Recentes</h2>
       <div className="grid grid-cols-1 gap-4">
         {lastSixAthletes.map((athlete) => {
-          // Ensure name is always a string
-          const athleteName: string = athlete.name || 'Atleta';
+          // Garantir que o nome seja sempre uma string
+          const athleteName = String(athlete.name || 'Atleta');
           
           return (
             <AthleteCard

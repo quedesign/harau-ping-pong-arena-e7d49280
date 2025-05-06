@@ -1,3 +1,4 @@
+
 import { AthleteProfile } from '@/types';
 import { SupabaseAthleteData } from './types';
 
@@ -7,16 +8,16 @@ export const mapSupabaseToAthleteProfile = (data: SupabaseAthleteData): AthleteP
     name: data.users?.name,
     email: data.users?.email,
     handedness: (data.handedness || 'right') as 'left' | 'right' | 'ambidextrous',
-    height: data.height || undefined,
-    weight: data.weight || undefined,
+    height: data.height ?? undefined,
+    weight: data.weight ?? undefined,
     level: (data.level || 'beginner') as 'beginner' | 'intermediate' | 'advanced' | 'professional',
     location: {
       city: data.city || '',
       state: data.state || '',
       country: data.country || '',
     },
-    bio: data.bio || undefined,
-    yearsPlaying: data.years_playing || undefined,
+    bio: data.bio ?? undefined,
+    yearsPlaying: data.years_playing ?? undefined,
     wins: data.wins || 0,
     losses: data.losses || 0,
     profileImage: data.users?.profile_image ?? undefined, // Convert null to undefined explicitly

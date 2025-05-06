@@ -35,6 +35,8 @@ export const useRegister = () => {
       if (signUpError) throw signUpError;
 
       if (authData.user) {
+        console.log("Auth data received:", authData.user);
+        
         // Insert into the profiles table
         const { error: insertError } = await supabase
           .from('profiles')
@@ -45,7 +47,10 @@ export const useRegister = () => {
             role: role,
           });
 
-        if (insertError) throw insertError;
+        if (insertError) {
+          console.error("Error creating profile:", insertError);
+          throw insertError;
+        }
 
         // If user is an athlete, create an athlete profile record
         if (role === 'athlete') {
@@ -62,7 +67,10 @@ export const useRegister = () => {
               losses: 0
             });
 
-          if (athleteError) throw athleteError;
+          if (athleteError) {
+            console.error("Error creating athlete profile:", athleteError);
+            throw athleteError;
+          }
         }
 
         toast.success(t("auth.registerSuccess"), {
@@ -72,7 +80,7 @@ export const useRegister = () => {
       }
       throw new Error(t("auth.registerFailed"));
     } catch (err: any) {
-      console.error("Detalhes do erro de registro:", err);
+      console.error("Register error details:", err);
       const errorMessage = err.message || t("auth.registerFailed");
 
       setError(errorMessage);

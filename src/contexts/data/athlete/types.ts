@@ -13,14 +13,14 @@ export interface AthleteContextType {
 export interface SupabaseAthleteData {
   id: string;
   handedness?: string;
-  height?: number;
-  weight?: number;
+  height?: number | null;
+  weight?: number | null;
   level?: string;
   city?: string;
   state?: string;
   country?: string;
-  bio?: string;
-  years_playing?: number;
+  bio?: string | null;
+  years_playing?: number | null;
   wins?: number;
   losses?: number;
   playing_style?: string;
@@ -35,7 +35,7 @@ export interface SupabaseAthleteData {
   users?: {
     name: string;
     email: string;
-    profile_image?: string | null; // Updated to accept both null and undefined
+    profile_image?: string | null;
     created_at: string;
   };
 }

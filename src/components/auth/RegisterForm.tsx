@@ -49,7 +49,7 @@ export const RegisterForm = ({ onSuccess }: RegisterFormProps) => {
       if (success) {
         console.log('Registro bem-sucedido, redirecionando');
         onSuccess();
-        // Adicione um pequeno atraso antes de redirecionar para o dashboard
+        // Add a small delay before redirecting to dashboard
         setTimeout(() => {
           navigate('/dashboard');
         }, 500);

@@ -1,6 +1,6 @@
 
 import { useEffect, useMemo, useState } from "react";
-import { User } from "@/types";
+import { User, UserRole } from "@/types";
 import AuthContext, { AuthContextType } from "./AuthContext";
 import { useAuthOperations } from "./useAuthOperations";
 import { useLocation } from "react-router-dom";
@@ -17,10 +17,26 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     resetPassword,
     updateUser: updateUserOperation,
     loginWithGoogle,
-    loginWithGithub,
-    loginAsTestUser,
-    getCurrentUser
+    currentUser: authCurrentUser,
+    setCurrentUser: setAuthCurrentUser,
+    isLoading: authIsLoading,
+    setIsLoading: setAuthIsLoading,
   } = useAuthOperations();
+
+  // Add missing methods with empty implementations
+  const loginWithGithub = async () => {
+    console.warn("GitHub login not implemented yet");
+    return Promise.resolve();
+  };
+
+  const loginAsTestUser = async () => {
+    console.warn("Test user login not implemented yet");
+    return Promise.resolve();
+  };
+
+  const getCurrentUser = async () => {
+    return currentUser;
+  };
 
   const onAuthStateChange = async () => {
     setIsLoading(true);
@@ -76,7 +92,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setIsLoading(true);
     try {
       const user = await login(email, password);
-      setCurrentUser(user);
+      if (user) {
+        setCurrentUser(user);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -90,8 +108,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   ) => {
     setIsLoading(true);
     try {
-      const user = await register(name, email, password, role);
-      setCurrentUser(user);
+      const user = await register(name, email, password, role as UserRole);
+      if (user) {
+        setCurrentUser(user);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -122,6 +142,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  const resetPasswordWrapper = async (email: string): Promise<void> => {
+    await resetPassword(email);
+  };
+
   const isAdmin = useMemo(() => {
     return currentUser?.role === "admin";
   }, [currentUser]);
@@ -133,7 +157,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     loginWithEmailAndPassword,
     registerWithEmailAndPassword,
     logout,
-    resetPassword,
+    resetPassword: resetPasswordWrapper,
     updateUser,
     loginWithGoogle,
     loginWithGithub,

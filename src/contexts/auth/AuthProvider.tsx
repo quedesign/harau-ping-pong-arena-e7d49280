@@ -4,6 +4,7 @@ import { User, UserRole } from "@/types";
 import AuthContext, { AuthContextType } from "./AuthContext";
 import { useAuthOperations } from "./useAuthOperations";
 import { useLocation, useNavigate } from "react-router-dom";
+import { AuthChangeEvent, Session } from "@supabase/supabase-js";
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
@@ -96,7 +97,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     
     // Set up auth state change listener for Google login
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
+      (event: AuthChangeEvent, session: Session | null) => {
         console.log("Auth state changed:", event, session?.user?.id);
         
         if (session && session.user) {
@@ -106,7 +107,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             .select('*')
             .eq('id', session.user.id)
             .single()
-            .then(({ data: profile }) => {
+            .then(({ data: profile }: { data: any }) => {
               if (profile) {
                 const user: User = {
                   id: session.user.id,
@@ -132,7 +133,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     );
     
     // Check current session on mount
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(({ data: { session } }: { data: { session: Session | null } }) => {
       if (session && session.user) {
         // Fetch user data from profiles table
         supabase
@@ -140,7 +141,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           .select('*')
           .eq('id', session.user.id)
           .single()
-          .then(({ data: profile }) => {
+          .then(({ data: profile }: { data: any }) => {
             if (profile) {
               const user: User = {
                 id: session.user.id,

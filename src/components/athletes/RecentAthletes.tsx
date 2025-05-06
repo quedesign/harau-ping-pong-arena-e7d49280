@@ -28,24 +28,29 @@ const RecentAthletes: React.FC = () => {
     <section>
       <h2 className="text-lg font-semibold mb-4">Atletas Recentes</h2>
       <div className="grid grid-cols-1 gap-4">
-        {lastSixAthletes.map((athlete) => (
-          <AthleteCard
-            key={athlete.id}
-            athlete={{
-              userId: athlete.id,
-              name: (athlete.name ?? 'Atleta') as string, // Ensure it's always a string
-              level: 'beginner' as 'beginner',
-              bio: `Atleta desde ${athlete.createdAt?.toLocaleDateString() ?? 'recentemente'}`,
-              location: {
-                city: 'São Paulo',
-                state: 'SP',
-                country: 'Brasil'
-              },
-              wins: 0,
-              losses: 0
-            }}
-          />
-        ))}
+        {lastSixAthletes.map((athlete) => {
+          // Ensure name is always a string, not undefined
+          const athleteName: string = athlete.name || 'Atleta';
+          
+          return (
+            <AthleteCard
+              key={athlete.id}
+              athlete={{
+                userId: athlete.id,
+                name: athleteName,
+                level: 'beginner' as 'beginner',
+                bio: `Atleta desde ${athlete.createdAt?.toLocaleDateString() ?? 'recentemente'}`,
+                location: {
+                  city: 'São Paulo',
+                  state: 'SP',
+                  country: 'Brasil'
+                },
+                wins: 0,
+                losses: 0
+              }}
+            />
+          );
+        })}
       </div>
     </section>
   );

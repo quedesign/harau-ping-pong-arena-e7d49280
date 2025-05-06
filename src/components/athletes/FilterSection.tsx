@@ -1,20 +1,25 @@
 
-import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { SideSlider } from './SideSlider';
 import LevelFilter from './LevelFilter';
 import LocationFilter from './LocationFilter';
 import PlayingStyleFilter from './PlayingStyleFilter';
-import { Filter } from 'lucide-react';
 
 interface FilterSectionProps {
   filters: Record<string, string[]>;
   setFilters: React.Dispatch<React.SetStateAction<Record<string, string[]>>>;
   title: string;
+  isFilterDrawerOpen: boolean;
+  setIsFilterDrawerOpen: (isOpen: boolean) => void;
 }
 
-const FilterSection: React.FC<FilterSectionProps> = ({ filters, setFilters, title }) => {
-  const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
+const FilterSection: React.FC<FilterSectionProps> = ({ 
+  filters, 
+  setFilters, 
+  title,
+  isFilterDrawerOpen,
+  setIsFilterDrawerOpen
+}) => {
   const totalFiltersApplied = Object.values(filters).reduce(
     (count, filterValues) => count + filterValues.length,
     0
@@ -25,25 +30,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({ filters, setFilters, titl
   };
 
   return (
-    <section className="mb-6 mt-4">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg font-semibold">{title}</h2>
-        <Button 
-          variant="outline" 
-          size="sm" 
-          onClick={() => setIsFilterDrawerOpen(true)}
-          className="flex items-center"
-        >
-          <Filter className="mr-2 h-4 w-4" />
-          Filtros
-          {totalFiltersApplied > 0 && (
-            <span className="ml-2 bg-primary text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
-              {totalFiltersApplied}
-            </span>
-          )}
-        </Button>
-      </div>
-
+    <section className="mb-6">
       <div className="flex flex-wrap gap-2">
         {Object.entries(filters).map(([key, values]) => 
           values.map(value => (

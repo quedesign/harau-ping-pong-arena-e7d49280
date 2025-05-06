@@ -18,19 +18,18 @@ const SearchBar: React.FC<SearchBarProps> = ({ setSearchTerm, label, placeholder
         setSearchTerm(newSearchTerm);
     };
 
-    return (<div className='mb-6'>
-        <div className='relative'>
+    return (
+        <div className='relative w-full'>
             <Search className='absolute left-3 top-1/2 transform -translate-y-1/2 text-zinc-400' size={18} />
             <Input
-          type="text"
-          id="search"
-          placeholder={placeholder}
-          value={searchTerm}
-          onChange={handleInputChange}
-          className="pl-10 bg-zinc-900 border-zinc-800"
-        />
-    </div>
-    </div>
+                type="text"
+                id="search"
+                placeholder={placeholder}
+                value={searchTerm}
+                onChange={handleInputChange}
+                className="pl-10 bg-zinc-900 border-zinc-800 w-full"
+            />
+        </div>
     );
 };
 

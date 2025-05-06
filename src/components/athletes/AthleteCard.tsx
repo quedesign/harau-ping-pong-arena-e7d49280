@@ -35,48 +35,48 @@ export const AthleteCard: React.FC<AthleteCardProps> = ({ athlete, onClick }) =>
 
   return (
     <Card className="bg-zinc-900 border-zinc-800 hover:border-zinc-700 transition-colors">
-      <CardHeader className="pb-2">
+      <CardHeader className="pb-1 px-4 pt-4">
         <div className="flex justify-between items-start">
-          <CardTitle className="text-xl truncate">{name}</CardTitle>
+          <CardTitle className="text-lg truncate">{name}</CardTitle>
           {athlete.level && (
             <Badge className="bg-blue-500/20 text-blue-400">
               {athlete.level}
             </Badge>
           )}
         </div>
-        <CardDescription className="line-clamp-2">
+        <CardDescription className="line-clamp-2 text-xs">
           {athlete.bio || 'Sem biografia disponível'}
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        <div className="space-y-3 mb-4">
+      <CardContent className="px-4 pb-3">
+        <div className="mb-2">
           {athlete.location && (
             <div className="flex items-center text-zinc-400">
-               <MapPin className="h-4 w-4 mr-2" />
-              <span className="text-sm">
+              <MapPin className="h-3 w-3 mr-1" />
+              <span className="text-xs">
                 {athlete.location.city}, {athlete.location.country}
               </span>
             </div>
           )}
         </div>
-        <div className="flex items-center justify-between mt-4">
-          <Button variant="outline" size="sm" onClick={handleFollow} className="w-24">
-           <PlusCircle className="h-4 w-4 mr-2" />
+        <div className="flex items-center justify-between gap-1 mt-3">
+          <Button variant="outline" size="sm" onClick={handleFollow} className="h-8 px-2 text-xs">
+            <PlusCircle className="h-3 w-3 mr-1" />
             {isFollowing? "Seguindo" : "Seguir"}
           </Button>
-          <Button variant="outline" size="sm" onClick={handleSendMessage} className="w-24">
-            <MessageCircle className="h-4 w-4 mr-2" />
+          <Button variant="outline" size="sm" onClick={handleSendMessage} className="h-8 px-2 text-xs">
+            <MessageCircle className="h-3 w-3 mr-1" />
             Mensagem
           </Button>
           {onClick ? (
-            <Button size="sm" onClick={handleViewProfile} className="w-24">
-              <Eye className="h-4 w-4 mr-2" />
+            <Button size="sm" onClick={handleViewProfile} className="h-8 px-2 text-xs">
+              <Eye className="h-3 w-3 mr-1" />
               Perfil
             </Button>
           ) : (
             <Link to={`/athletes/${athlete.userId}`}>
-              <Button size="sm" className="w-24">
-                <Eye className="h-4 w-4 mr-2" />
+              <Button size="sm" className="h-8 px-2 text-xs">
+                <Eye className="h-3 w-3 mr-1" />
                 Perfil
               </Button>
             </Link>

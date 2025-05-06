@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
@@ -7,7 +8,6 @@ import { useAuth } from '@/contexts/auth';
 import { useAthlete } from '@/contexts/data/athlete';
 import { AthleteProfile as AthleteProfileType } from '@/types';
 import AthleteProfileHeader from '@/components/athlete/AthleteProfileHeader';
-import AthleteProfileCard from '@/components/athlete/AthleteProfileCard';
 import AthleteStats from '@/components/athlete/AthleteStats';
 import AthleteEquipments from '@/components/athlete/AthleteEquipments';
 import AthleteDetailsSection from '@/components/athlete/AthleteDetailsSection';
@@ -17,6 +17,7 @@ import AthletePreferredLocations from '@/components/athlete/AthletePreferredLoca
 import AthletePreferredTimes from '@/components/athlete/AthletePreferredTimes';
 import { checkSupabaseConnection } from '@/integrations/supabase/client';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import WolfProLinkBanner from '@/components/WolfProLinkBanner';
 
 const AthleteProfile = () => {
   const { id } = useParams<{ id: string }>();
@@ -115,57 +116,58 @@ const AthleteProfile = () => {
         
         <AthleteProfileHeader athlete={athlete} />
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-          <div className="space-y-6">
-            <AthleteProfileCard profile={athlete} />
-          </div>
+        <WolfProLinkBanner />
+        
+        <Tabs defaultValue="info" className="w-full mt-6">
+          <TabsList className="grid grid-cols-2 md:grid-cols-4 w-full">
+            <TabsTrigger value="info">{t('athlete.information')}</TabsTrigger>
+            <TabsTrigger value="tournaments">{t('athlete.tournaments')}</TabsTrigger>
+            <TabsTrigger value="matches">{t('athlete.matches')}</TabsTrigger>
+            <TabsTrigger value="availability">{t('athlete.availability')}</TabsTrigger>
+          </TabsList>
           
-          <div className="md:col-span-2">
-            <Tabs defaultValue="info" className="w-full">
-              <TabsList className="grid grid-cols-2 md:grid-cols-4 w-full">
-                <TabsTrigger value="info">{t('athlete.information')}</TabsTrigger>
-                <TabsTrigger value="tournaments">{t('athlete.tournaments')}</TabsTrigger>
-                <TabsTrigger value="matches">{t('athlete.matches')}</TabsTrigger>
-                <TabsTrigger value="availability">{t('athlete.availability')}</TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="info" className="mt-4 space-y-4">
-                <AthleteDetailsSection 
-                  playingStyle={athlete.playingStyle}
-                  gripStyle={athlete.gripStyle}
-                  playFrequency={athlete.playFrequency}
-                  tournamentParticipation={athlete.tournamentParticipation}
-                  club={athlete.club}
-                  height={athlete.height}
-                  weight={athlete.weight}
-                />
-              </TabsContent>
-              
-              <TabsContent value="tournaments" className="mt-4">
-                <AthleteTournaments athleteId={athlete.userId} tournaments={[]} />
-              </TabsContent>
-              
-              <TabsContent value="matches" className="mt-4">
-                <AthleteMatches athleteId={athlete.userId} />
-              </TabsContent>
-              
-              <TabsContent value="availability" className="mt-4 space-y-6">
-                {athlete.preferredLocations && athlete.preferredLocations.length > 0 && (
-                  <AthletePreferredLocations 
-                    preferredLocations={athlete.preferredLocations} 
-                    athlete={athlete} 
-                  />
-                )}
-                {athlete.availableTimes && athlete.availableTimes.length > 0 && (
-                  <AthletePreferredTimes 
-                    availableTimes={athlete.availableTimes} 
-                    athlete={athlete} 
-                  />
-                )}
-              </TabsContent>
-            </Tabs>
-          </div>
-        </div>
+          <TabsContent value="info" className="mt-4 space-y-4">
+            <AthleteDetailsSection 
+              playingStyle={athlete.playingStyle}
+              gripStyle={athlete.gripStyle}
+              playFrequency={athlete.playFrequency}
+              tournamentParticipation={athlete.tournamentParticipation}
+              club={athlete.club}
+              height={athlete.height}
+              weight={athlete.weight}
+            />
+            
+            {athlete.equipment && (
+              <AthleteEquipments 
+                equipment={athlete.equipment} 
+                athlete={athlete} 
+              />
+            )}
+          </TabsContent>
+          
+          <TabsContent value="tournaments" className="mt-4">
+            <AthleteTournaments athleteId={athlete.userId} tournaments={[]} />
+          </TabsContent>
+          
+          <TabsContent value="matches" className="mt-4">
+            <AthleteMatches athleteId={athlete.userId} />
+          </TabsContent>
+          
+          <TabsContent value="availability" className="mt-4 space-y-6">
+            {athlete.preferredLocations && athlete.preferredLocations.length > 0 && (
+              <AthletePreferredLocations 
+                preferredLocations={athlete.preferredLocations} 
+                athlete={athlete} 
+              />
+            )}
+            {athlete.availableTimes && athlete.availableTimes.length > 0 && (
+              <AthletePreferredTimes 
+                availableTimes={athlete.availableTimes} 
+                athlete={athlete} 
+              />
+            )}
+          </TabsContent>
+        </Tabs>
       </div>
     </Layout>
   );

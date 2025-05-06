@@ -1,4 +1,5 @@
-import { Link } from 'react-router-dom';
+
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/auth';
 import { useTranslation } from 'react-i18next';
@@ -6,9 +7,7 @@ import { useTranslation } from 'react-i18next';
 const Navbar = () => {
   const { currentUser } = useAuth();
   const { t } = useTranslation();
-
-  const handleRegister = () => {
-  };
+  const navigate = useNavigate();
 
   return (
     <nav className="w-full p-6 flex justify-between items-center z-10 relative">
@@ -18,15 +17,20 @@ const Navbar = () => {
       </div>
       <div className="flex items-center space-x-4">
           {currentUser ? (
-            <Link to="/dashboard">
-              <Button>{t('common.dashboard')}</Button>
-            </Link>
+            <div className="flex items-center gap-3">
+              <Link to="/atletas">
+                <Button variant="outline">{t('common.athletes')}</Button>
+              </Link>
+              <Link to="/dashboard">
+                <Button>{t('common.dashboard')}</Button>
+              </Link>
+            </div>
           ) : (
             <>
               <Link to="/login">
                 <Button variant="ghost" className="text-white hover:bg-white/10">{t('common.login')}</Button>
               </Link>
-              <Button onClick={handleRegister} className="rounded-full bg-primary hover:bg-primary/90">{t('common.register')}</Button>
+              <Button onClick={() => navigate('/register')} className="rounded-full bg-primary hover:bg-primary/90">{t('common.register')}</Button>
             </>
           )}
       </div>

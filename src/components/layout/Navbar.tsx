@@ -52,7 +52,7 @@ const Navbar: React.FC = () => {
           
           {currentUser && (
             <>
-              <Link to="/athletes" className="text-white hover:text-primary transition">
+              <Link to="/atletas" className="text-white hover:text-primary transition">
                 {t('common.athletes')}
               </Link>
               {currentUser.role === 'admin' && (
@@ -116,7 +116,7 @@ const Navbar: React.FC = () => {
             
             {currentUser && (
               <>
-                <Link to="/athletes" className="text-white hover:text-primary transition py-2" onClick={toggleMenu}>
+                <Link to="/atletas" className="text-white hover:text-primary transition py-2" onClick={toggleMenu}>
                   {t('common.athletes')}
                 </Link>
                 {currentUser.role === 'admin' && (

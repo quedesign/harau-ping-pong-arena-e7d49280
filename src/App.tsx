@@ -20,9 +20,8 @@ import AuthCallback from "./pages/auth/AuthCallback";
 // Athlete pages
 import TournamentList from "./pages/tournaments/TournamentList";
 import TournamentDetail from "./pages/tournaments/TournamentDetail";
-import AthleteList from "./pages/athletes/AthleteList";
-import AthleteProfile from "./pages/athletes/AthleteProfile";
 import AthleteSearch from "./pages/athletes/AthleteSearch";
+import AthleteProfile from "./pages/athletes/AthleteProfile";
 
 // Message pages
 import MessageList from "./pages/messages/MessageList";
@@ -58,7 +57,7 @@ const App = () => {
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/tournaments" element={<TournamentList />} />
                 <Route path="/tournaments/:id" element={<TournamentDetail />} />
-                <Route path="/athletes" element={<AthleteList />} />
+                <Route path="/athletes" element={<Navigate to="/atletas" />} />
                 <Route path="/athletes/:id" element={<AthleteProfile />} />
                 <Route path="/atletas" element={<AthleteSearch />} />
 

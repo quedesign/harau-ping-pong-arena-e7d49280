@@ -27,21 +27,21 @@ const AthleteProfileHeader: React.FC<AthleteProfileHeaderProps> = ({ athlete }) 
             {athlete.location?.city}, {athlete.location?.country}
           </span>
         </div>
-      </div>
-
-      <div className="flex flex-col gap-2">
-        <Button size="sm" variant="outline" className="flex gap-2">
-          <UserPlus size={16} />
-          Follow
-        </Button>
-        <Button size="sm" variant="outline" className="flex gap-2">
-          <MessageSquare size={16} />
-          Message
-        </Button>
-        <Button size="sm" variant="outline" className="flex gap-2">
-          <Mail size={16} />
-          Email
-        </Button>
+        
+        <div className="flex flex-wrap justify-center md:justify-start gap-2 mt-4">
+          <Button size="sm" variant="outline" className="flex gap-1 h-8 text-xs">
+            <UserPlus size={14} />
+            Seguir
+          </Button>
+          <Button size="sm" variant="outline" className="flex gap-1 h-8 text-xs">
+            <MessageSquare size={14} />
+            Mensagem
+          </Button>
+          <Button size="sm" variant="outline" className="flex gap-1 h-8 text-xs">
+            <Mail size={14} />
+            Email
+          </Button>
+        </div>
       </div>
     </div>
   );

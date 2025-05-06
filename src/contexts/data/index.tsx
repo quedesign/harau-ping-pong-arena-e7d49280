@@ -1,5 +1,5 @@
 
-import React, { useContext } from 'react';
+import React from 'react';
 import { TournamentProvider, useTournament } from './TournamentContext';
 import { AthleteProvider, useAthlete } from './athlete';
 import { DataContext } from './utils';
@@ -35,8 +35,6 @@ export const useData = () => {
         ...athleteContext,
         // Match related
         ...matchContext,
-        loading: tournamentContext.loading || athleteContext.loading || matchContext.loading,
+        loading: tournamentContext.loading || athleteContext.isLoading || matchContext.loading,
     };
 };
-
-

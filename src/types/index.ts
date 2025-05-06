@@ -1,3 +1,4 @@
+
 // Type definitions for Harau Ping Pong App
 
 // User types
@@ -34,6 +35,8 @@ export interface AthleteEquipment {
 export interface AthleteProfile {
   userId: string;
   name?: string; // Added name to fix issues
+  email?: string; // Added email for consistency
+  role?: UserRole; // Added role field
   handedness: 'left' | 'right' | 'ambidextrous';
   height?: number; // in cm
   weight?: number; // in kg
@@ -51,6 +54,8 @@ export interface AthleteProfile {
   yearsPlaying?: number;
   wins: number;
   losses: number;
+  profileImage?: string; // Added for consistency
+  createdAt?: Date; // Added createdAt
   
   // New fields for sports data
   playingStyle?: PlayingStyle;

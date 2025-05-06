@@ -1,30 +1,31 @@
+
 import React, { createContext, useContext, useCallback } from 'react';
 import { AthleteProfile } from '@/types';
 import { database } from '@/integrations/firebase/client';
 import { get, ref, set, child, remove } from 'firebase/database';
 import { useTranslation } from 'react-i18next';
 import { useToast } from '@/hooks/use-toast';
-import { formatFirebaseAthleteProfile, mapFirebaseAthleteToAthlete } from './athlete/mappers';
+import { formatFirebaseAthleteProfile } from './athlete/mappers';
 
 interface AthleteContextType {
   athleteProfiles: AthleteProfile[];
+  isLoading: boolean;
   getAthleteProfile: (userId: string) => Promise<AthleteProfile | null>;
   createAthleteProfile: (profile: AthleteProfile) => Promise<AthleteProfile>;
   updateAthleteProfile: (userId: string, data: Partial<AthleteProfile>) => Promise<AthleteProfile>;
+  deleteAthleteProfile: (userId: string) => Promise<void>;
 }
 
 const AthleteContext = createContext<AthleteContextType | undefined>(undefined);
-
-
 
 export const AthleteProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { t } = useTranslation();
   const { toast } = useToast();
   const [athleteProfiles, setAthleteProfiles] = React.useState<AthleteProfile[]>([]);
-  const [loading, setLoading] = React.useState(true);
+  const [isLoading, setIsLoading] = React.useState(true);
 
   const fetchAthleteProfiles = useCallback(async () => {
-    setLoading(true);
+    setIsLoading(true);
     try {
       const athletesRef = ref(database, 'athletes');
       const snapshot = await get(athletesRef);
@@ -45,9 +46,9 @@ export const AthleteProvider: React.FC<{ children: React.ReactNode }> = ({ child
         variant: 'destructive',
       });
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
-  }, [setAthleteProfiles, t]);
+  }, [setAthleteProfiles, t, toast]);
 
   React.useEffect(() => {
     fetchAthleteProfiles();
@@ -79,42 +80,35 @@ export const AthleteProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
     try {
       const athleteData = {
-      userId: rest.userId,
-       name: rest.name,
-       email: rest.email,
-       role: rest.role,
-       profileImage: rest.profileImage,
-       createdAt: new Date().toISOString(),
-       updatedAt: new Date().toISOString(),
-      handedness: rest.handedness || null,
-      height: rest.height || null,
-      weight: rest.weight || null,
-      level: rest.level || null,
-      city: location.city,
-      state: location.state,
-      country: location.country,
-      bio: rest.bio,
-      years_playing: rest.yearsPlaying,
-      wins: rest.wins,
-      losses: rest.losses,
-      // New fields
-      playing_style: rest.playingStyle,
-      grip_style: rest.gripStyle,
-      play_frequency: rest.playFrequency,
-      tournament_participation: rest.tournamentParticipation,
-      club: rest.club,
-      available_times: rest.availableTimes,
-      preferred_locations: rest.preferredLocations,
-      racket: equipment?.racket,
-      rubbers: equipment?.rubbers
+        userId: rest.userId,
+        name: rest.name || '',
+        handedness: rest.handedness || 'right',
+        height: rest.height || null,
+        weight: rest.weight || null,
+        level: rest.level || 'beginner',
+        city: location?.city || '',
+        state: location?.state || '',
+        country: location?.country || '',
+        bio: rest.bio || '',
+        years_playing: rest.yearsPlaying || 0,
+        wins: rest.wins || 0,
+        losses: rest.losses || 0,
+        // New fields
+        playing_style: rest.playingStyle || 'all-round',
+        grip_style: rest.gripStyle || 'shakehand',
+        play_frequency: rest.playFrequency || 'weekly',
+        tournament_participation: rest.tournamentParticipation || 'never',
+        club: rest.club || '',
+        available_times: rest.availableTimes || [],
+        preferred_locations: rest.preferredLocations || [],
+        racket: equipment?.racket || '',
+        rubbers: equipment?.rubbers || ''
       };
 
       await set(ref(database, `athletes/${profile.userId}`), athleteData);
       await set(ref(database, `users/${profile.userId}/role`), 'athlete');
 
-
       const newProfile = formatFirebaseAthleteProfile(athleteData);
-
       setAthleteProfiles(prev => [...prev, newProfile]);
 
       return newProfile;
@@ -126,40 +120,39 @@ export const AthleteProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   const updateAthleteProfile = async (userId: string, profileData: Partial<AthleteProfile>): Promise<AthleteProfile> => {
     try {
-    const updateData: Partial<AthleteProfile> = {
-      updatedAt: new Date().toISOString()
-    };
+      const updateData: Record<string, any> = {
+        updated_at: new Date().toISOString()
+      };
 
-    
-    if (profileData.handedness) updateData.handedness = profileData.handedness;
-    if (profileData.height !== undefined) updateData.height = profileData.height;
-    if (profileData.weight !== undefined) updateData.weight = profileData.weight;
-    if (profileData.level) updateData.level = profileData.level;
-    if (profileData.bio !== undefined) updateData.bio = profileData.bio;
-    if (profileData.yearsPlaying !== undefined) updateData.years_playing = profileData.yearsPlaying;
-    if (profileData.wins !== undefined) updateData.wins = profileData.wins;
-    if (profileData.losses !== undefined) updateData.losses = profileData.losses;
-    
-    if (profileData.location) {
-      if (profileData.location.city) updateData.city = profileData.location.city;
-      if (profileData.location.state) updateData.state = profileData.location.state;
-      if (profileData.location.country) updateData.country = profileData.location.country;
-    }
+      if (profileData.handedness) updateData.handedness = profileData.handedness;
+      if (profileData.height !== undefined) updateData.height = profileData.height;
+      if (profileData.weight !== undefined) updateData.weight = profileData.weight;
+      if (profileData.level) updateData.level = profileData.level;
+      if (profileData.bio !== undefined) updateData.bio = profileData.bio;
+      if (profileData.yearsPlaying !== undefined) updateData.years_playing = profileData.yearsPlaying;
+      if (profileData.wins !== undefined) updateData.wins = profileData.wins;
+      if (profileData.losses !== undefined) updateData.losses = profileData.losses;
+      
+      if (profileData.location) {
+        if (profileData.location.city) updateData.city = profileData.location.city;
+        if (profileData.location.state) updateData.state = profileData.location.state;
+        if (profileData.location.country) updateData.country = profileData.location.country;
+      }
 
-    // New fields
-    if (profileData.playingStyle) updateData.playing_style = profileData.playingStyle;
-    if (profileData.gripStyle) updateData.grip_style = profileData.gripStyle;
-    if (profileData.playFrequency) updateData.play_frequency = profileData.playFrequency;
-    if (profileData.tournamentParticipation) updateData.tournament_participation = profileData.tournamentParticipation;
-    if (profileData.club !== undefined) updateData.club = profileData.club;
-    if (profileData.availableTimes !== undefined) updateData.available_times = profileData.availableTimes;
-    if (profileData.preferredLocations !== undefined) updateData.preferred_locations = profileData.preferredLocations;
-    
-    if (profileData.equipment) {
-      if (profileData.equipment.racket !== undefined) updateData.racket = profileData.equipment.racket;
-      if (profileData.equipment.rubbers !== undefined) updateData.rubbers = profileData.equipment.rubbers;
-    }
-    
+      // New fields
+      if (profileData.playingStyle) updateData.playing_style = profileData.playingStyle;
+      if (profileData.gripStyle) updateData.grip_style = profileData.gripStyle;
+      if (profileData.playFrequency) updateData.play_frequency = profileData.playFrequency;
+      if (profileData.tournamentParticipation) updateData.tournament_participation = profileData.tournamentParticipation;
+      if (profileData.club !== undefined) updateData.club = profileData.club;
+      if (profileData.availableTimes !== undefined) updateData.available_times = profileData.availableTimes;
+      if (profileData.preferredLocations !== undefined) updateData.preferred_locations = profileData.preferredLocations;
+      
+      if (profileData.equipment) {
+        if (profileData.equipment.racket !== undefined) updateData.racket = profileData.equipment.racket;
+        if (profileData.equipment.rubbers !== undefined) updateData.rubbers = profileData.equipment.rubbers;
+      }
+      
       await set(ref(database, `athletes/${userId}`), updateData);
 
       const updatedAthleteProfile = await getAthleteProfile(userId);
@@ -176,7 +169,7 @@ export const AthleteProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }
   };
 
-   const deleteAthleteProfile = async (userId: string): Promise<void> => {
+  const deleteAthleteProfile = async (userId: string): Promise<void> => {
     try {
       await remove(ref(database, `athletes/${userId}`));
       setAthleteProfiles(prev => prev.filter(p => p.userId !== userId));
@@ -185,15 +178,16 @@ export const AthleteProvider: React.FC<{ children: React.ReactNode }> = ({ child
       throw error;
     }
   };
+
   const value = {
     athleteProfiles,
+    isLoading,
     getAthleteProfile,
     createAthleteProfile,
     updateAthleteProfile,
     deleteAthleteProfile
   };
     
-
   return <AthleteContext.Provider value={value}>{children}</AthleteContext.Provider>;
 };
 

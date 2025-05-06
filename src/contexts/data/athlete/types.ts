@@ -10,29 +10,31 @@ export interface AthleteContextType {
 }
 
 export interface SupabaseAthleteData {
-  user_id: string;
-  handedness: string;
+  id: string;
+  handedness?: string;
   height?: number;
   weight?: number;
-  level: string;
-  city: string;
-  state: string;
-  country: string;
+  level?: string;
+  city?: string;
+  state?: string;
+  country?: string;
   bio?: string;
   years_playing?: number;
-  wins: number;
-  losses: number;
-  created_at: string;
-  updated_at: string;
-  
-  // Campos adicionais que se alinham com nossos tipos
+  wins?: number;
+  losses?: number;
   playing_style?: string;
   grip_style?: string;
   play_frequency?: string;
   tournament_participation?: string;
   club?: string;
-  available_times?: string[];
-  preferred_locations?: string[];
   racket?: string;
   rubbers?: string;
+  created_at?: string;
+  updated_at?: string;
+  users?: {
+    name: string;
+    email: string;
+    profile_image?: string;
+    created_at: string;
+  };
 }

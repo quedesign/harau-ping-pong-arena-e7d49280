@@ -54,11 +54,13 @@ export const mapSupabaseToAthleteProfile = (data: SupabaseAthleteData): AthleteP
     playFrequency: data.play_frequency as 'daily' | 'weekly' | 'monthly' | 'rarely',
     tournamentParticipation: data.tournament_participation as 'never' | 'local' | 'regional' | 'national' | 'international',
     club: data.club,
+    profileImage: data.users?.profile_image,
     equipment: {
       racket: data.racket,
       rubbers: data.rubbers,
     },
     createdAt: data.created_at ? new Date(data.created_at) : new Date(),
+    role: 'athlete', // Default role
   };
 };
 
@@ -100,6 +102,7 @@ export const formatFirebaseAthleteProfile = (data: any): AthleteProfile => {
     userId: data.userId,
     name: data.name || '',
     email: data.email || '',
+    role: data.role || 'athlete',
     handedness: data.handedness as 'left' | 'right' | 'ambidextrous',
     height: data.height,
     weight: data.weight,
@@ -118,6 +121,7 @@ export const formatFirebaseAthleteProfile = (data: any): AthleteProfile => {
     playFrequency: data.play_frequency as 'daily' | 'weekly' | 'monthly' | 'rarely',
     tournamentParticipation: data.tournament_participation as 'never' | 'local' | 'regional' | 'national' | 'international',
     club: data.club,
+    profileImage: data.profileImage || data.profile_image,
     equipment: {
       racket: data.racket,
       rubbers: data.rubbers,

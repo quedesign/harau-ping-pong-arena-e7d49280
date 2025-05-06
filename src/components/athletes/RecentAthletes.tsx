@@ -30,7 +30,7 @@ const RecentAthletes: React.FC = () => {
       <div className="grid grid-cols-1 gap-4">
         {lastSixAthletes.map((athlete) => {
           // Explicitly ensure name is always a string by using nullish coalescing
-          const athleteName = athlete.name ?? 'Atleta';
+          const athleteName: string = athlete.name ?? 'Atleta';
           
           return (
             <AthleteCard

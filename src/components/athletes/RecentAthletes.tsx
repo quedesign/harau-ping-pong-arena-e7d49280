@@ -33,7 +33,7 @@ const RecentAthletes: React.FC = () => {
             key={athlete.id}
             athlete={{
               userId: athlete.id,
-              name: athlete.name ?? 'Atleta', // Using nullish coalescing to provide a default value
+              name: (athlete.name as string) || 'Atleta', // Type assertion to handle the TypeScript error
               level: 'beginner',
               bio: `Atleta desde ${athlete.createdAt?.toLocaleDateString() ?? 'recentemente'}`,
               location: {

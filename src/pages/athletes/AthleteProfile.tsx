@@ -17,6 +17,7 @@ import AthleteMatches from '@/components/athlete/AthleteMatches';
 import AthletePreferredLocations from '@/components/athlete/AthletePreferredLocations';
 import AthletePreferredTimes from '@/components/athlete/AthletePreferredTimes';
 import { checkSupabaseConnection } from '@/integrations/supabase/client';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 const AthleteProfile = () => {
   const { id } = useParams<{ id: string }>();
@@ -35,6 +36,7 @@ const AthleteProfile = () => {
     const checkConnection = async () => {
       const isConnected = await checkSupabaseConnection();
       setSupabaseConnected(isConnected);
+      console.log("Status da conexão Supabase:", isConnected);
     };
     
     checkConnection();
@@ -94,26 +96,28 @@ const AthleteProfile = () => {
   return (
     <Layout>
       <div className="container py-6">
-        <AthleteProfileHeader athlete={athlete} athleteName={athlete.name} />
+        {supabaseConnected === false && (
+          <Alert variant="destructive" className="mb-6">
+            <AlertDescription>
+              Atenção: Sua aplicação não está conectada ao Supabase corretamente. 
+              ID do projeto: nrgjaofrozgccdiebqwv. Verifique suas credenciais na configuração do cliente Supabase.
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {supabaseConnected === true && (
+          <Alert className="mb-6 bg-green-800/20 border-green-800">
+            <AlertDescription className="text-green-400">
+              Conexão com Supabase estabelecida com sucesso! ID do projeto: nrgjaofrozgccdiebqwv
+            </AlertDescription>
+          </Alert>
+        )}
+        
+        <AthleteProfileHeader athlete={athlete} />
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
           <div className="space-y-6">
-            <AthleteProfileCard profile={athlete} athleteName={athlete.name} />
-            <AthleteStats 
-              wins={athlete.wins} 
-              losses={athlete.losses} 
-              stats={{
-                totalMatches: 0,
-                tournamentsPlayed: 0,
-                longestStreak: '0 vitórias',
-                winRate: athlete.wins > 0 ? Math.round((athlete.wins / (athlete.wins + athlete.losses)) * 100) : 0,
-                averagePointsPerGame: 0,
-                bestTournament: 'N/A'
-              }} 
-            />
-            {athlete.equipment && (
-              <AthleteEquipments equipment={athlete.equipment} athlete={athlete} />
-            )}
+            <AthleteProfileCard profile={athlete} />
           </div>
           
           <div className="md:col-span-2">
@@ -146,13 +150,13 @@ const AthleteProfile = () => {
               </TabsContent>
               
               <TabsContent value="availability" className="mt-4 space-y-6">
-                {athlete.preferredLocations && (
+                {athlete.preferredLocations && athlete.preferredLocations.length > 0 && (
                   <AthletePreferredLocations 
                     preferredLocations={athlete.preferredLocations} 
                     athlete={athlete} 
                   />
                 )}
-                {athlete.availableTimes && (
+                {athlete.availableTimes && athlete.availableTimes.length > 0 && (
                   <AthletePreferredTimes 
                     availableTimes={athlete.availableTimes} 
                     athlete={athlete} 
@@ -162,15 +166,6 @@ const AthleteProfile = () => {
             </Tabs>
           </div>
         </div>
-
-        {supabaseConnected === false && (
-          <div className="mt-8 p-4 bg-red-800/20 border border-red-800 rounded-md">
-            <p className="text-red-400 font-medium">
-              Atenção: Sua aplicação não está conectada ao Supabase corretamente. 
-              Verifique suas credenciais na configuração do cliente Supabase.
-            </p>
-          </div>
-        )}
       </div>
     </Layout>
   );

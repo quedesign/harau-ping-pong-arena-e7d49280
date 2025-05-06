@@ -18,7 +18,7 @@ const AthleteProfileCard: React.FC<AthleteProfileCardProps> = ({
   profile,
   athleteName,
 }) => {
-  const displayName = athleteName || `Player ${profile.userId}`;
+  const displayName = athleteName || profile.name || `Player ${profile.userId}`;
 
   return (
     <>
@@ -26,7 +26,6 @@ const AthleteProfileCard: React.FC<AthleteProfileCardProps> = ({
         <CardContent className="p-6" >
           <AthleteProfileHeader 
             athlete={profile}
-            athleteName={displayName}
           />
 
           <AthleteStatsSummary wins={profile.wins} losses={profile.losses} />
@@ -51,14 +50,14 @@ const AthleteProfileCard: React.FC<AthleteProfileCardProps> = ({
         />
       )}
       
-      {profile.availableTimes && (
+      {profile.availableTimes && profile.availableTimes.length > 0 && (
         <AthletePreferredTimes 
           availableTimes={profile.availableTimes} 
           athlete={profile} 
         />
       )}
       
-      {profile.preferredLocations && (
+      {profile.preferredLocations && profile.preferredLocations.length > 0 && (
         <AthletePreferredLocations 
           preferredLocations={profile.preferredLocations} 
           athlete={profile} 

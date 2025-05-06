@@ -24,7 +24,13 @@ const RecentAthletes: React.FC<RecentAthletesProps> = ({ athletes, loading = fal
       <h2 className="text-xl font-semibold mb-4">Atletas Recentes</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {athletes.map((athlete) => (
-          <AthleteCard key={athlete.userId} athlete={athlete} />
+          <AthleteCard 
+            key={athlete.userId} 
+            athlete={{
+              ...athlete,
+              name: athlete.name || 'Atleta', // Ensuring name is always a string
+            }} 
+          />
         ))}
       </div>
     </section>

@@ -45,7 +45,14 @@ const AthleteResults = ({
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
       {filteredAthletes.map((athlete) => (
-        <AthleteCard key={athlete.userId} athlete={athlete} onClick={() => setActiveTab(athlete.userId)} />
+        <AthleteCard 
+          key={athlete.userId} 
+          athlete={{
+            ...athlete,
+            name: athlete.name || 'Atleta', // Ensuring name is always a string
+          }} 
+          onClick={() => setActiveTab(athlete.userId)} 
+        />
       ))}
     </div>
   );

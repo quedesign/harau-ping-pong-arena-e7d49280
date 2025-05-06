@@ -82,9 +82,16 @@ const AthleteProfile = () => {
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
           <div className="space-y-6">
-            <AthleteProfileCard athlete={athlete} />
-            <AthleteStats athlete={athlete} />
-            <AthleteEquipments equipment={athlete.equipment} />
+            <AthleteProfileCard profile={athlete} />
+            <AthleteStats stats={{
+              totalMatches: 0,
+              tournamentsPlayed: 0,
+              longestStreak: '0 vitórias',
+              winRate: athlete.wins > 0 ? Math.round((athlete.wins / (athlete.wins + athlete.losses)) * 100) : 0,
+              averagePointsPerGame: 0,
+              bestTournament: 'N/A'
+            }} />
+            <AthleteEquipments equipment={athlete.equipment} athlete={athlete} />
           </div>
           
           <div className="md:col-span-2">
@@ -97,7 +104,16 @@ const AthleteProfile = () => {
               </TabsList>
               
               <TabsContent value="info" className="mt-4 space-y-4">
-                <AthleteDetailsSection athlete={athlete} />
+                <AthleteDetailsSection 
+                  athlete={athlete}
+                  playingStyle={athlete.playingStyle}
+                  gripStyle={athlete.gripStyle}
+                  playFrequency={athlete.playFrequency}
+                  tournamentParticipation={athlete.tournamentParticipation}
+                  club={athlete.club}
+                  height={athlete.height}
+                  weight={athlete.weight}
+                />
               </TabsContent>
               
               <TabsContent value="tournaments" className="mt-4">

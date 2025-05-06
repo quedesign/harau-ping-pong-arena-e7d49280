@@ -1,42 +1,52 @@
 
-import { AthleteProfile } from '@/types';
+import { AthleteProfile, AthleteEquipment } from '@/types';
 
 export interface AthleteProfileHeaderProps {
   athlete: AthleteProfile;
+  athleteName?: string;
 }
 
 export interface AthleteProfileCardProps {
-  athlete: AthleteProfile;
+  profile: AthleteProfile;
+  athleteName?: string;
 }
 
 export interface AthleteStatsProps {
-  athlete: AthleteProfile;
+  athlete?: AthleteProfile;
+  stats?: any;
 }
 
 export interface AthleteEquipmentsProps {
-  athlete: AthleteProfile;
-  equipment?: any;
+  athlete?: AthleteProfile;
+  equipment?: AthleteEquipment;
 }
 
 export interface AthleteDetailsSectionProps {
-  athlete: AthleteProfile;
+  athlete?: AthleteProfile;
+  playingStyle?: string;
+  gripStyle?: string;
+  playFrequency?: string;
+  tournamentParticipation?: string;
+  club?: string;
+  height?: number;
+  weight?: number;
 }
 
 export interface AthleteTournamentsProps {
-  athleteId: string;
+  athleteId?: string;
   tournaments?: any[];
 }
 
 export interface AthleteMatchesProps {
-  athleteId: string;
+  athleteId?: string;
 }
 
 export interface AthletePreferredLocationsProps {
-  athlete: AthleteProfile;
+  athlete?: AthleteProfile;
   preferredLocations?: string[];
 }
 
 export interface AthletePreferredTimesProps {
-  athlete: AthleteProfile;
+  athlete?: AthleteProfile;
   availableTimes?: string[];
 }

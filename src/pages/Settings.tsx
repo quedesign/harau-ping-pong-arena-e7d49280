@@ -24,7 +24,13 @@ const Settings = () => {
   };
 
   const handleNotificationsChange = (checked: boolean) => {
-    updateSettings({ notifications: checked });
+    updateSettings({ 
+      notifications: { 
+        email: checked, 
+        browser: settings.notifications?.browser || false, 
+        mobile: settings.notifications?.mobile || false 
+      } 
+    });
   };
 
   const handleSubmit = () => {
@@ -70,7 +76,7 @@ const Settings = () => {
 
           <TabsContent value="notifications">
             <NotificationSettings
-              emailNotifications={settings.notifications}
+              emailNotifications={settings.notifications?.email || false}
               onEmailNotificationsChange={handleNotificationsChange}
               onSubmit={handleSubmit}
             />

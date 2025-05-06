@@ -25,11 +25,8 @@ const AthleteProfileCard: React.FC<AthleteProfileCardProps> = ({
       <Card className="bg-zinc-900 border-zinc-800 h-fit">
         <CardContent className="p-6" >
           <AthleteProfileHeader 
+            athlete={profile}
             athleteName={displayName}
-            location={profile.location}
-            level={profile.level}
-            handedness={profile.handedness}
-            yearsPlaying={profile.yearsPlaying}
           />
 
           <AthleteStatsSummary wins={profile.wins} losses={profile.losses} />
@@ -47,9 +44,9 @@ const AthleteProfileCard: React.FC<AthleteProfileCardProps> = ({
         </CardContent>
       </Card>
       
-      {profile.equipment && <AthleteEquipments equipment={profile.equipment} />}
-      {profile.availableTimes && <AthletePreferredTimes availableTimes={profile.availableTimes} />}
-      {profile.preferredLocations && <AthletePreferredLocations preferredLocations={profile.preferredLocations} />}
+      {profile.equipment && <AthleteEquipments equipment={profile.equipment} athlete={profile} />}
+      {profile.availableTimes && <AthletePreferredTimes availableTimes={profile.availableTimes} athlete={profile} />}
+      {profile.preferredLocations && <AthletePreferredLocations preferredLocations={profile.preferredLocations} athlete={profile} />}
     </>
   );
 };

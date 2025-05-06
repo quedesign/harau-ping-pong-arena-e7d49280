@@ -1,5 +1,7 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { BarChart } from 'lucide-react';
+import { AthleteStatsProps } from './types';
 
 interface AthleteStatsData {
   totalMatches: number;
@@ -10,12 +12,13 @@ interface AthleteStatsData {
   bestTournament: string;
 }
 
-interface AthleteStatsProps {
-  stats: AthleteStatsData;
-}
-
 const AthleteStats = ({ stats }: AthleteStatsProps) => {
+  if (!stats) {
+    return null;
+  }
+
   const { totalMatches = 0, tournamentsPlayed = 0, longestStreak = '0 vitórias', winRate = 0, averagePointsPerGame = 0.0, bestTournament = 'N/A' } = stats;
+  
   return (
     <Card className="bg-zinc-900 border-zinc-800">
       <CardHeader>

@@ -1,54 +1,21 @@
-
 import React, {
   createContext,
   useContext,
-  useEffect,
-  useState,
   PropsWithChildren,
 } from "react";
-import { User, AuthContextType } from "@/types";
-import { useAuthOperations } from "./useAuthOperations";
+import { AuthContextType } from "@/contexts/auth/types";
+
+// This file is now deprecated in favor of AuthProvider.tsx
+// We're keeping it as a simple reexport to prevent breaking existing imports
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
+// This component is no longer used directly - see AuthProvider.tsx
 export const AuthProvider: React.FC<PropsWithChildren> = ({ children }) => {
-  const {
-    currentUser,
-    setCurrentUser,
-    isLoading,
-    setIsLoading,
-    error,
-    setError,
-    login,
-    logout,
-    register,
-    resetPassword,
-    createTestUser,
-    loginWithGoogle,
-  } = useAuthOperations();
-
-  const value: AuthContextType = {
-    currentUser,
-    isLoading,
-    error,
-    login,
-    logout,
-    register,
-    resetPassword,
-    createTestUser,
-    setError,
-    loginWithGoogle,
-  };
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  console.warn('AuthContext.tsx is deprecated. Please import from AuthProvider.tsx instead');
+  // The actual implementation is in AuthProvider.tsx
+  return null as any; // This should never be used
 };
 
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-
-  if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-
-  return context;
-};
+// Reexport the hook from the new file
+export { useAuth } from './AuthProvider';

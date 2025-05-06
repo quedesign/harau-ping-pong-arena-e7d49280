@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { User } from '@/types/index';
+import { User, UserRole } from '@/types';
 import { useTranslation } from 'react-i18next';
 import { useLogin } from './operations/useLogin';
 import { useLogout } from './operations/useLogout';

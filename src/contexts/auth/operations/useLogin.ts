@@ -1,11 +1,9 @@
+
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-import { FirebaseError } from "firebase/app";
-import { getDatabase, ref, get } from "firebase/database";
+import { supabase } from '@/integrations/supabase/client';
 import { User } from "@/types";
-import { readData } from '@/integrations/firebase/utils';
 
 export const useLogin = () => {
   const { t } = useTranslation();
@@ -19,33 +17,49 @@ export const useLogin = () => {
   ): Promise<void> => {
     setIsLoading(true);
     setError(null);
-    const auth = getAuth();
 
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      // Sign in with Supabase
+      const { data: authData, error: signInError } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
 
-      // Fetch user data from Firebase Realtime Database
-      if (userCredential.user) {
-        const userData = await readData(`users/${userCredential.user.uid}`);
-        console.log('User data retrieved:', userData);
+      if (signInError) throw signInError;
+
+      if (authData.user) {
+        // Fetch additional user data from the users table
+        const { data: userData, error: userError } = await supabase
+          .from('users')
+          .select('*')
+          .eq('id', authData.user.id)
+          .single();
+
+        if (userError) throw userError;
+
         if (userData) {
-          onLoginSuccess(userData as User)
+          const user: User = {
+            id: authData.user.id,
+            email: authData.user.email || '',
+            name: userData.name,
+            role: userData.role,
+            profileImage: userData.profile_image || '',
+            createdAt: new Date(userData.created_at),
+          };
+
+          onLoginSuccess(user);
         } else {
-            toast.warn(t("auth.noUserData"), { description: t("auth.noUserDataDescription") });
+          toast.warn(t("auth.noUserData"), { description: t("auth.noUserDataDescription") });
         }
       }
-    } catch (err: unknown) {
-      let errorMessage = t("auth.loginFailed");
-      if (err instanceof FirebaseError) {
-        errorMessage = err.message;
-      } else if (err instanceof Error) {
-        errorMessage = err.message;
-      }
+    } catch (err: any) {
+      const errorMessage = err.message || t("auth.loginFailed");
       setError(errorMessage);
       toast.error(t("common.error"), { description: errorMessage });
     } finally {
       setIsLoading(false);
     }
   };
+  
   return { login, isLoading, error };
 };

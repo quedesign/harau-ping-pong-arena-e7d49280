@@ -15,6 +15,7 @@ import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import Dashboard from "./pages/Dashboard";
 import ForgotPassword from "./pages/ForgotPassword";
+import AuthCallback from "./pages/auth/AuthCallback";
 
 // Athlete pages
 import TournamentList from "./pages/tournaments/TournamentList";
@@ -51,6 +52,7 @@ const App = () => {
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
+                <Route path="/auth/callback" element={<AuthCallback />} />
 
                 {/* Shared routes */}
                 <Route path="/dashboard" element={<Dashboard />} />

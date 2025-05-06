@@ -2,17 +2,19 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import { getAuth, signOut } from 'firebase/auth';
+import { supabase } from '@/integrations/supabase/client';
 
 export const useLogout = () => {
   const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
 
   const logout = async () => {
-    const auth = getAuth();
     setIsLoading(true);
     try {
-      await signOut(auth);
+      const { error } = await supabase.auth.signOut();
+      
+      if (error) throw error;
+      
       toast.success(t('auth.logoutSuccess'));
     } catch (err:any) {
       const errorMessage =

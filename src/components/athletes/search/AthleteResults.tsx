@@ -1,72 +1,53 @@
 
-import { useState } from "react";
-import { AthleteProfile } from "@/types";
-import AthleteCard from "@/components/athletes/AthleteCard";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { AthleteProfile } from '@/types';
+import { useAthlete } from '@/contexts/data/athlete';
+import { AthleteCard, EmptyState } from '@/components';
 
 interface AthleteResultsProps {
   filteredAthletes: AthleteProfile[];
   noResults: boolean;
   searchTerm: string;
   filtersApplied: boolean;
-  setActiveTab: (value: string) => void;
+  setActiveTab: (tab: string) => void;
 }
 
-const AthleteResults: React.FC<AthleteResultsProps> = ({
+const AthleteResults = ({
   filteredAthletes,
   noResults,
   searchTerm,
   filtersApplied,
   setActiveTab,
-}) => {
+}: AthleteResultsProps) => {
+  const { isLoading } = useAthlete();
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center py-12">
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  if (noResults) {
+    let message = "Nenhum atleta encontrado.";
+    
+    if (searchTerm && filtersApplied) {
+      message = `Nenhum atleta encontrado para "${searchTerm}" com os filtros selecionados.`;
+    } else if (searchTerm) {
+      message = `Nenhum atleta encontrado para "${searchTerm}".`;
+    } else if (filtersApplied) {
+      message = "Nenhum atleta encontrado com os filtros selecionados.";
+    }
+    
+    return <EmptyState message={message} />;
+  }
+
   return (
-    <Tabs defaultValue="all" className="mb-8" onValueChange={setActiveTab}>
-      <TabsList className="bg-zinc-900 border-zinc-800">
-        <TabsTrigger value="all">Todos</TabsTrigger>
-        <TabsTrigger value="recommended">Recomendados</TabsTrigger>
-        <TabsTrigger value="nearby">Próximos</TabsTrigger>
-      </TabsList>
-      
-      <TabsContent value="all" className="mt-4">
-        {noResults ? (
-          <div className="text-center py-12 bg-zinc-900 rounded-lg border border-zinc-800">
-            <div className="mx-auto h-12 w-12 text-zinc-600 mb-4">🏓</div>
-            <h3 className="text-xl font-medium mb-2">Nenhum atleta encontrado</h3>
-            <p className="text-zinc-400 mb-6">
-              {searchTerm || filtersApplied
-                ? "Nenhum atleta corresponde aos critérios de busca"
-                : "Não há atletas cadastrados no momento"}
-            </p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredAthletes.map((athlete) => (
-              <AthleteCard key={athlete.userId} athlete={athlete} />
-            ))}
-          </div>
-        )}
-      </TabsContent>
-      
-      <TabsContent value="recommended" className="mt-4">
-        <div className="text-center py-12 bg-zinc-900 rounded-lg border border-zinc-800">
-          <div className="mx-auto h-12 w-12 text-zinc-600 mb-4">⭐</div>
-          <h3 className="text-xl font-medium mb-2">Recomendações em breve</h3>
-          <p className="text-zinc-400 mb-6">
-            Estamos trabalhando para trazer recomendações personalizadas para você
-          </p>
-        </div>
-      </TabsContent>
-      
-      <TabsContent value="nearby" className="mt-4">
-        <div className="text-center py-12 bg-zinc-900 rounded-lg border border-zinc-800">
-          <div className="mx-auto h-12 w-12 text-zinc-600 mb-4">📍</div>
-          <h3 className="text-xl font-medium mb-2">Atletas próximos</h3>
-          <p className="text-zinc-400 mb-6">
-            Em breve você poderá encontrar atletas próximos à sua localização
-          </p>
-        </div>
-      </TabsContent>
-    </Tabs>
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
+      {filteredAthletes.map((athlete) => (
+        <AthleteCard key={athlete.userId} athlete={athlete} onClick={() => setActiveTab(athlete.userId)} />
+      ))}
+    </div>
   );
 };
 

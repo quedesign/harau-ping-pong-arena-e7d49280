@@ -1,14 +1,13 @@
+
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { toast } from "sonner";
-import { writeData } from "@/integrations/firebase/utils";
+import { supabase } from '@/integrations/supabase/client';
 
 export const useRegister = () => {
   const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const auth = getAuth();
 
   const register = async (
     name: string,
@@ -20,18 +19,47 @@ export const useRegister = () => {
     setError(null);
 
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-
-      if (user?.uid) {
-        const userFirebase = {
-          name: name,
-          email: email,
-          role: role,
+      // Register with Supabase Auth
+      const { data: authData, error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            name,
+            role
+          }
         }
-        console.log('User data to be written:', userFirebase);
-        await writeData(`users/${user.uid}`, userFirebase)
-        console.log('User data successfully written');
+      });
+
+      if (signUpError) throw signUpError;
+
+      if (authData.user) {
+        // Insert into the users table
+        const { error: insertError } = await supabase
+          .from('users')
+          .insert({
+            id: authData.user.id,
+            name: name,
+            email: email,
+            role: role,
+            created_at: new Date().toISOString()
+          });
+
+        if (insertError) throw insertError;
+
+        // If user is an athlete, create an athlete record
+        if (role === 'athlete') {
+          const { error: athleteError } = await supabase
+            .from('athletes')
+            .insert({
+              id: authData.user.id,
+              level: 'beginner',
+              wins: 0,
+              losses: 0
+            });
+
+          if (athleteError) throw athleteError;
+        }
 
         toast.success(t("auth.registerSuccess"), {
           description: t("auth.accountCreated"),
@@ -39,10 +67,9 @@ export const useRegister = () => {
         return true;
       }
       throw new Error(t("auth.registerFailed"));
-    } catch (err) {
+    } catch (err: any) {
       console.error("Detalhes do erro de registro:", err);
-      const errorMessage =
-        err instanceof Error ? err.message : t("auth.registerFailed");
+      const errorMessage = err.message || t("auth.registerFailed");
 
       setError(errorMessage);
       toast.error(t("common.error"), {

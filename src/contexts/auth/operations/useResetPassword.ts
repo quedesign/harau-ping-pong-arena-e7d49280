@@ -1,12 +1,11 @@
 
 import { useState } from "react";
 import { useTranslation } from 'react-i18next';
-import { getAuth, sendPasswordResetEmail } from 'firebase/auth';
-import { FirebaseError } from "firebase/app";
 import { toast } from "sonner";
+import { supabase } from '@/integrations/supabase/client';
 
 export const useResetPassword = () => {
-    const { t } = useTranslation();
+  const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -14,30 +13,27 @@ export const useResetPassword = () => {
     setIsLoading(true);
     setError(null);
     
-    const auth = getAuth();
-
     try {
-        await sendPasswordResetEmail(auth, email);
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
 
-        toast.success(t("auth.resetPasswordSuccess"), {
+      if (error) throw error;
+
+      toast.success(t("auth.resetPasswordSuccess"), {
         description: t('auth.resetPasswordEmailSent')
-        });
+      });
 
-        return true;
-    } catch (err) {
-        let errorMessage = t('auth.resetPasswordFailed');
-        if (err instanceof FirebaseError) {
-            errorMessage = err.message;
-        }
-        console.error("Reset password error:", err);
+      return true;
+    } catch (err: any) {
+      const errorMessage = err.message || t('auth.resetPasswordFailed');
+      setError(errorMessage);
 
-        setError(errorMessage);
-
-        toast.error(t('common.error'), {
+      toast.error(t('common.error'), {
         description: errorMessage,
-        });
+      });
 
-        return false;
+      return false;
     } finally {
       setIsLoading(false);
     }

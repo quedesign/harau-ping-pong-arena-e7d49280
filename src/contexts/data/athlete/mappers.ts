@@ -1,107 +1,132 @@
 
-import { AthleteProfile, PlayingStyle, GripStyle, PlayFrequency, TournamentParticipation } from '@/types';
-import { SupabaseAthleteData } from './types';
+import { AthleteProfile } from '@/types';
 
-// Converter dados do Supabase para o formato do app
+export interface SupabaseAthleteData {
+  id: string;
+  handedness?: string;
+  height?: number;
+  weight?: number;
+  level?: string;
+  city?: string;
+  state?: string;
+  country?: string;
+  bio?: string;
+  years_playing?: number;
+  wins?: number;
+  losses?: number;
+  playing_style?: string;
+  grip_style?: string;
+  play_frequency?: string;
+  tournament_participation?: string;
+  club?: string;
+  racket?: string;
+  rubbers?: string;
+  created_at?: string;
+  updated_at?: string;
+  users?: {
+    name: string;
+    email: string;
+    profile_image?: string;
+    created_at: string;
+  };
+}
+
 export const mapSupabaseToAthleteProfile = (data: SupabaseAthleteData): AthleteProfile => {
   return {
-    userId: data.user_id,
+    userId: data.id,
+    name: data.users?.name || '',
+    email: data.users?.email || '',
     handedness: data.handedness as 'left' | 'right' | 'ambidextrous',
     height: data.height,
     weight: data.weight,
     level: data.level as 'beginner' | 'intermediate' | 'advanced' | 'professional',
     location: {
-      city: data.city,
-      state: data.state,
-      country: data.country,
+      city: data.city || '',
+      state: data.state || '',
+      country: data.country || '',
     },
     bio: data.bio,
     yearsPlaying: data.years_playing,
-    wins: data.wins,
-    losses: data.losses,
-    // Campos novos - acessar propriedades opcionais com segurança
-    playingStyle: data.playing_style as PlayingStyle | undefined,
-    gripStyle: data.grip_style as GripStyle | undefined,
-    playFrequency: data.play_frequency as PlayFrequency | undefined,
-    tournamentParticipation: data.tournament_participation as TournamentParticipation | undefined,
+    wins: data.wins || 0,
+    losses: data.losses || 0,
+    playingStyle: data.playing_style as 'offensive' | 'defensive' | 'all-round',
+    gripStyle: data.grip_style as 'shakehand' | 'penhold' | 'seemiller' | 'other',
+    playFrequency: data.play_frequency as 'daily' | 'weekly' | 'monthly' | 'rarely',
+    tournamentParticipation: data.tournament_participation as 'never' | 'local' | 'regional' | 'national' | 'international',
     club: data.club,
-    availableTimes: data.available_times || [],
-    preferredLocations: data.preferred_locations || [],
     equipment: {
       racket: data.racket,
-      rubbers: data.rubbers
-    }
+      rubbers: data.rubbers,
+    },
+    createdAt: data.created_at ? new Date(data.created_at) : new Date(),
   };
 };
 
-// Converter formato do app para dados do Supabase
-export const mapProfileToSupabaseData = (profile: AthleteProfile) => {
-  const { location, equipment, ...rest } = profile;
+export const mapProfileToSupabaseData = (profile: Partial<AthleteProfile>): any => {
+  const result: any = {};
   
-  // Preparar dados para o Supabase
+  if (profile.userId) result.id = profile.userId;
+  if (profile.handedness !== undefined) result.handedness = profile.handedness;
+  if (profile.height !== undefined) result.height = profile.height;
+  if (profile.weight !== undefined) result.weight = profile.weight;
+  if (profile.level !== undefined) result.level = profile.level;
+  if (profile.bio !== undefined) result.bio = profile.bio;
+  if (profile.yearsPlaying !== undefined) result.years_playing = profile.yearsPlaying;
+  if (profile.wins !== undefined) result.wins = profile.wins;
+  if (profile.losses !== undefined) result.losses = profile.losses;
+  if (profile.playingStyle !== undefined) result.playing_style = profile.playingStyle;
+  if (profile.gripStyle !== undefined) result.grip_style = profile.gripStyle;
+  if (profile.playFrequency !== undefined) result.play_frequency = profile.playFrequency;
+  if (profile.tournamentParticipation !== undefined) result.tournament_participation = profile.tournamentParticipation;
+  if (profile.club !== undefined) result.club = profile.club;
+  
+  if (profile.location) {
+    if (profile.location.city !== undefined) result.city = profile.location.city;
+    if (profile.location.state !== undefined) result.state = profile.location.state;
+    if (profile.location.country !== undefined) result.country = profile.location.country;
+  }
+  
+  if (profile.equipment) {
+    if (profile.equipment.racket !== undefined) result.racket = profile.equipment.racket;
+    if (profile.equipment.rubbers !== undefined) result.rubbers = profile.equipment.rubbers;
+  }
+  
+  return result;
+};
+
+export const formatFirebaseAthleteProfile = (data: any): AthleteProfile => {
+  // Legacy mapper function maintained for compatibility
   return {
-    user_id: rest.userId,
-    handedness: rest.handedness,
-    height: rest.height,
-    weight: rest.weight,
-    level: rest.level,
-    city: location.city,
-    state: location.state,
-    country: location.country,
-    bio: rest.bio,
-    years_playing: rest.yearsPlaying,
-    wins: rest.wins,
-    losses: rest.losses,
-    // Campos novos
-    playing_style: rest.playingStyle,
-    grip_style: rest.gripStyle,
-    play_frequency: rest.playFrequency,
-    tournament_participation: rest.tournamentParticipation,
-    club: rest.club,
-    available_times: rest.availableTimes,
-    preferred_locations: rest.preferredLocations,
-    racket: equipment?.racket,
-    rubbers: equipment?.rubbers
+    userId: data.userId,
+    name: data.name || '',
+    email: data.email || '',
+    handedness: data.handedness as 'left' | 'right' | 'ambidextrous',
+    height: data.height,
+    weight: data.weight,
+    level: data.level as 'beginner' | 'intermediate' | 'advanced' | 'professional',
+    location: {
+      city: data.city || '',
+      state: data.state || '',
+      country: data.country || '',
+    },
+    bio: data.bio,
+    yearsPlaying: data.years_playing,
+    wins: data.wins || 0,
+    losses: data.losses || 0,
+    playingStyle: data.playing_style as 'offensive' | 'defensive' | 'all-round',
+    gripStyle: data.grip_style as 'shakehand' | 'penhold' | 'seemiller' | 'other',
+    playFrequency: data.play_frequency as 'daily' | 'weekly' | 'monthly' | 'rarely',
+    tournamentParticipation: data.tournament_participation as 'never' | 'local' | 'regional' | 'national' | 'international',
+    club: data.club,
+    equipment: {
+      racket: data.racket,
+      rubbers: data.rubbers,
+    },
+    createdAt: data.createdAt ? new Date(data.createdAt) : new Date(),
   };
 };
 
-// Preparar dados para atualização no Supabase
-export const prepareUpdateData = (profileData: Partial<AthleteProfile>): {
-  updated_at: string;
-  [key: string]: unknown;
-} => {
-  type UpdateData = { [key: string]: unknown; updated_at: string };
-
-  const updateData: UpdateData = { updated_at: new Date().toISOString() };
-  
-  if (profileData.handedness) updateData.handedness = profileData.handedness;
-  if (profileData.height !== undefined) updateData.height = profileData.height;
-  if (profileData.weight !== undefined) updateData.weight = profileData.weight;
-  if (profileData.level) updateData.level = profileData.level;
-  if (profileData.bio !== undefined) updateData.bio = profileData.bio;
-  if (profileData.yearsPlaying !== undefined) updateData.years_playing = profileData.yearsPlaying;
-  if (profileData.wins !== undefined) updateData.wins = profileData.wins;
-  if (profileData.losses !== undefined) updateData.losses = profileData.losses;
-  
-  if (profileData.location) {
-    if (profileData.location.city !== undefined) updateData.city = profileData.location.city;
-    if (profileData.location.state !== undefined) updateData.state = profileData.location.state;
-    if (profileData.location.country !== undefined) updateData.country = profileData.location.country;
-  }
-
-  // Campos novos
-  if (profileData.playingStyle !== undefined) updateData.playing_style = profileData.playingStyle;
-  if (profileData.gripStyle !== undefined) updateData.grip_style = profileData.gripStyle;
-  if (profileData.playFrequency !== undefined) updateData.play_frequency = profileData.playFrequency;
-  if (profileData.tournamentParticipation !== undefined) updateData.tournament_participation = profileData.tournamentParticipation;
-  if (profileData.club !== undefined) updateData.club = profileData.club;
-  if (profileData.availableTimes !== undefined) updateData.available_times = profileData.availableTimes;
-  if (profileData.preferredLocations !== undefined) updateData.preferred_locations = profileData.preferredLocations;
-  
-  if (profileData.equipment) {
-    if (profileData.equipment.racket !== undefined) updateData.racket = profileData.equipment.racket;
-    if (profileData.equipment.rubbers !== undefined) updateData.rubbers = profileData.equipment.rubbers;
-  }
-  
-  return updateData;
+export const mapFirebaseAthleteToAthlete = (athlete: any): AthleteProfile => {
+  // Legacy mapper function maintained for compatibility
+  return formatFirebaseAthleteProfile(athlete);
 };

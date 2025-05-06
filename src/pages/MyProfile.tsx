@@ -12,7 +12,8 @@ import SecurityTab from '@/components/profile/SecurityTab';
 import SportsDataTab from '@/components/profile/SportsDataTab';
 import EquipmentTab from '@/components/profile/EquipmentTab';
 import { useAthlete } from '@/contexts/data/athlete';
-import { AthleteProfile } from '@/types';
+import { AthleteProfile, User } from '@/types';
+import { supabase } from '@/integrations/supabase/client';
 
 const MyProfile = () => {
   const { currentUser } = useAuth();
@@ -33,7 +34,7 @@ const MyProfile = () => {
     const fetchProfile = async () => {
       setLoading(true);
       try {
-        if (currentUser.role === 'athlete') {
+        if (currentUser.role === 'athlete' && currentUser.id) {
           const profile = await getAthleteProfile(currentUser.id);
           setAthleteProfile(profile || null);
         }
@@ -51,40 +52,50 @@ const MyProfile = () => {
     return null;
   }
 
-  const handleUpdateProfile = (name: string, email: string) => {
-    const users = JSON.parse(localStorage.getItem('users') || '[]');
-    const userIndex = users.findIndex((u: { id: string }) => u.id === currentUser.id);
+  const handleUpdateProfile = async (user: User) => {
+    try {
+      // Update user profile in Supabase
+      const { error } = await supabase
+        .from('users')
+        .update({
+          name: user.name,
+          email: user.email,
+          profile_image: user.profileImage
+        })
+        .eq('id', currentUser.id);
 
-    if (userIndex >= 0) {
-      users[userIndex] = {
-        ...users[userIndex],
-        name,
-        email,
-      };
-
-      localStorage.setItem('users', JSON.stringify(users));
-      localStorage.setItem('harauAuth', JSON.stringify({ ...currentUser, name, email }));
+      if (error) throw error;
 
       toast({
         title: t('common.success'),
         description: t('profile.updateSuccess'),
       });
+    } catch (error) {
+      console.error("Error updating user profile:", error);
+      toast({
+        title: t('common.error'),
+        description: t('profile.updateError'),
+        variant: 'destructive',
+      });
     }
   };
 
-  const handlePasswordChange = (currentPassword: string, newPassword: string) => {
-    const users = JSON.parse(localStorage.getItem('users') || '[]');
-    const userIndex = users.findIndex((u: { id: string; password?: string }) => u.id === currentUser.id);
-
-    if (userIndex >= 0 && users[userIndex].password === currentPassword) {
-      users[userIndex].password = newPassword;
-      localStorage.setItem('users', JSON.stringify(users));
+  const handlePasswordChange = async (currentPassword: string, newPassword: string) => {
+    try {
+      // Supabase doesn't provide a direct way to verify current password before changing
+      // We'll just attempt to change the password directly
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword
+      });
+      
+      if (error) throw error;
       
       toast({
         title: t('common.success'),
         description: t('profile.passwordUpdateSuccess'),
       });
-    } else {
+    } catch (error) {
+      console.error("Error updating password:", error);
       toast({
         title: t('common.error'),
         description: t('auth.currentPasswordIncorrect'),

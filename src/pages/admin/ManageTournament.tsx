@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useTournament } from '@/contexts/data';
@@ -13,12 +14,13 @@ import { format } from 'date-fns';
 import { DatePicker } from '@/components/ui/date-picker';
 import AthleteApprovalSection from '@/components/admin/AthleteApprovalSection';
 import { TournamentFormat, Tournament } from '@/types';
+import { toast } from 'sonner';
 
 const ManageTournament = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { currentUser } = useAuth();
-  const { tournaments, loading, updateTournament, deleteTournament } = useTournament();
+  const { tournaments, loading, updateTournament, deleteTournament, fetchSingleTournament } = useTournament();
   
   const [tournament, setTournament] = useState<Tournament | null>(null);
   const [error, setError] = useState<Error | null>(null);
@@ -34,6 +36,12 @@ const ManageTournament = () => {
   const [bannerImage, setBannerImage] = useState('');
   const [status, setStatus] = useState<'upcoming' | 'ongoing' | 'completed'>('upcoming');
   const [pixKey, setPixKey] = useState('');
+
+  useEffect(() => {
+    if (id) {
+      fetchSingleTournament(id);
+    }
+  }, [id, fetchSingleTournament]);
 
   useEffect(() => {
     if (tournaments && id) {
@@ -62,12 +70,44 @@ const ManageTournament = () => {
     }
   }, [tournament]);
 
-  const handleSetFormat = (value: string) => {
-    setFormatType(value as TournamentFormat);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!id) return;
+
+    try {
+      const updatedTournamentData = {
+        name,
+        description,
+        format: formatType,
+        startDate: startDate || new Date(),
+        endDate: endDate || new Date(),
+        location,
+        entryFee,
+        maxParticipants,
+        bannerImage,
+        status,
+        pixKey,
+      };
+
+      await updateTournament(id, updatedTournamentData);
+      toast.success("Torneio atualizado com sucesso!");
+    } catch (err) {
+      console.error("Error updating tournament:", err);
+      toast.error("Erro ao atualizar torneio");
+    }
   };
-  
-  const handleSetStatus = (value: string) => {
-    setStatus(value as 'upcoming' | 'ongoing' | 'completed');
+
+  const handleDelete = async () => {
+    if (!id) return;
+    
+    try {
+      await deleteTournament(id);
+      toast.success("Torneio excluído com sucesso!");
+      navigate('/admin/tournaments');
+    } catch (err) {
+      console.error("Error deleting tournament:", err);
+      toast.error("Erro ao excluir torneio");
+    }
   };
 
   if (!currentUser || currentUser.role !== 'admin') {
@@ -99,33 +139,6 @@ const ManageTournament = () => {
       </Layout>
     );
   }
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!id) return;
-
-    const updatedTournamentData = {
-      name,
-      description,
-      format: formatType,
-      startDate: startDate || new Date(),
-      endDate: endDate || new Date(),
-      location,
-      entryFee,
-      maxParticipants,
-      bannerImage,
-      status,
-      pixKey,
-    };
-
-    await updateTournament(id, updatedTournamentData);
-  };
-
-  const handleDelete = async () => {
-    if (!id) return;
-    await deleteTournament(id);
-    navigate('/admin/tournaments');
-  };
 
   return (
     <Layout>
@@ -274,7 +287,7 @@ const ManageTournament = () => {
 
         {tournament && <AthleteApprovalSection tournament={tournament} />}
 
-        <Button variant="destructive" onClick={handleDelete}>
+        <Button variant="destructive" onClick={handleDelete} className="mt-4">
           Delete Tournament
         </Button>
       </div>

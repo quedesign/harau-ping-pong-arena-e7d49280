@@ -4,16 +4,52 @@ import { useAuth } from '@/contexts/auth';
 import { useCreateTournament } from '@/hooks/useCreateTournament';
 import Layout from '@/components/layout/Layout';
 import { CreateTournamentForm } from '@/components/tournament/CreateTournamentForm';
+import { toast } from 'sonner';
+import { useTournament } from '@/contexts/data';
+import { Tournament } from '@/types';
 
 const CreateTournament = () => {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
+  const { createTournament } = useTournament();
 
   const {
     formData,
     setters,
-    handleSubmit,
   } = useCreateTournament();
+
+  const handleSubmit = async () => {
+    try {
+      if (!currentUser) {
+        toast.error("Você precisa estar logado para criar um torneio");
+        return;
+      }
+      
+      const tournamentData: Omit<Tournament, 'id'> = {
+        name: formData.name,
+        description: formData.description,
+        format: formData.format,
+        startDate: formData.startDate,
+        endDate: formData.endDate,
+        location: formData.location,
+        entryFee: formData.entryFee,
+        maxParticipants: formData.maxParticipants,
+        registeredParticipants: [],
+        createdBy: currentUser.id,
+        bannerImage: formData.bannerImage || '',
+        status: 'upcoming',
+        pixKey: formData.pixKey || '',
+      };
+      
+      const newTournament = await createTournament(tournamentData);
+      
+      toast.success("Torneio criado com sucesso!");
+      navigate(`/admin/tournaments/${newTournament.id}/manage`);
+    } catch (error) {
+      console.error("Error creating tournament:", error);
+      toast.error("Erro ao criar torneio");
+    }
+  };
 
   if (!currentUser || currentUser.role !== 'admin') {
     navigate('/dashboard');

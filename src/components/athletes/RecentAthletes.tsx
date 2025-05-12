@@ -51,27 +51,32 @@ const RecentAthletes: React.FC = () => {
     <section>
       <h2 className="text-lg font-semibold mb-4">Atletas Recentes</h2>
       <div className="grid grid-cols-1 gap-4">
-        {lastSixAthletes.map((athlete) => (
-          <AthleteCard
-            key={athlete.id}
-            athlete={{
-              userId: athlete.id,
-              name: athlete.name ?? 'Atleta', // Using nullish coalescing to ensure it's always a string
-              level: 'beginner' as 'beginner',
-              bio: `Atleta desde ${athlete.createdAt?.toLocaleDateString() ?? 'recentemente'}`,
-              location: {
-                city: 'São Paulo',
-                state: 'SP',
-                country: 'Brasil'
-              },
-              wins: 0,
-              losses: 0
-            }}
-            onClick={() => handleAthleteClick(athlete.id)}
-            onFollowClick={() => handleFollowClick(athlete.id, athlete.name ?? 'Atleta')}
-            onMessageClick={() => handleMessageClick(athlete.id, athlete.name ?? 'Atleta')}
-          />
-        ))}
+        {lastSixAthletes.map((athlete) => {
+          // Ensure we have a string for the name
+          const athleteName = athlete.name ?? 'Atleta';
+          
+          return (
+            <AthleteCard
+              key={athlete.id}
+              athlete={{
+                userId: athlete.id,
+                name: athleteName,
+                level: 'beginner' as 'beginner',
+                bio: `Atleta desde ${athlete.createdAt?.toLocaleDateString() ?? 'recentemente'}`,
+                location: {
+                  city: 'São Paulo',
+                  state: 'SP',
+                  country: 'Brasil'
+                },
+                wins: 0,
+                losses: 0
+              }}
+              onClick={() => handleAthleteClick(athlete.id)}
+              onFollowClick={() => handleFollowClick(athlete.id, athleteName)}
+              onMessageClick={() => handleMessageClick(athlete.id, athleteName)}
+            />
+          );
+        })}
       </div>
     </section>
   );

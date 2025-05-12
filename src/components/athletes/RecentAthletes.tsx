@@ -53,7 +53,8 @@ const RecentAthletes: React.FC = () => {
       <div className="grid grid-cols-1 gap-4">
         {lastSixAthletes.map((athlete) => {
           // Ensure we have a string for the name
-          const athleteName = athlete.name ?? 'Atleta';
+          const athleteName: string = athlete.name || 'Atleta';
+          const createdAtString: string = athlete.createdAt ? athlete.createdAt.toLocaleDateString() : 'recentemente';
           
           return (
             <AthleteCard
@@ -61,8 +62,8 @@ const RecentAthletes: React.FC = () => {
               athlete={{
                 userId: athlete.id,
                 name: athleteName,
-                level: 'beginner' as 'beginner',
-                bio: `Atleta desde ${athlete.createdAt?.toLocaleDateString() ?? 'recentemente'}`,
+                level: 'beginner',
+                bio: `Atleta desde ${createdAtString}`,
                 location: {
                   city: 'São Paulo',
                   state: 'SP',

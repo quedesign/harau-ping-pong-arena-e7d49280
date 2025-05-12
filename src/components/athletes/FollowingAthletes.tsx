@@ -111,8 +111,9 @@ const FollowingAthletes: React.FC = () => {
       <h2 className="text-lg font-semibold mb-4">Atletas Seguidos</h2>
       <div className="grid grid-cols-1 gap-4">
         {followedAthletes.map((athlete) => {
-          // Ensure we have a string for the name
-          const athleteName = athlete.name ?? 'Atleta';
+          // Ensure we have a string for the name and date
+          const athleteName: string = athlete.name || 'Atleta';
+          const createdAtString: string = athlete.createdAt ? athlete.createdAt.toLocaleDateString() : 'recentemente';
           
           return (
             <AthleteCard
@@ -120,8 +121,8 @@ const FollowingAthletes: React.FC = () => {
               athlete={{
                 userId: athlete.id,
                 name: athleteName,
-                level: 'beginner' as 'beginner',
-                bio: `Atleta desde ${athlete.createdAt?.toLocaleDateString() ?? 'recentemente'}`,
+                level: 'beginner',
+                bio: `Atleta desde ${createdAtString}`,
                 location: {
                   city: 'São Paulo',
                   state: 'SP',

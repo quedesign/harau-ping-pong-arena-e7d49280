@@ -35,7 +35,8 @@ export const useFollowing = (userId?: string) => {
         return;
       }
       
-      const athleteIds = followData.map(row => row.athlete_id);
+      // Specify the type of row explicitly
+      const athleteIds = followData.map((row: { athlete_id: string }) => row.athlete_id);
       setFollowingCount(athleteIds.length);
       
       // Get user profiles for these athletes

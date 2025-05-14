@@ -92,9 +92,9 @@ const MessageList = () => {
           if (messagesError || !messages || messages.length === 0) continue;
 
           // Count unread messages
-          const { data: unreadCount, error: unreadError } = await supabase
+          const { count: unreadCount, error: unreadError } = await supabase
             .from('messages')
-            .select('id', { count: 'exact' })
+            .select('id', { count: 'exact', head: true })
             .eq('conversation_id', conversationId)
             .eq('read', false)
             .neq('sender_id', currentUser.id);

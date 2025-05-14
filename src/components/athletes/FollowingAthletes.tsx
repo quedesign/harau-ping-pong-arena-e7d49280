@@ -112,14 +112,15 @@ const FollowingAthletes: React.FC = () => {
       <div className="grid grid-cols-1 gap-4">
         {followedAthletes.map((athlete) => {
           // Ensure we have a string for the name and date
+          const athleteId: string = athlete.id || 'unknown-id';
           const athleteName: string = athlete.name || 'Atleta';
           const createdAtString: string = athlete.createdAt ? athlete.createdAt.toLocaleDateString() : 'recentemente';
           
           return (
             <AthleteCard
-              key={athlete.id}
+              key={athleteId}
               athlete={{
-                userId: athlete.id,
+                userId: athleteId,
                 name: athleteName,
                 level: 'beginner',
                 bio: `Atleta desde ${createdAtString}`,
@@ -131,9 +132,9 @@ const FollowingAthletes: React.FC = () => {
                 wins: 0,
                 losses: 0
               }}
-              onClick={() => handleAthleteClick(athlete.id)}
-              onFollowClick={() => handleUnfollowClick(athlete.id, athleteName)}
-              onMessageClick={() => handleMessageClick(athlete.id, athleteName)}
+              onClick={() => handleAthleteClick(athleteId)}
+              onFollowClick={() => handleUnfollowClick(athleteId, athleteName)}
+              onMessageClick={() => handleMessageClick(athleteId, athleteName)}
             />
           );
         })}

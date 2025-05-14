@@ -52,15 +52,16 @@ const RecentAthletes: React.FC = () => {
       <h2 className="text-lg font-semibold mb-4">Atletas Recentes</h2>
       <div className="grid grid-cols-1 gap-4">
         {lastSixAthletes.map((athlete) => {
-          // Ensure we have a string for the name
+          // Ensure we have a string for the name and ID
+          const athleteId: string = athlete.id || 'unknown-id';
           const athleteName: string = athlete.name || 'Atleta';
           const createdAtString: string = athlete.createdAt ? athlete.createdAt.toLocaleDateString() : 'recentemente';
           
           return (
             <AthleteCard
-              key={athlete.id}
+              key={athleteId}
               athlete={{
-                userId: athlete.id,
+                userId: athleteId,
                 name: athleteName,
                 level: 'beginner',
                 bio: `Atleta desde ${createdAtString}`,
@@ -72,9 +73,9 @@ const RecentAthletes: React.FC = () => {
                 wins: 0,
                 losses: 0
               }}
-              onClick={() => handleAthleteClick(athlete.id)}
-              onFollowClick={() => handleFollowClick(athlete.id, athleteName)}
-              onMessageClick={() => handleMessageClick(athlete.id, athleteName)}
+              onClick={() => handleAthleteClick(athleteId)}
+              onFollowClick={() => handleFollowClick(athleteId, athleteName)}
+              onMessageClick={() => handleMessageClick(athleteId, athleteName)}
             />
           );
         })}

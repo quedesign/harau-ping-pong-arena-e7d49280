@@ -87,8 +87,17 @@ export const fetchAthleteProfile = async (userId: string): Promise<AthleteProfil
     throw error;
   }
   
-  // Correctly access the nested profiles object
-  const profileData = data.profiles as SupabaseProfileData;
+  // Fix: The profiles property might be an object, not an array
+  // Let's check its structure and handle accordingly
+  const profileData = data.profiles ? 
+    // If it's already in the expected shape, use it directly
+    (typeof data.profiles === 'object' && !Array.isArray(data.profiles) ? 
+      data.profiles as SupabaseProfileData : 
+      // If it's an array with one item, take the first item
+      Array.isArray(data.profiles) && data.profiles.length > 0 ? 
+        data.profiles[0] as SupabaseProfileData : 
+        undefined) : 
+    undefined;
   
   const athleteData: SupabaseAthleteData = {
     id: data.user_id,

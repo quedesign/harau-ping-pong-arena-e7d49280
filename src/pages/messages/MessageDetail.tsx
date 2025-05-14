@@ -9,7 +9,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Send, Calendar } from 'lucide-react';
-import { toast } from '@/components/ui/sonner';
+import { toast } from '@/components/ui/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 interface Message {
   id: string;
@@ -27,77 +28,208 @@ const MessageDetail = () => {
   const [newMessage, setNewMessage] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [conversationId, setConversationId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
   
   const athlete = athleteProfiles.find(p => p.userId === id);
-  const athleteName = athlete ? `Player ${athlete.userId}` : 'Unknown Player';
+  const athleteName = athlete?.name || `Atleta ${id?.substring(0, 8)}`;
 
   useEffect(() => {
-    const sampleMessages: Message[] = [
-      {
-        id: '1',
-        text: `Hello! Would you like to schedule a match?`,
-        timestamp: new Date(Date.now() - 60000 * 35),
-        isFromCurrentUser: false,
-      },
-      {
-        id: '2',
-        text: `Sure, I'm available this weekend.`,
-        timestamp: new Date(Date.now() - 60000 * 30),
-        isFromCurrentUser: true,
-      },
-      {
-        id: '3',
-        text: `Great! How about Saturday afternoon?`,
-        timestamp: new Date(Date.now() - 60000 * 10),
-        isFromCurrentUser: false,
+    if (!currentUser || !id) return;
+
+    const fetchOrCreateConversation = async () => {
+      setLoading(true);
+      try {
+        // Check if a conversation already exists
+        const { data: participations, error: participationsError } = await supabase
+          .from('conversation_participants')
+          .select('conversation_id')
+          .eq('user_id', currentUser.id);
+
+        if (participationsError) throw participationsError;
+
+        if (participations && participations.length > 0) {
+          // Check if there's already a conversation with this athlete
+          for (const participation of participations) {
+            const { data: otherParticipant, error: otherParticipantError } = await supabase
+              .from('conversation_participants')
+              .select('user_id')
+              .eq('conversation_id', participation.conversation_id)
+              .eq('user_id', id)
+              .maybeSingle();
+
+            if (otherParticipantError) continue;
+
+            if (otherParticipant) {
+              // Found existing conversation
+              setConversationId(participation.conversation_id);
+              fetchMessages(participation.conversation_id);
+              return;
+            }
+          }
+        }
+
+        // No existing conversation, create a new one
+        const { data: newConversation, error: conversationError } = await supabase
+          .from('conversations')
+          .insert({})
+          .select()
+          .single();
+
+        if (conversationError) throw conversationError;
+
+        // Add participants
+        const participants = [
+          { conversation_id: newConversation.id, user_id: currentUser.id },
+          { conversation_id: newConversation.id, user_id: id }
+        ];
+
+        const { error: participantsError } = await supabase
+          .from('conversation_participants')
+          .insert(participants);
+
+        if (participantsError) throw participantsError;
+
+        setConversationId(newConversation.id);
+        setMessages([]);
+      } catch (error) {
+        console.error('Error fetching/creating conversation:', error);
+        toast({
+          title: "Erro",
+          description: "Não foi possível iniciar a conversa",
+          variant: "destructive"
+        });
+      } finally {
+        setLoading(false);
       }
-    ];
-    
-    setMessages(sampleMessages);
-  }, [id]);
+    };
+
+    const fetchMessages = async (convId: string) => {
+      try {
+        const { data, error } = await supabase
+          .from('messages')
+          .select('*')
+          .eq('conversation_id', convId)
+          .order('created_at', { ascending: true });
+
+        if (error) throw error;
+
+        const formattedMessages = data.map(msg => ({
+          id: msg.id,
+          text: msg.content,
+          timestamp: new Date(msg.created_at),
+          isFromCurrentUser: msg.sender_id === currentUser.id
+        }));
+
+        setMessages(formattedMessages);
+
+        // Mark messages as read
+        if (data.some(msg => !msg.read && msg.sender_id !== currentUser.id)) {
+          await supabase
+            .from('messages')
+            .update({ read: true })
+            .eq('conversation_id', convId)
+            .neq('sender_id', currentUser.id)
+            .eq('read', false);
+        }
+      } catch (error) {
+        console.error('Error fetching messages:', error);
+      }
+    };
+
+    fetchOrCreateConversation();
+
+    // Set up real-time subscription
+    const channel = supabase
+      .channel('messages-channel')
+      .on('postgres_changes', 
+        { 
+          event: 'INSERT', 
+          schema: 'public', 
+          table: 'messages',
+          filter: `conversation_id=eq.${conversationId}`
+        }, 
+        (payload) => {
+          if (payload.new && payload.new.sender_id !== currentUser.id) {
+            const newMsg = {
+              id: payload.new.id,
+              text: payload.new.content,
+              timestamp: new Date(payload.new.created_at),
+              isFromCurrentUser: false
+            };
+            setMessages(prevMessages => [...prevMessages, newMsg]);
+            
+            // Mark as read
+            supabase
+              .from('messages')
+              .update({ read: true })
+              .eq('id', payload.new.id);
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [currentUser, id, conversationId]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const handleSendMessage = () => {
-    if (!newMessage.trim()) return;
+  const handleSendMessage = async () => {
+    if (!newMessage.trim() || !conversationId || !currentUser) return;
     
-    const message: Message = {
-      id: Date.now().toString(),
-      text: newMessage,
-      timestamp: new Date(),
-      isFromCurrentUser: true,
-    };
-    
-    setMessages([...messages, message]);
-    setNewMessage('');
-    
-    setTimeout(() => {
-      if (Math.random() > 0.7) {
-        const responseMessage: Message = {
-          id: (Date.now() + 1).toString(),
-          text: "That sounds good! Looking forward to our match.",
-          timestamp: new Date(),
-          isFromCurrentUser: false,
-        };
-        setMessages(prev => [...prev, responseMessage]);
-      }
-    }, 3000);
+    try {
+      const { error } = await supabase
+        .from('messages')
+        .insert({
+          conversation_id: conversationId,
+          sender_id: currentUser.id,
+          content: newMessage.trim(),
+        });
+
+      if (error) throw error;
+
+      const newMsg = {
+        id: Date.now().toString(),
+        text: newMessage.trim(),
+        timestamp: new Date(),
+        isFromCurrentUser: true
+      };
+      
+      setMessages(prevMessages => [...prevMessages, newMsg]);
+      setNewMessage('');
+    } catch (error) {
+      console.error('Error sending message:', error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível enviar a mensagem",
+        variant: "destructive"
+      });
+    }
   };
 
   const handleScheduleMatch = () => {
-    const matchMessage: Message = {
-      id: Date.now().toString(),
-      text: "I'd like to schedule a match with you. Are you available this weekend?",
-      timestamp: new Date(),
-      isFromCurrentUser: true,
-    };
+    const matchMessage = "Gostaria de marcar uma partida com você. Está disponível este final de semana?";
+    setNewMessage(matchMessage);
     
-    setMessages([...messages, matchMessage]);
-    
-    toast.success(`Match request sent to ${athleteName}`);
+    toast({
+      title: "Solicitação de partida",
+      description: `Envie a mensagem para ${athleteName}`
+    });
   };
+
+  if (loading) {
+    return (
+      <Layout>
+        <div className="flex justify-center items-center h-64">
+          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
+        </div>
+      </Layout>
+    );
+  }
 
   return (
     <Layout>
@@ -125,7 +257,7 @@ const MessageDetail = () => {
               onClick={handleScheduleMatch}
             >
               <Calendar size={16} />
-              Schedule Match
+              Agendar Partida
             </Button>
           </div>
           
@@ -162,7 +294,7 @@ const MessageDetail = () => {
             <div className="relative flex-1">
               <Input
                 type="text"
-                placeholder="Type a message..."
+                placeholder="Digite uma mensagem..."
                 className="bg-zinc-800 border-zinc-700"
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}

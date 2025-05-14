@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
@@ -11,6 +12,17 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Search, MessageCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+
+interface Conversation {
+  id: string;
+  userId: string;
+  name: string;
+  lastMessage: string;
+  timestamp: Date;
+  unread: boolean;
+}
 
 const MessageList = () => {
   const { athleteProfiles } = useData();
@@ -18,26 +30,118 @@ const MessageList = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // For demo purposes, let's create mock conversations with the first 3 athletes
-  const conversations = athleteProfiles.slice(0, 3).map(profile => ({
-    userId: profile.userId,
-    name: `Player ${profile.userId}`,
-    lastMessage: "Let's schedule a match soon!",
-    timestamp: new Date(Date.now() - Math.random() * 86400000 * 3), // Random time within last 3 days
-    unread: Math.random() > 0.7, // 30% chance of being unread
-  }));
+  useEffect(() => {
+    if (!currentUser) return;
+
+    const fetchConversations = async () => {
+      setIsLoading(true);
+      try {
+        // Get all conversations where the current user is a participant
+        const { data: participations, error: participationsError } = await supabase
+          .from('conversation_participants')
+          .select('conversation_id')
+          .eq('user_id', currentUser.id);
+
+        if (participationsError) throw participationsError;
+
+        if (!participations || participations.length === 0) {
+          setConversations([]);
+          setIsLoading(false);
+          return;
+        }
+
+        const conversationIds = participations.map(p => p.conversation_id);
+
+        // For each conversation, get the other participants
+        const conversationData: Conversation[] = [];
+
+        for (const conversationId of conversationIds) {
+          // Get other participants
+          const { data: otherParticipants, error: participantsError } = await supabase
+            .from('conversation_participants')
+            .select('user_id')
+            .eq('conversation_id', conversationId)
+            .neq('user_id', currentUser.id);
+
+          if (participantsError) continue;
+
+          if (!otherParticipants || otherParticipants.length === 0) continue;
+
+          const otherUserId = otherParticipants[0].user_id;
+
+          // Get other user profile
+          const { data: profileData, error: profileError } = await supabase
+            .from('profiles')
+            .select('name')
+            .eq('id', otherUserId)
+            .maybeSingle();
+
+          if (profileError || !profileData) continue;
+
+          // Get last message
+          const { data: messages, error: messagesError } = await supabase
+            .from('messages')
+            .select('*')
+            .eq('conversation_id', conversationId)
+            .order('created_at', { ascending: false })
+            .limit(1);
+
+          if (messagesError || !messages || messages.length === 0) continue;
+
+          // Count unread messages
+          const { data: unreadCount, error: unreadError } = await supabase
+            .from('messages')
+            .select('id', { count: 'exact' })
+            .eq('conversation_id', conversationId)
+            .eq('read', false)
+            .neq('sender_id', currentUser.id);
+
+          if (unreadError) continue;
+
+          conversationData.push({
+            id: conversationId,
+            userId: otherUserId,
+            name: profileData.name || `User ${otherUserId.substring(0, 8)}`,
+            lastMessage: messages[0].content,
+            timestamp: new Date(messages[0].created_at),
+            unread: unreadCount ? unreadCount > 0 : false
+          });
+        }
+
+        setConversations(conversationData);
+      } catch (error) {
+        console.error('Error fetching conversations:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchConversations();
+  }, [currentUser]);
 
   const filteredConversations = conversations.filter(
     convo => convo.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  if (isLoading) {
+    return (
+      <Layout>
+        <div className="flex justify-center items-center h-64">
+          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
+        </div>
+      </Layout>
+    );
+  }
+
   return (
     <Layout>
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">{t('messages.title')}</h1>
+        <h1 className="text-3xl font-bold mb-2">Mensagens</h1>
         <p className="text-zinc-400">
-          Chat with other players and schedule matches
+          Converse com outros jogadores e agende partidas
         </p>
       </div>
 
@@ -46,7 +150,7 @@ const MessageList = () => {
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-zinc-400" size={18} />
           <Input
             type="text"
-            placeholder="Search conversations..."
+            placeholder="Buscar conversas..."
             className="pl-10 bg-zinc-900 border-zinc-800"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -57,17 +161,17 @@ const MessageList = () => {
       <div className="space-y-3">
         {filteredConversations.length > 0 ? (
           filteredConversations.map((conversation) => (
-            <ConversationCard key={conversation.userId} conversation={conversation} />
+            <ConversationCard key={conversation.id} conversation={conversation} />
           ))
         ) : (
           <div className="text-center py-12 bg-zinc-900 rounded-lg border border-zinc-800">
             <MessageCircle className="mx-auto h-12 w-12 text-zinc-600 mb-4" />
-            <h3 className="text-xl font-medium mb-2">{t('messages.noConversations')}</h3>
+            <h3 className="text-xl font-medium mb-2">Sem conversas</h3>
             <p className="text-zinc-400 mb-4">
-              Start chatting with athletes to see conversations here
+              Comece a conversar com atletas para ver suas conversas aqui
             </p>
             <Link to="/athletes">
-              <Button>{t('messages.findAthletes')}</Button>
+              <Button>Encontrar Atletas</Button>
             </Link>
           </div>
         )}
@@ -75,14 +179,6 @@ const MessageList = () => {
     </Layout>
   );
 };
-
-interface Conversation {
-  userId: string;
-  name: string;
-  lastMessage: string;
-  timestamp: Date;
-  unread: boolean;
-}
 
 const ConversationCard = ({ conversation }: { conversation: Conversation }) => {
   const formatTime = (date: Date) => {

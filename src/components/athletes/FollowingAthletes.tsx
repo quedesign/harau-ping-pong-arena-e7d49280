@@ -3,59 +3,13 @@ import AthleteCard from '@/components/athletes/AthleteCard';
 import { Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from '@/hooks/use-toast';
-import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/auth';
-import { User } from '@/types';
+import { useFollowing } from '@/hooks/useFollowing';
 
 const FollowingAthletes: React.FC = () => {
-  const [followedAthletes, setFollowedAthletes] = useState<User[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const { currentUser } = useAuth();
-  
-  // In a real app, we would fetch the followed athletes from the database
-  // For now, we'll simulate this with a placeholder implementation
-  useEffect(() => {
-    const fetchFollowedAthletes = async () => {
-      setIsLoading(true);
-      try {
-        // Placeholder for API call to get followed athletes
-        // In a real application, this would fetch from the database
-        
-        // Simulate loading delay
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
-        // Placeholder data
-        const mockFollowedAthletes: User[] = [
-          {
-            id: 'followed-1',
-            name: 'Carlos Silva',
-            email: 'carlos@example.com',
-            role: 'athlete',
-            createdAt: new Date('2023-01-15')
-          },
-          {
-            id: 'followed-2',
-            name: 'Ana Soares',
-            email: 'ana@example.com',
-            role: 'athlete',
-            createdAt: new Date('2023-03-22')
-          }
-        ];
-        
-        setFollowedAthletes(mockFollowedAthletes);
-      } catch (err) {
-        console.error('Error fetching followed athletes:', err);
-        setError('Erro ao carregar atletas seguidos');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    
-    fetchFollowedAthletes();
-  }, [currentUser]);
+  const { followedAthletes, isLoading, error, unfollowAthlete } = useFollowing(currentUser?.id);
   
   if (isLoading) {
     return (
@@ -77,7 +31,7 @@ const FollowingAthletes: React.FC = () => {
     return (
       <section>
         <h2 className="text-lg font-semibold mb-4">Atletas Seguidos</h2>
-        <div className="p-8 text-center text-muted-foreground bg-accent/10 rounded-lg">
+        <div className="p-8 text-center text-muted-foreground bg-zinc-900/10 rounded-lg border border-zinc-800">
           <p>Você ainda não segue nenhum atleta.</p>
           <p className="text-sm mt-2">Explore a lista de atletas recentes para começar a seguir.</p>
         </div>
@@ -89,21 +43,18 @@ const FollowingAthletes: React.FC = () => {
     navigate(`/athletes/${userId}`);
   };
 
-  const handleUnfollowClick = (userId: string, name: string) => {
-    // Remove athlete from followed list
-    setFollowedAthletes(prev => prev.filter(athlete => athlete.id !== userId));
-    
-    toast({
-      title: "Deixou de seguir",
-      description: `Você deixou de seguir ${name}`,
-    });
+  const handleUnfollowClick = async (userId: string, name: string) => {
+    const success = await unfollowAthlete(userId);
+    if (success) {
+      toast({
+        title: "Deixou de seguir",
+        description: `Você deixou de seguir ${name}`,
+      });
+    }
   };
 
   const handleMessageClick = (userId: string, name: string) => {
-    toast({
-      title: "Nova mensagem",
-      description: `Iniciando conversa com ${name}`,
-    });
+    navigate(`/messages/${userId}`);
   };
   
   return (
@@ -135,6 +86,7 @@ const FollowingAthletes: React.FC = () => {
               onClick={() => handleAthleteClick(athleteId)}
               onFollowClick={() => handleUnfollowClick(athleteId, athleteName)}
               onMessageClick={() => handleMessageClick(athleteId, athleteName)}
+              isFollowed={true}
             />
           );
         })}

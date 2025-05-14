@@ -1,13 +1,17 @@
 
 import AthleteCard from '@/components/athletes/AthleteCard';
 import { Loader2 } from 'lucide-react';
-import { useGetAthletes } from '@/hooks/useGetAthletes';
 import { useNavigate } from 'react-router-dom';
 import { toast } from '@/hooks/use-toast';
+import { useGetAthletes } from '@/hooks/useGetAthletes';
+import { useAuth } from '@/contexts/auth';
+import { useFollowing } from '@/hooks/useFollowing';
 
 const RecentAthletes: React.FC = () => {
   const { athletes, isLoading, error } = useGetAthletes();
   const navigate = useNavigate();
+  const { currentUser } = useAuth();
+  const { followAthlete, unfollowAthlete, isFollowing } = useFollowing(currentUser?.id);
   
   if (isLoading) {
     return (
@@ -31,20 +35,28 @@ const RecentAthletes: React.FC = () => {
     navigate(`/athletes/${userId}`);
   };
 
-  const handleFollowClick = (userId: string, name: string) => {
-    // This would integrate with the follow functionality in a real app
-    toast({
-      title: "Seguindo atleta",
-      description: `Você começou a seguir ${name}`,
-    });
+  const handleFollowClick = async (userId: string, name: string, isFollowed: boolean) => {
+    if (isFollowed) {
+      const success = await unfollowAthlete(userId);
+      if (success) {
+        toast({
+          title: "Deixou de seguir",
+          description: `Você deixou de seguir ${name}`,
+        });
+      }
+    } else {
+      const success = await followAthlete(userId);
+      if (success) {
+        toast({
+          title: "Seguindo atleta",
+          description: `Você começou a seguir ${name}`,
+        });
+      }
+    }
   };
 
   const handleMessageClick = (userId: string, name: string) => {
-    // This would integrate with the messaging functionality in a real app
-    toast({
-      title: "Nova mensagem",
-      description: `Iniciando conversa com ${name}`,
-    });
+    navigate(`/messages/${userId}`);
   };
   
   return (
@@ -74,7 +86,7 @@ const RecentAthletes: React.FC = () => {
                 losses: 0
               }}
               onClick={() => handleAthleteClick(athleteId)}
-              onFollowClick={() => handleFollowClick(athleteId, athleteName)}
+              onFollowClick={() => handleFollowClick(athleteId, athleteName, false)}
               onMessageClick={() => handleMessageClick(athleteId, athleteName)}
             />
           );

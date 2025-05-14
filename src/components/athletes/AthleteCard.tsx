@@ -4,8 +4,9 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { MapPin, MessageSquare, UserPlus, UserMinus, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/auth';
+import { useFollowing } from '@/hooks/useFollowing';
 
 interface AthleteCardProps {
   athlete: {
@@ -24,17 +25,33 @@ interface AthleteCardProps {
   onClick?: () => void;
   onFollowClick?: () => void;
   onMessageClick?: () => void;
+  isFollowed?: boolean;
 }
 
 const AthleteCard: React.FC<AthleteCardProps> = ({ 
   athlete, 
   onClick, 
   onFollowClick,
-  onMessageClick
+  onMessageClick,
+  isFollowed: isFollowedProp
 }) => {
   const { name, level, bio, location } = athlete;
   const { currentUser } = useAuth();
   const [isFollowing, setIsFollowing] = useState(false);
+  const { isFollowing: checkIsFollowing } = useFollowing(currentUser?.id);
+  
+  useEffect(() => {
+    if (isFollowedProp !== undefined) {
+      setIsFollowing(isFollowedProp);
+    } else {
+      const checkFollowStatus = async () => {
+        const followStatus = await checkIsFollowing(athlete.userId);
+        setIsFollowing(followStatus);
+      };
+      
+      checkFollowStatus();
+    }
+  }, [athlete.userId, isFollowedProp, checkIsFollowing]);
   
   // Format location string if available
   const formattedLocation = location 
@@ -51,9 +68,12 @@ const AthleteCard: React.FC<AthleteCardProps> = ({
 
   return (
     <Card 
-      className="hover:bg-accent/10 transition-colors"
+      className="hover:bg-accent/10 transition-colors bg-zinc-900 border-zinc-800"
       role={onClick ? "button" : undefined} 
       tabIndex={onClick ? 0 : undefined}
+      onClick={(e) => {
+        if (onClick && e.target === e.currentTarget) onClick();
+      }}
     >
       <CardContent className="p-4">
         <div className="flex items-center gap-3">

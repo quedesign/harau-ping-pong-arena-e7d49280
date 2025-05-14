@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import Layout from '@/components/layout/Layout';
 import { useAthlete } from '@/contexts/data/athlete';
@@ -6,15 +7,8 @@ import { Input } from '@/components/ui/input';
 import { EmptyState } from '@/components';
 import SearchBar from '@/components/athletes/SearchBar';
 import { FloatingSupportButton } from '@/components/FloatingSupportButton';
-import RecentAthletes from '@/components/athletes/search/RecentAthletes';
 import SearchFilters from '@/components/athletes/search/SearchFilters';
 import AthleteResults from '@/components/athletes/search/AthleteResults';
-
-// Local AthleteCard component if needed
-const AthleteCard = ({ athlete }: any) => {
-  // Simple implementation
-  return <div>{athlete.name}</div>;
-};
 
 // Fixed the missing FilterSection import
 const FilterSection = ({ title, children }: { title: string, children: React.ReactNode }) => {
@@ -83,15 +77,6 @@ const AthleteSearch = () => {
     setNoResults(filteredAthletes.length === 0);
   }, [filteredAthletes]);
 
-  const recentAthletes = useMemo(() => {
-    if (!athleteProfiles) return []; 
-    return [...athleteProfiles].sort((a, b) => {
-      const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
-      const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
-      return dateB - dateA;
-    }).slice(0, 6);
-  }, [athleteProfiles]);
-
   if (isLoading) {
     return (
       <Layout>
@@ -113,9 +98,6 @@ const AthleteSearch = () => {
           <h1 className="text-3xl font-bold mb-2">Encontre um atleta</h1>
           <p className="text-zinc-400">Encontre atletas pelo nome, nível, localização e estilo de jogo</p>
         </div>
-  
-        {/* Recent Athletes Section */}
-        <RecentAthletes athletes={recentAthletes} />
   
         {/* Search and Filter Section */}
         <SearchFilters

@@ -7,7 +7,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useSessionManagement } from "./hooks/useSessionManagement";
 import { useSupabaseAuth } from "./hooks/useSupabaseAuth";
 import { useMockLogins } from "./hooks/useMockLogins";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
@@ -33,48 +34,128 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const { loginWithGithub, loginAsTestUser } = useMockLogins();
   const { refreshSession } = useSessionManagement();
   
-  // Set up Supabase auth state listener
-  useSupabaseAuth(setCurrentUser);
+  useEffect(() => {
+    // Set up Supabase auth state listener
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log("Auth state change:", event, session?.user?.id);
+      setIsLoading(true);
+
+      if (session?.user) {
+        try {
+          // Fetch user profile from profiles table
+          const { data: profile, error: profileError } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', session.user.id)
+            .single();
+          
+          if (profileError && profileError.code !== 'PGRST116') {
+            console.error("Error fetching user profile:", profileError);
+          }
+          
+          if (profile) {
+            const userData: User = {
+              id: profile.id,
+              name: profile.name || 'User',
+              email: profile.email || session.user.email || '',
+              role: profile.role as 'athlete' | 'admin' | 'organizer',
+              profileImage: profile.profile_image,
+              createdAt: profile.created_at ? new Date(profile.created_at) : new Date(),
+            };
+            setCurrentUser(userData);
+          } else if (session.user.id) {
+            // If profile doesn't exist, create one
+            const newProfile = {
+              id: session.user.id,
+              name: session.user.user_metadata?.name || 'User', 
+              email: session.user.email || '',
+              role: session.user.user_metadata?.role || 'athlete',
+              profile_image: session.user.user_metadata?.avatar_url,
+            };
+            
+            const { error: insertError } = await supabase
+              .from('profiles')
+              .insert(newProfile);
+              
+            if (insertError) {
+              console.error("Error creating user profile:", insertError);
+            } else {
+              // Use the new profile data
+              setCurrentUser({
+                id: session.user.id,
+                name: newProfile.name,
+                email: newProfile.email,
+                role: newProfile.role as 'athlete' | 'admin' | 'organizer',
+                profileImage: newProfile.profile_image,
+                createdAt: new Date(),
+              });
+            }
+          }
+        } catch (err) {
+          console.error("Error processing user data:", err);
+          setCurrentUser(null);
+        }
+      } else {
+        setCurrentUser(null);
+      }
+      
+      setIsLoading(false);
+    });
+
+    // Initial auth state check
+    const checkInitialAuthState = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) {
+          setIsLoading(false);
+        }
+        // The onAuthStateChange handler will set the user if session exists
+      } catch (error) {
+        console.error("Error checking initial auth state:", error);
+        setIsLoading(false);
+      }
+    };
+
+    checkInitialAuthState();
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
 
   // Refresh session when user navigates
   useEffect(() => {
     refreshSession(currentUser);
   }, [pathname, currentUser, refreshSession]);
 
-  const getCurrentUser = async () => {
-    return currentUser;
-  };
-
-  const onAuthStateChange = async () => {
-    setIsLoading(true);
-    try {
-      const user = await getCurrentUser();
-      if (user) {
-        setCurrentUser(user);
-      } else {
-        setCurrentUser(null);
-      }
-    } catch (error) {
-      console.error("Error checking auth state:", error);
-      setCurrentUser(null);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    // Initialize authentication state
-    onAuthStateChange();
-  }, []);
-
   const loginWithEmailAndPassword = async (email: string, password: string) => {
     setIsLoading(true);
     try {
-      const success = await login(email, password);
-      if (success) {
-        toast.success("Login realizado com sucesso!");
-        navigate('/dashboard');
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        toast({
+          title: "Erro ao fazer login",
+          description: error.message,
+          variant: "destructive",
+        });
+        return false;
       }
+
+      return !!data.user;
+    } catch (error: any) {
+      console.error("Login error:", error);
+      toast({
+        title: "Erro ao fazer login",
+        description: error.message || "Ocorreu um erro ao tentar fazer login",
+        variant: "destructive",
+      });
+      return false;
     } finally {
       setIsLoading(false);
     }
@@ -88,18 +169,41 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   ) => {
     setIsLoading(true);
     try {
-      const success = await register(name, email, password, role);
-      if (success) {
-        toast.success("Registro realizado com sucesso!");
-        // Wait a moment before logging in to ensure registration is complete
-        setTimeout(async () => {
-          await login(email, password);
-          navigate('/dashboard');
-        }, 500);
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            name,
+            role,
+          },
+        },
+      });
+
+      if (error) {
+        toast({
+          title: "Erro ao registrar",
+          description: error.message,
+          variant: "destructive",
+        });
+        return false;
       }
-    } catch (error) {
+
+      // The profile creation will happen in the onAuthStateChange handler
+      toast({
+        title: "Registro realizado com sucesso!",
+        description: "Sua conta foi criada com sucesso.",
+      });
+      
+      return !!data.user;
+    } catch (error: any) {
       console.error("Registration error:", error);
-      toast.error("Erro no registro. Por favor tente novamente.");
+      toast({
+        title: "Erro ao registrar",
+        description: error.message || "Ocorreu um erro ao tentar registrar",
+        variant: "destructive",
+      });
+      return false;
     } finally {
       setIsLoading(false);
     }
@@ -108,10 +212,22 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const logout = async () => {
     setIsLoading(true);
     try {
-      await logoutOperation();
+      const { error } = await supabase.auth.signOut();
+      
+      if (error) {
+        throw error;
+      }
+      
       setCurrentUser(null);
       localStorage.removeItem('sessionTimeout');
       navigate('/login');
+    } catch (error) {
+      console.error("Logout error:", error);
+      toast({
+        title: "Erro ao sair",
+        description: "Ocorreu um erro ao tentar sair",
+        variant: "destructive",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -121,15 +237,61 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     if (!currentUser) return;
     setIsLoading(true);
     try {
-      await updateUserOperation(userData);
-      // currentUser is updated in the updateUserOperation
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          name: userData.name,
+          email: userData.email,
+          profile_image: userData.profileImage
+        })
+        .eq('id', currentUser.id);
+
+      if (error) throw error;
+
+      setCurrentUser({
+        ...currentUser,
+        ...userData
+      });
+      
+      toast({
+        title: "Perfil atualizado",
+        description: "Seu perfil foi atualizado com sucesso",
+      });
+    } catch (error) {
+      console.error("Update user error:", error);
+      toast({
+        title: "Erro ao atualizar perfil",
+        description: "Ocorreu um erro ao tentar atualizar seu perfil",
+        variant: "destructive",
+      });
     } finally {
       setIsLoading(false);
     }
   };
 
   const resetPasswordWrapper = async (email: string): Promise<void> => {
-    await resetPassword(email);
+    setIsLoading(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      
+      if (error) throw error;
+      
+      toast({
+        title: "Email enviado",
+        description: "Verifique seu email para redefinir sua senha",
+      });
+    } catch (error: any) {
+      console.error("Reset password error:", error);
+      toast({
+        title: "Erro ao redefinir senha",
+        description: error.message || "Ocorreu um erro ao tentar redefinir sua senha",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const isAdmin = useMemo(() => {

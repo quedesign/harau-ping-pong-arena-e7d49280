@@ -22,7 +22,7 @@ export const useFollowing = (userId?: string) => {
     setError(null);
     
     try {
-      // Using raw SQL query instead of the builder to bypass TypeScript restrictions
+      // Using raw RPC function call
       const { data: followData, error: followError } = await supabase
         .rpc('get_athlete_followers', { user_id: userId });
       
@@ -73,7 +73,7 @@ export const useFollowing = (userId?: string) => {
     if (!userId) return false;
     
     try {
-      // Using raw SQL query
+      // Using RPC function call
       const { data, error } = await supabase
         .rpc('follow_athlete', { 
           follower_user_id: userId, 
@@ -99,7 +99,7 @@ export const useFollowing = (userId?: string) => {
     if (!userId) return false;
     
     try {
-      // Using raw SQL query
+      // Using RPC function call
       const { data, error } = await supabase
         .rpc('unfollow_athlete', { 
           follower_user_id: userId, 

@@ -40,58 +40,23 @@ const MessageDetail = () => {
     const fetchOrCreateConversation = async () => {
       setLoading(true);
       try {
-        // Check if a conversation already exists
-        const { data: participations, error: participationsError } = await supabase
-          .from('conversation_participants')
-          .select('conversation_id')
-          .eq('user_id', currentUser.id);
-
-        if (participationsError) throw participationsError;
-
-        if (participations && participations.length > 0) {
-          // Check if there's already a conversation with this athlete
-          for (const participation of participations) {
-            const { data: otherParticipant, error: otherParticipantError } = await supabase
-              .from('conversation_participants')
-              .select('user_id')
-              .eq('conversation_id', participation.conversation_id)
-              .eq('user_id', id)
-              .maybeSingle();
-
-            if (otherParticipantError) continue;
-
-            if (otherParticipant) {
-              // Found existing conversation
-              setConversationId(participation.conversation_id);
-              fetchMessages(participation.conversation_id);
-              return;
-            }
+        // Try to get or create a conversation using the RPC function
+        if (currentUser.id) {
+          const { data: convId, error: rpcError } = await supabase
+            .rpc('get_or_create_conversation', { 
+              user1_id: currentUser.id, 
+              user2_id: id 
+            });
+            
+          if (rpcError) {
+            throw rpcError;
+          }
+          
+          if (convId) {
+            setConversationId(convId);
+            await fetchMessages(convId);
           }
         }
-
-        // No existing conversation, create a new one
-        const { data: newConversation, error: conversationError } = await supabase
-          .from('conversations')
-          .insert({})
-          .select()
-          .single();
-
-        if (conversationError) throw conversationError;
-
-        // Add participants
-        const participants = [
-          { conversation_id: newConversation.id, user_id: currentUser.id },
-          { conversation_id: newConversation.id, user_id: id }
-        ];
-
-        const { error: participantsError } = await supabase
-          .from('conversation_participants')
-          .insert(participants);
-
-        if (participantsError) throw participantsError;
-
-        setConversationId(newConversation.id);
-        setMessages([]);
       } catch (error) {
         console.error('Error fetching/creating conversation:', error);
         toast({
@@ -140,38 +105,40 @@ const MessageDetail = () => {
     fetchOrCreateConversation();
 
     // Set up real-time subscription
-    const channel = supabase
-      .channel('messages-channel')
-      .on('postgres_changes', 
-        { 
-          event: 'INSERT', 
-          schema: 'public', 
-          table: 'messages',
-          filter: `conversation_id=eq.${conversationId}`
-        }, 
-        (payload) => {
-          if (payload.new && payload.new.sender_id !== currentUser.id) {
-            const newMsg = {
-              id: payload.new.id,
-              text: payload.new.content,
-              timestamp: new Date(payload.new.created_at),
-              isFromCurrentUser: false
-            };
-            setMessages(prevMessages => [...prevMessages, newMsg]);
-            
-            // Mark as read
-            supabase
-              .from('messages')
-              .update({ read: true })
-              .eq('id', payload.new.id);
+    if (conversationId) {
+      const channel = supabase
+        .channel('messages-channel')
+        .on('postgres_changes', 
+          { 
+            event: 'INSERT', 
+            schema: 'public', 
+            table: 'messages',
+            filter: `conversation_id=eq.${conversationId}`
+          }, 
+          (payload) => {
+            if (payload.new && currentUser && payload.new.sender_id !== currentUser.id) {
+              const newMsg = {
+                id: payload.new.id,
+                text: payload.new.content,
+                timestamp: new Date(payload.new.created_at),
+                isFromCurrentUser: false
+              };
+              setMessages(prevMessages => [...prevMessages, newMsg]);
+              
+              // Mark as read
+              supabase
+                .from('messages')
+                .update({ read: true })
+                .eq('id', payload.new.id);
+            }
           }
-        }
-      )
-      .subscribe();
+        )
+        .subscribe();
 
-    return () => {
-      supabase.removeChannel(channel);
-    };
+      return () => {
+        supabase.removeChannel(channel);
+      };
+    }
   }, [currentUser, id, conversationId]);
 
   useEffect(() => {
@@ -179,7 +146,7 @@ const MessageDetail = () => {
   }, [messages]);
 
   const handleSendMessage = async () => {
-    if (!newMessage.trim() || !conversationId || !currentUser) return;
+    if (!newMessage.trim() || !conversationId || !currentUser?.id) return;
     
     try {
       const { error } = await supabase

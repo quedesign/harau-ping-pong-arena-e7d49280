@@ -127,7 +127,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   // Refresh session when user navigates
   useEffect(() => {
-    refreshSession(currentUser);
+    if (currentUser) {
+      refreshSession(currentUser);
+    }
   }, [pathname, currentUser, refreshSession]);
 
   const loginWithEmailAndPassword = async (email: string, password: string): Promise<void> => {
@@ -243,7 +245,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           email: userData.email || currentUser.email,
           profile_image: profileImage
         })
-        .eq('id', currentUser.id);
+        .eq('id', currentUser.id || '');
 
       if (error) throw error;
 

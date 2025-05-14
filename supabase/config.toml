@@ -1,1 +1,44 @@
+
 project_id = "nrgjaofrozgccdiebqwv"
+functions = []
+
+[storage]
+enabled = true
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "storage", "graphql_public"]
+
+[db]
+port = 54322
+
+[db.pooler]
+enabled = false
+port = 54329
+pool_mode = "transaction"
+
+[realtime]
+enabled = true
+
+[studio]
+enabled = true
+port = 54323
+browse_api_port = 54324
+
+[auth]
+enabled = true
+
+[auth.external.github]
+enabled = false
+
+[auth.external.google]
+enabled = false
+
+[analytics]
+enabled = false
+port = 54327
+
+[inbucket]
+enabled = false
+port = 54325

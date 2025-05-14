@@ -1,3 +1,4 @@
+
 // Type definitions for Harau Ping Pong App
 
 // User types
@@ -132,19 +133,32 @@ export interface Bracket {
   seeds: Seed[];
 }
 
-// Extend the existing AuthContextType
-export interface AuthContextType {
-  currentUser: User | null;
-  isLoading: boolean;
-  error: string | null;
-  login: (email: string, password: string, callback?: (user: User) => void) => Promise<boolean>;
-  logout: () => Promise<void>;
-  register: (name: string, email: string, password: string, role: UserRole) => Promise<boolean>;
-  resetPassword: (email: string) => Promise<boolean>;
-  createTestUser: () => Promise<boolean>;
-  setError?: (error: string | null) => void;
-  loginWithGoogle?: (callback?: (user: User) => void) => Promise<void>;
+// Database table types (for Supabase)
+export interface AthleteFollower {
+  id: string;
+  follower_id: string;
+  athlete_id: string;
+  created_at: string;
 }
 
-// For useLogin hook
-export type UseLogin = (email: string, password: string, callback?: (user: User) => void) => Promise<boolean>;
+export interface Conversation {
+  id: string;
+  created_at: string;
+}
+
+export interface ConversationParticipant {
+  id: string;
+  conversation_id: string;
+  user_id: string;
+  created_at: string;
+}
+
+export interface Message {
+  id: string;
+  conversation_id: string;
+  sender_id: string;
+  content: string;
+  read: boolean;
+  created_at: string;
+  updated_at: string;
+}

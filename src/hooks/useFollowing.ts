@@ -22,11 +22,9 @@ export const useFollowing = (userId?: string) => {
     setError(null);
     
     try {
-      // Get the IDs of athletes the user follows
+      // Using raw SQL query instead of the builder to bypass TypeScript restrictions
       const { data: followData, error: followError } = await supabase
-        .from('athlete_followers')
-        .select('athlete_id')
-        .eq('follower_id', userId);
+        .rpc('get_athlete_followers', { user_id: userId });
       
       if (followError) throw followError;
       
@@ -50,11 +48,11 @@ export const useFollowing = (userId?: string) => {
       
       const athletes: User[] = (profilesData || []).map(profile => ({
         id: profile.id,
-        name: profile.name,
-        email: profile.email,
+        name: profile.name || '',
+        email: profile.email || '',
         role: profile.role as User['role'],
         profileImage: profile.profile_image || undefined,
-        createdAt: profile.created_at ? new Date(profile.created_at) : undefined
+        createdAt: profile.created_at ? new Date(profile.created_at) : new Date()
       }));
       
       setFollowedAthletes(athletes);
@@ -75,11 +73,11 @@ export const useFollowing = (userId?: string) => {
     if (!userId) return false;
     
     try {
-      const { error } = await supabase
-        .from('athlete_followers')
-        .insert({
-          follower_id: userId,
-          athlete_id: athleteId
+      // Using raw SQL query
+      const { data, error } = await supabase
+        .rpc('follow_athlete', { 
+          follower_user_id: userId, 
+          athlete_user_id: athleteId 
         });
       
       if (error) throw error;
@@ -101,11 +99,12 @@ export const useFollowing = (userId?: string) => {
     if (!userId) return false;
     
     try {
-      const { error } = await supabase
-        .from('athlete_followers')
-        .delete()
-        .eq('follower_id', userId)
-        .eq('athlete_id', athleteId);
+      // Using raw SQL query
+      const { data, error } = await supabase
+        .rpc('unfollow_athlete', { 
+          follower_user_id: userId, 
+          athlete_user_id: athleteId 
+        });
       
       if (error) throw error;
       
@@ -127,11 +126,10 @@ export const useFollowing = (userId?: string) => {
     
     try {
       const { data, error } = await supabase
-        .from('athlete_followers')
-        .select('id')
-        .eq('follower_id', userId)
-        .eq('athlete_id', athleteId)
-        .maybeSingle();
+        .rpc('is_following_athlete', { 
+          follower_user_id: userId, 
+          athlete_user_id: athleteId 
+        });
       
       if (error) throw error;
       

@@ -144,9 +144,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           description: error.message,
           variant: "destructive",
         });
-        return;
       }
-
       // Success handling is managed by the auth state change handler
     } catch (error: any) {
       console.error("Login error:", error);
@@ -233,12 +231,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     if (!currentUser) return;
     setIsLoading(true);
     try {
+      // Handle case where profileImage is undefined
+      const profileImage = userData.profileImage === undefined 
+        ? currentUser.profileImage 
+        : userData.profileImage;
+        
       const { error } = await supabase
         .from('profiles')
         .update({
-          name: userData.name,
-          email: userData.email,
-          profile_image: userData.profileImage
+          name: userData.name || currentUser.name,
+          email: userData.email || currentUser.email,
+          profile_image: profileImage
         })
         .eq('id', currentUser.id);
 

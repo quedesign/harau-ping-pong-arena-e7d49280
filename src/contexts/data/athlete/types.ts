@@ -10,8 +10,16 @@ export interface AthleteContextType {
   deleteAthleteProfile?: (userId: string) => Promise<void>;
 }
 
+export interface SupabaseProfileData {
+  name: string;
+  email: string;
+  profile_image?: string | null;
+  created_at: string;
+}
+
 export interface SupabaseAthleteData {
   id: string;
+  user_id?: string;
   handedness?: string;
   height?: number | null;
   weight?: number | null;
@@ -32,6 +40,7 @@ export interface SupabaseAthleteData {
   rubbers?: string;
   created_at?: string;
   updated_at?: string;
+  profiles?: SupabaseProfileData;
   users?: {
     name: string;
     email: string;

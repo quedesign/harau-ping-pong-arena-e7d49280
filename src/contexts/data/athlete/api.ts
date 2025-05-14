@@ -2,7 +2,7 @@
 import { AthleteProfile } from '@/types';
 import { supabase } from '@/integrations/supabase/client';
 import { mapSupabaseToAthleteProfile, mapProfileToSupabaseData } from './mappers';
-import { SupabaseAthleteData } from './types';
+import { SupabaseAthleteData, SupabaseProfileData } from './types';
 
 export const fetchAllAthleteProfiles = async (): Promise<AthleteProfile[]> => {
   const { data, error } = await supabase
@@ -28,8 +28,9 @@ export const fetchAllAthleteProfiles = async (): Promise<AthleteProfile[]> => {
     throw error;
   }
   
-  return data.map(athlete => {
-    const profileData = athlete.profiles;
+  return (data as any[]).map(athlete => {
+    // Correctly access the nested profiles object
+    const profileData = athlete.profiles as SupabaseProfileData;
     
     const athleteData: SupabaseAthleteData = {
       id: athlete.user_id,
@@ -86,7 +87,8 @@ export const fetchAthleteProfile = async (userId: string): Promise<AthleteProfil
     throw error;
   }
   
-  const profileData = data.profiles;
+  // Correctly access the nested profiles object
+  const profileData = data.profiles as SupabaseProfileData;
   
   const athleteData: SupabaseAthleteData = {
     id: data.user_id,

@@ -29,6 +29,8 @@ export const fetchAllAthleteProfiles = async (): Promise<AthleteProfile[]> => {
   }
   
   return data.map(athlete => {
+    const profileData = athlete.profiles;
+    
     const athleteData: SupabaseAthleteData = {
       id: athlete.user_id,
       handedness: athlete.handedness,
@@ -42,11 +44,11 @@ export const fetchAllAthleteProfiles = async (): Promise<AthleteProfile[]> => {
       years_playing: athlete.years_playing || undefined,
       wins: athlete.wins,
       losses: athlete.losses,
-      users: athlete.profiles ? {
-        name: athlete.profiles.name,
-        email: athlete.profiles.email,
-        profile_image: athlete.profiles.profile_image || undefined, // Convert null to undefined
-        created_at: athlete.profiles.created_at
+      users: profileData ? {
+        name: profileData.name,
+        email: profileData.email,
+        profile_image: profileData.profile_image || undefined, // Convert null to undefined
+        created_at: profileData.created_at
       } : undefined
     };
     
@@ -84,6 +86,8 @@ export const fetchAthleteProfile = async (userId: string): Promise<AthleteProfil
     throw error;
   }
   
+  const profileData = data.profiles;
+  
   const athleteData: SupabaseAthleteData = {
     id: data.user_id,
     handedness: data.handedness,
@@ -97,11 +101,11 @@ export const fetchAthleteProfile = async (userId: string): Promise<AthleteProfil
     years_playing: data.years_playing || undefined,
     wins: data.wins,
     losses: data.losses,
-    users: data.profiles ? {
-      name: data.profiles.name,
-      email: data.profiles.email,
-      profile_image: data.profiles.profile_image || undefined, // Convert null to undefined
-      created_at: data.profiles.created_at
+    users: profileData ? {
+      name: profileData.name,
+      email: profileData.email,
+      profile_image: profileData.profile_image || undefined, // Convert null to undefined
+      created_at: profileData.created_at
     } : undefined
   };
   

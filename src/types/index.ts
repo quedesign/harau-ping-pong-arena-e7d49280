@@ -1,8 +1,7 @@
-
 // Type definitions for Harau Ping Pong App
 
 // User types
-export type UserRole = 'athlete' | 'admin';
+export type UserRole = 'athlete' | 'admin' | 'organizer';
 
 export interface User {
   id?: string;

@@ -60,8 +60,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
               id: profile.id,
               name: profile.name || 'User',
               email: profile.email || session.user.email || '',
-              role: profile.role as 'athlete' | 'admin' | 'organizer',
-              profileImage: profile.profile_image,
+              role: (profile.role as User["role"]) || 'athlete',
+              profileImage: profile.profile_image || undefined,
               createdAt: profile.created_at ? new Date(profile.created_at) : new Date(),
             };
             setCurrentUser(userData);
@@ -71,8 +71,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
               id: session.user.id,
               name: session.user.user_metadata?.name || 'User', 
               email: session.user.email || '',
-              role: session.user.user_metadata?.role || 'athlete',
-              profile_image: session.user.user_metadata?.avatar_url,
+              role: (session.user.user_metadata?.role as User["role"]) || 'athlete',
+              profile_image: session.user.user_metadata?.avatar_url || null,
             };
             
             const { error: insertError } = await supabase
@@ -87,8 +87,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 id: session.user.id,
                 name: newProfile.name,
                 email: newProfile.email,
-                role: newProfile.role as 'athlete' | 'admin' | 'organizer',
-                profileImage: newProfile.profile_image,
+                role: newProfile.role,
+                profileImage: newProfile.profile_image || undefined,
                 createdAt: new Date(),
               });
             }
@@ -130,7 +130,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     refreshSession(currentUser);
   }, [pathname, currentUser, refreshSession]);
 
-  const loginWithEmailAndPassword = async (email: string, password: string) => {
+  const loginWithEmailAndPassword = async (email: string, password: string): Promise<void> => {
     setIsLoading(true);
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
@@ -144,10 +144,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           description: error.message,
           variant: "destructive",
         });
-        return false;
+        return;
       }
 
-      return !!data.user;
+      // Success handling is managed by the auth state change handler
     } catch (error: any) {
       console.error("Login error:", error);
       toast({
@@ -155,7 +155,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         description: error.message || "Ocorreu um erro ao tentar fazer login",
         variant: "destructive",
       });
-      return false;
     } finally {
       setIsLoading(false);
     }
@@ -166,7 +165,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     email: string,
     password: string,
     role: User["role"]
-  ) => {
+  ): Promise<void> => {
     setIsLoading(true);
     try {
       const { data, error } = await supabase.auth.signUp({
@@ -186,7 +185,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           description: error.message,
           variant: "destructive",
         });
-        return false;
+        return;
       }
 
       // The profile creation will happen in the onAuthStateChange handler
@@ -194,8 +193,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         title: "Registro realizado com sucesso!",
         description: "Sua conta foi criada com sucesso.",
       });
-      
-      return !!data.user;
     } catch (error: any) {
       console.error("Registration error:", error);
       toast({
@@ -203,7 +200,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         description: error.message || "Ocorreu um erro ao tentar registrar",
         variant: "destructive",
       });
-      return false;
     } finally {
       setIsLoading(false);
     }

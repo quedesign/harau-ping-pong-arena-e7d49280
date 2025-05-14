@@ -52,8 +52,8 @@ export const useFollowing = (userId?: string) => {
         id: profile.id,
         name: profile.name,
         email: profile.email,
-        role: profile.role as 'athlete' | 'admin' | 'organizer',
-        profileImage: profile.profile_image,
+        role: profile.role as User['role'],
+        profileImage: profile.profile_image || undefined,
         createdAt: profile.created_at ? new Date(profile.created_at) : undefined
       }));
       

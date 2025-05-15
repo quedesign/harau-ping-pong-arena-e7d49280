@@ -7,6 +7,7 @@ import { useAuthActions } from "./hooks/useAuthActions";
 import { useSocialLogin } from "./hooks/useSocialLogin";
 import { useAuthOperations } from "./useAuthOperations";
 import { useSessionManagement } from "./hooks/useSessionManagement";
+import { useAdminCheck } from "./hooks/useAdminCheck";
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const { pathname } = useLocation();
@@ -26,6 +27,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   } = useAuthActions();
   const { loginWithGithub, loginAsTestUser, isSocialLoading } = useSocialLogin();
   const { refreshSession } = useSessionManagement();
+  const { isAdmin } = useAdminCheck(currentUser);
   
   // Keep these operations for backward compatibility
   const {
@@ -48,10 +50,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setCurrentUser(updatedUser);
     }
   };
-
-  const isAdmin = useMemo(() => {
-    return currentUser?.role === "admin";
-  }, [currentUser]);
 
   const combinedIsLoading = isLoading || isAuthLoading || isSocialLoading;
   const combinedError = error || operationsError;

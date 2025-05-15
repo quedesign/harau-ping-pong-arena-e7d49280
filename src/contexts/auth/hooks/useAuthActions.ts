@@ -4,10 +4,12 @@ import { User } from "@/types";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/use-toast";
 import { useNavigate } from 'react-router-dom';
+import { useUserProfileUpdate } from './useUserProfileUpdate';
 
 export function useAuthActions() {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { updateUserProfile } = useUserProfileUpdate();
   
   const loginWithEmailAndPassword = async (email: string, password: string): Promise<void> => {
     setIsLoading(true);
@@ -106,45 +108,7 @@ export function useAuthActions() {
   };
 
   const updateUser = async (userData: Partial<User>, currentUser: User | null) => {
-    if (!currentUser) return;
-    setIsLoading(true);
-    try {
-      // Handle case where profileImage is undefined
-      const profileImage = userData.profileImage === undefined 
-        ? currentUser.profileImage 
-        : userData.profileImage;
-        
-      const { error } = await supabase
-        .from('profiles')
-        .update({
-          name: userData.name || currentUser.name,
-          email: userData.email || currentUser.email,
-          profile_image: profileImage
-        })
-        .eq('id', currentUser.id || '');
-
-      if (error) throw error;
-      
-      toast({
-        title: "Perfil atualizado",
-        description: "Seu perfil foi atualizado com sucesso",
-      });
-      
-      return {
-        ...currentUser,
-        ...userData
-      };
-    } catch (error) {
-      console.error("Update user error:", error);
-      toast({
-        title: "Erro ao atualizar perfil",
-        description: "Ocorreu um erro ao tentar atualizar seu perfil",
-        variant: "destructive",
-      });
-      return null;
-    } finally {
-      setIsLoading(false);
-    }
+    return await updateUserProfile(userData, currentUser);
   };
 
   const resetPassword = async (email: string): Promise<void> => {
